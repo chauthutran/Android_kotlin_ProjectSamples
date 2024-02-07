@@ -55,6 +55,11 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    buildFeatures {
+        viewBinding = true
+        dataBinding = true
+    }
 }
 
 dependencies {
@@ -118,7 +123,7 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.50")
 
     //Firebase
-    implementation("com.google.firebase:firebase-auth:21.0.6")
+    implementation("com.google.firebase:firebase-auth:22.3.1")
 
     //Coroutines with firebase
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.1")

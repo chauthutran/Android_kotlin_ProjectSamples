@@ -5,9 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.psi.shoppingapp.R
+import com.psi.shoppingapp.databinding.FragmentAccountOptionsBinding
+import com.psi.shoppingapp.databinding.FragmentIntroductionBinding
 
 class AccountOptionsFragment : Fragment() {
+
+    private lateinit var binding: FragmentAccountOptionsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,8 +22,23 @@ class AccountOptionsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_account_options, container, false)
+        binding = FragmentAccountOptionsBinding.inflate(inflater)
+        return binding.root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
+            buttonRegisterAccountOptions.setOnClickListener {
+                findNavController().navigate(R.id.action_accountOptionsFragment_to_registerFragment)
+            }
+
+            buttonLoginAccountOptions.setOnClickListener{
+                findNavController().navigate(R.id.action_accountOptionsFragment_to_loginFragment)
+            }
+        }
+    }
+
 
 }

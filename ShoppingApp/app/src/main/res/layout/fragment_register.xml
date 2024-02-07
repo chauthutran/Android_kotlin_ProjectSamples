@@ -13,7 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@tools:sample/avatars"
         app:srcCompat="@drawable/blury_background" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -102,11 +101,11 @@
             android:layout_height="@dimen/edittextHeight"
             android:layout_marginTop="10dp"
             android:inputType="textPassword"
-            android:hint="Email"
+            android:hint="Password"
             app:layout_constraintEnd_toEndOf="@id/guidelineRegisterRight"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@id/guidelineRegisterLeft"
-            app:layout_constraintTop_toBottomOf="@id/editLastNameRegister" />
+            app:layout_constraintTop_toBottomOf="@id/editEmailRegister" />
 
         <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
             android:id="@+id/buttonRegisterRegister"
