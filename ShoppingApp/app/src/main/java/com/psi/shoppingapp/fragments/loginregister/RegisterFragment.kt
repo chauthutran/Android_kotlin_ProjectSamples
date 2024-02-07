@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.psi.shoppingapp.R
 import com.psi.shoppingapp.data.User
 import com.psi.shoppingapp.databinding.FragmentRegisterBinding
 import com.psi.shoppingapp.utils.RegisterValidation
@@ -48,6 +50,10 @@ class RegisterFragment : Fragment() {
                 )
                 val password = editPasswordRegister.text.toString()
                 viewModel.createAcccountWithEmailAndPassword(user, password)
+            }
+
+            tvLoginQuestion.setOnClickListener{
+                findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
             }
         }
 

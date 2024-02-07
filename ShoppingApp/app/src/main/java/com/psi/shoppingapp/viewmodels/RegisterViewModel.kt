@@ -3,7 +3,9 @@ package com.psi.shoppingapp.viewmodels
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import com.psi.shoppingapp.data.User
+import com.psi.shoppingapp.utils.Constants
 import com.psi.shoppingapp.utils.RegisterFieldsState
 import com.psi.shoppingapp.utils.RegisterValidation
 import com.psi.shoppingapp.utils.Resource
@@ -19,11 +21,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val firebaseAuth: FirebaseAuth
+    private val firebaseAuth: FirebaseAuth,
+    private val db: FirebaseFirestore
 ): ViewModel() {
 
-    private var _register = MutableStateFlow<Resource<FirebaseUser>>(Resource.UnSpecified())
-    var register: Flow<Resource<FirebaseUser>> = _register
+    private var _register = MutableStateFlow<Resource<User>>(Resource.UnSpecified())
+    var register: Flow<Resource<User>> = _register
 
     private val _validation = Channel<RegisterFieldsState>()
     val validation = _validation.receiveAsFlow()
@@ -38,7 +41,7 @@ class RegisterViewModel @Inject constructor(
             firebaseAuth.createUserWithEmailAndPassword(user.email, password)
                 .addOnSuccessListener {
                     it.user?.let {
-                        _register.value = Resource.Success(it)
+                        saveUserInfo(it.uid, user)
                     }
                 }.addOnFailureListener {
                     _register.value = Resource.Error(it.message.toString())
@@ -56,9 +59,20 @@ class RegisterViewModel @Inject constructor(
     private fun checkValidation(user: User, password: String): Boolean {
         val emailValidation = validateEmail(user.email)
         val passwordValidation = validatePassword(password)
-        val canRegister =
-            emailValidation is RegisterValidation.Success && passwordValidation is RegisterValidation.Success
+        val canRegister = emailValidation is RegisterValidation.Success && passwordValidation is RegisterValidation.Success
 
         return canRegister
+    }
+
+    private fun saveUserInfo(userUid: String, user: User){
+        db.collection(Constants.USER_COLLECTION)
+            .document(userUid)
+            .set(user)
+            .addOnSuccessListener {
+                _register.value = Resource.Success(user)
+            }
+            .addOnFailureListener {
+                _register.value = Resource.Error(it.message.toString())
+            }
     }
 }

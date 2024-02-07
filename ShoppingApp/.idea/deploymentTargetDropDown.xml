@@ -15,7 +15,20 @@
         <State />
       </entry>
       <entry key="LoginRegisterActivity (5)">
-        <State />
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\cthut\.android\avd\Pixel_7_Pro_API_34_2_.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-02-07T07:26:36.318807400Z" />
+        </State>
       </entry>
       <entry key="app">
         <State />
