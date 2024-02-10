@@ -2,9 +2,6 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="LoginRegisterActivity (1)">
-        <State />
-      </entry>
       <entry key="LoginRegisterActivity (2)">
         <State />
       </entry>
@@ -30,8 +27,24 @@
           <timeTargetWasSelectedWithDropDown value="2024-02-07T07:26:36.318807400Z" />
         </State>
       </entry>
-      <entry key="app">
+      <entry key="ShoppingActivity">
         <State />
+      </entry>
+      <entry key="app">
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\cthut\.android\avd\Pixel_API_30.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-02-08T13:49:55.271132600Z" />
+        </State>
       </entry>
     </value>
   </component>
