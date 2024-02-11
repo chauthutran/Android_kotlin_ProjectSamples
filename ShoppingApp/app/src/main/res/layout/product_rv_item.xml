@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/g_card_background"
@@ -58,16 +59,16 @@
             android:id="@+id/tv_new_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="3dp"
             android:layout_marginBottom="15dp"
             android:fontFamily="@font/sf_pro_display"
-            android:text="$1600"
             android:textColor="@color/black"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_price"
             app:layout_constraintTop_toBottomOf="@id/linear_product_name"
-            android:layout_marginStart="10dp"/>
+            tools:text="$ 000" />
 
         <TextView
             android:id="@+id/tv_price"
@@ -76,12 +77,12 @@
             android:layout_marginTop="3dp"
             android:layout_marginBottom="15dp"
             android:fontFamily="@font/sf_pro_display"
-            android:text="$1600"
             android:textColor="@color/black"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@id/img_product"
-            app:layout_constraintTop_toBottomOf="@id/linear_product_name" />
+            app:layout_constraintTop_toBottomOf="@id/linear_product_name"
+            tools:text="$ 000" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
