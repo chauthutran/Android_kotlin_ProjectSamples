@@ -20,16 +20,21 @@ class MainCategoryViewModel @Inject constructor(
     private val _specialProducts = MutableStateFlow<Resource<List<Product>>>(Resource.UnSpecified())
     val specialProducts: StateFlow<Resource<List<Product>>> = _specialProducts
 
-    fun fetchSpecialProducts() {
+    init {
+        fetchSpecialProducts()
+    }
+
+    private fun fetchSpecialProducts() {
         viewModelScope.launch {
             _specialProducts.emit(Resource.Loading())
         }
 
         firestore.collection("Products")
-            .whereEqualTo("category", "Special Products")
+            .whereEqualTo("category", "Special Product")
             .get()
             .addOnSuccessListener { result ->
                 var specialProductList = result.toObjects(Product::class.java)
+                println("=== specialProductList: ${specialProductList.size}")
                 _specialProducts
                 viewModelScope.launch {
                     _specialProducts.emit(Resource.Success(specialProductList))

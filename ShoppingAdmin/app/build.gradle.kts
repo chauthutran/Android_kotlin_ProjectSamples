@@ -38,6 +38,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
+        viewBinding = true
         compose = true
     }
     composeOptions {
@@ -67,9 +68,14 @@ dependencies {
     implementation("com.google.firebase:firebase-storage:20.3.0")
     implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation("com.google.firebase:firebase-core:21.1.1")
-//    implementation("com.github.d-max:spots-dialog:0.7")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.10.2")
+
     implementation("com.github.d-max:spots-dialog:1.1@aar")
-//    implementation("com.squareup.picasso:.2.71820")
+
+
+    //Color picker
+    implementation("com.github.skydoves:colorpickerview:2.2.4")
+
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
