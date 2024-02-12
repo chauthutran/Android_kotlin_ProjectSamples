@@ -88,20 +88,20 @@ class MainCategoryViewModel @Inject constructor(
             }
 
             firestore.collection(Constants.PRODUCTS_COLLECTION)
-                .limit(pagingInfo.bestProductsPage * 10)
+                .limit(pagingInfo.productsPage * 10)
 //                .orderBy("name", Query.Direction.ASCENDING)
                 .whereEqualTo("category", "Best Product")
                 .get()
                 .addOnSuccessListener { result ->
                     var bestProductList = result.toObjects(Product::class.java)
-                    pagingInfo.isPagingEnd = (bestProductList == pagingInfo.oldBestProducts)
-                    pagingInfo.oldBestProducts = bestProductList
+                    pagingInfo.isPagingEnd = (bestProductList == pagingInfo.oldProducts)
+                    pagingInfo.oldProducts = bestProductList
 
                     viewModelScope.launch {
                         _bestProducts.emit(Resource.Success(bestProductList))
                     }
 
-                    pagingInfo.bestProductsPage++
+                    pagingInfo.productsPage++
                 }
                 .addOnFailureListener {
                     viewModelScope.launch {
@@ -114,7 +114,7 @@ class MainCategoryViewModel @Inject constructor(
 }
 
 internal data class PagingInfo (
-    var bestProductsPage: Long = 1,
-    var oldBestProducts: List<Product> = emptyList(),
+    var productsPage: Long = 1,
+    var oldProducts: List<Product> = emptyList(),
     var isPagingEnd: Boolean = false
 )

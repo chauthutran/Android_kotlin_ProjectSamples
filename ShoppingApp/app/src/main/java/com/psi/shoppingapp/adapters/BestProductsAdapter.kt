@@ -27,7 +27,7 @@ class BestProductsAdapter: RecyclerView.Adapter<BestProductsAdapter.BestProducts
                     tvNewPrice.visibility = View.INVISIBLE
                 }
                 else {
-                    val newPrice = product.price * ( 1f - product.price )
+                    val newPrice = product.price * ( 1f - product.offerPercentage )
 
                     println(String.format("%.2f", newPrice))
                     tvNewPrice.text = "$ ${String.format("%.2f", newPrice)}"
