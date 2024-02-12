@@ -13,7 +13,11 @@ class SpecialProductAdapter: RecyclerView.Adapter<SpecialProductAdapter.SpecialP
     inner class SpecialProductViewHolder(private val binding: SpecialRvItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(product: Product) {
             binding.apply {
-                Glide.with(itemView).load(product.images[0]).into(imageSpecialRvItem)
+                if(product.images.isNotEmpty())
+                {
+                    Glide.with(itemView).load(product.images[0]).into(imageSpecialRvItem)
+                }
+
                 tvSpecialProductName.text = product.name
                 tvSpecialPrdouctPrice.text = product.price.toString()
             }

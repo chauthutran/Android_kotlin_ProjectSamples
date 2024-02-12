@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -92,21 +93,28 @@ class MainCategoryFragment : Fragment(R.layout.fragment_main_category) {
             viewModel.bestDeals.collectLatest {
                 when(it) {
                     is Resource.Loading -> {
-                        showLoading()
+                        binding.bestProductsProgressbar.visibility = View.VISIBLE
                     }
                     is Resource.Success -> {
                         bestDealsAdapter.differ.submitList(it.data)
-                        hideLoading()
+                        binding.bestProductsProgressbar.visibility = View.GONE
                     }
                     is Resource.Error -> {
-                        hideLoading()
                         println("ERROR: ${it.message.toString()}")
                         Toast.makeText(requireContext(), it.message.toString(), Toast.LENGTH_SHORT).show()
+                        binding.bestProductsProgressbar.visibility = View.GONE
                     }
                     else -> Unit
                 }
             }
         }
+
+        // Scroll down to show the data
+        binding.nestedScrollMainCategory.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener{ scrollView,_, scrollY, _,_ ->
+            if( scrollView.getChildAt(0).bottom <= scrollView.height + scrollY) {
+                viewModel.fetchBestProducts()
+            }
+        })
 
     }
 

@@ -3,10 +3,10 @@ package com.psi.shoppingapp.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.psi.shoppingapp.data.Product
 import com.psi.shoppingapp.utils.Constants
 import com.psi.shoppingapp.utils.Resource
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +27,7 @@ class MainCategoryViewModel @Inject constructor(
     private val _bestProducts = MutableStateFlow<Resource<List<Product>>>(Resource.UnSpecified())
     val bestProducts: StateFlow<Resource<List<Product>>> = _bestProducts
 
+    private val pagingInfo = PagingInfo()
 
     init {
         fetchSpecialProducts()
@@ -79,24 +80,41 @@ class MainCategoryViewModel @Inject constructor(
             }
     }
 
-    private fun fetchBestProducts() {
-        viewModelScope.launch {
-            _bestProducts.emit(Resource.Loading())
-        }
+    fun fetchBestProducts() {
+        if( !pagingInfo.isPagingEnd ) {
 
-        firestore.collection(Constants.PRODUCTS_COLLECTION)
-            .whereEqualTo("category", "Best Product")
-            .get()
-            .addOnSuccessListener { result ->
-                var bestProductList = result.toObjects(Product::class.java)
-                viewModelScope.launch {
-                    _bestProducts.emit(Resource.Success(bestProductList))
-                }
+            viewModelScope.launch {
+                _bestProducts.emit(Resource.Loading())
             }
-            .addOnFailureListener {
-                viewModelScope.launch {
-                    _bestProducts.emit(Resource.Error(it.message.toString()))
+
+            firestore.collection(Constants.PRODUCTS_COLLECTION)
+                .limit(pagingInfo.bestProductsPage * 10)
+//                .orderBy("name", Query.Direction.ASCENDING)
+                .whereEqualTo("category", "Best Product")
+                .get()
+                .addOnSuccessListener { result ->
+                    var bestProductList = result.toObjects(Product::class.java)
+                    pagingInfo.isPagingEnd = (bestProductList == pagingInfo.oldBestProducts)
+                    pagingInfo.oldBestProducts = bestProductList
+
+                    viewModelScope.launch {
+                        _bestProducts.emit(Resource.Success(bestProductList))
+                    }
+
+                    pagingInfo.bestProductsPage++
                 }
-            }
+                .addOnFailureListener {
+                    viewModelScope.launch {
+                        _bestProducts.emit(Resource.Error(it.message.toString()))
+                    }
+                }
+        }
     }
+
 }
+
+internal data class PagingInfo (
+    var bestProductsPage: Long = 1,
+    var oldBestProducts: List<Product> = emptyList(),
+    var isPagingEnd: Boolean = false
+)

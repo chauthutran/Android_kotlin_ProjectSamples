@@ -14,7 +14,11 @@ class BestDealsAdapter: RecyclerView.Adapter<BestDealsAdapter.BestDealsViewHolde
     inner class BestDealsViewHolder(private val binding: BestDealsRvItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(product: Product) {
             binding.apply {
-                Glide.with(itemView).load(product.images[0]).into(imgBestDeal)
+                if(product.images.isNotEmpty())
+                {
+                    Glide.with(itemView).load(product.images[0]).into(imgBestDeal)
+                }
+
                 tvDealProductName.text = product.name
                 tvOldPrice.text = "$ ${product.price.toString()}"
 
