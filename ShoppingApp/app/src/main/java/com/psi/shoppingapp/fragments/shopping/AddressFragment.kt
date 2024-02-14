@@ -72,6 +72,10 @@ class AddressFragment : Fragment() {
 
                 viewModel.addAddress( address )
             }
+
+            imageAddressClose.setOnClickListener {
+                findNavController().navigateUp()
+            }
         }
 
 
