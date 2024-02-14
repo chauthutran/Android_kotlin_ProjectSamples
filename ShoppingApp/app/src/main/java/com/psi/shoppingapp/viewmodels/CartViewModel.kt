@@ -32,11 +32,11 @@ class CartViewModel @Inject constructor(
     private var cartProductDocuments = emptyList<DocumentSnapshot>()
 
     val productsPrice = cartProducts.map {
-        when(it) {
+        when (it) {
             is Resource.Success -> {
                 calculatePrice(it.data!!)
             }
-            else -> Unit
+            else -> null
         }
     }
 

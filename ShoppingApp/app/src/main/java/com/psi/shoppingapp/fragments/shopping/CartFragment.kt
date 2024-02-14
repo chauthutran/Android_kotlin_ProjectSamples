@@ -11,11 +11,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.psi.shoppingapp.R
 import com.psi.shoppingapp.adapters.CartProductAdapter
+import com.psi.shoppingapp.data.CartProduct
 import com.psi.shoppingapp.databinding.FragmentCartBinding
 import com.psi.shoppingapp.fhirebase.FirebaseCommon
 import com.psi.shoppingapp.utils.Resource
@@ -32,7 +34,6 @@ class CartFragment : Fragment() {
     // Reuse the viewModel from ShoppingActivity
     private val viewModel by activityViewModels<CartViewModel>()
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,9 +47,12 @@ class CartFragment : Fragment() {
 
         setupCartRv()
 
+        var totalPrice = 0f
+
         lifecycleScope.launchWhenStarted {
-            viewModel.productsPrice.collectLatest {price ->
+            viewModel.productsPrice.collectLatest { price ->
                 price?.let {
+                    totalPrice = it
                     binding.tvTotalPrice.text = "$ ${price}"
                 }
             }
@@ -56,6 +60,11 @@ class CartFragment : Fragment() {
 
         binding.imageCloseCart.setOnClickListener {
             findNavController().navigateUp()
+        }
+
+        binding.buttonCheckout.setOnClickListener {
+            var action = CartFragmentDirections.actionCartFragmentToBillingFragment( totalPrice, cartProductAdapter.differ.currentList.toTypedArray() )
+            findNavController().navigate(action)
         }
 
         cartProductAdapter.onProductClick = {
@@ -89,6 +98,7 @@ class CartFragment : Fragment() {
                 alertDialog.show()
             }
         }
+
         lifecycleScope.launchWhenStarted {
             viewModel.cartProducts.collectLatest {
                 when( it ) {
