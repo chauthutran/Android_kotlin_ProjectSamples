@@ -5,18 +5,27 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.psi.shoppingapp.R
 import com.psi.shoppingapp.activities.ShoppingActivity
 import com.psi.shoppingapp.adapters.ColorsAdapter
 import com.psi.shoppingapp.adapters.SizesAdapter
 import com.psi.shoppingapp.adapters.ViewPager2ImagesAdapter
+import com.psi.shoppingapp.data.CartProduct
 import com.psi.shoppingapp.databinding.FragmentProductDetailsBinding
+import com.psi.shoppingapp.utils.Resource
 import com.psi.shoppingapp.utils.hideBottomNavigationView
+import com.psi.shoppingapp.viewmodels.DetailsViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
+@AndroidEntryPoint
 class ProductDetailsFragment : Fragment() {
 
     private val args by navArgs<ProductDetailsFragmentArgs>()
@@ -25,6 +34,11 @@ class ProductDetailsFragment : Fragment() {
     private val viewPagerAdapter by lazy {ViewPager2ImagesAdapter()}
     private val sizesAdapter by lazy { SizesAdapter() }
     private val colorsAdapter by lazy {ColorsAdapter()}
+
+    private var selectedColor: Int? = null
+    private var selectedSize: String? = null
+
+    private val viewModel by viewModels<DetailsViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +85,37 @@ class ProductDetailsFragment : Fragment() {
 
         binding.imageClose.setOnClickListener {
             findNavController().navigateUp()
+        }
+
+        sizesAdapter.onItemClick = {
+            selectedSize = it
+        }
+
+        colorsAdapter.onItemClick = {
+            selectedColor = it
+        }
+
+        binding.buttonAddToCart.setOnClickListener {
+            viewModel.addUpdateProductInCart( CartProduct(product, 1, selectedColor, selectedSize))
+        }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.addToCart.collectLatest {
+                when(it) {
+                    is Resource.Loading -> {
+                        binding.buttonAddToCart.startAnimation()
+                    }
+                    is Resource.Success -> {
+                        binding.buttonAddToCart.revertAnimation()
+                        Snackbar.make( requireView(), "Product was added", Snackbar.LENGTH_SHORT).show()
+                    }
+                    is Resource.Error -> {
+                        binding.buttonAddToCart.stopAnimation()
+                        Snackbar.make( requireView(), it.message.toString(), Snackbar.LENGTH_SHORT).show()
+                    }
+                    else -> Unit
+                }
+            }
         }
     }
 

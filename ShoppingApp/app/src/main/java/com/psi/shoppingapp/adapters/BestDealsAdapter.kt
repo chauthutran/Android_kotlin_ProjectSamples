@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.psi.shoppingapp.data.Product
 import com.psi.shoppingapp.databinding.BestDealsRvItemBinding
+import com.psi.shoppingapp.helper.getProductPrice
 
 class BestDealsAdapter: RecyclerView.Adapter<BestDealsAdapter.BestDealsViewHolder>() {
     inner class BestDealsViewHolder(private val binding: BestDealsRvItemBinding): RecyclerView.ViewHolder(binding.root) {
@@ -23,9 +24,8 @@ class BestDealsAdapter: RecyclerView.Adapter<BestDealsAdapter.BestDealsViewHolde
                 tvOldPrice.text = "$ ${product.price.toString()}"
 
                 product.offerPercentage?.let {
-                    val newPrice = product.price * ( 1f - it)
-                    tvNewPrice.text = String.format("%.2f", newPrice)
-
+                    val priceAfterOffer = product.offerPercentage.getProductPrice(product.price)
+                    tvNewPrice.text = "$ ${String.format("%.2f", priceAfterOffer)}"
                     tvOldPrice.paintFlags = tvOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 }
 
