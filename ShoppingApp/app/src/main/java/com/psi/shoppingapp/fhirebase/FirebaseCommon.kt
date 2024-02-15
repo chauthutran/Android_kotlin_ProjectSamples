@@ -2,7 +2,6 @@ package com.psi.shoppingapp.fhirebase
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
 import com.psi.shoppingapp.data.CartProduct
 import com.psi.shoppingapp.utils.Constants
 
@@ -10,7 +9,7 @@ class FirebaseCommon (
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth
 ) {
-    private val cartCollection = firestore.collection( Constants.USER_COLLECTION ).document(auth.uid!!).collection( Constants.CART_COLLECTION )
+    private val cartCollection = firestore.collection( Constants.USER_COLLECTION ).document(auth.uid!!).collection( Constants.USER_CART_COLLECTION )
 
     fun addProductToCart( cartProduct: CartProduct, onResult: (CartProduct?, Exception?) -> Unit ) {
         cartCollection.document().set(cartProduct)

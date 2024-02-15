@@ -28,7 +28,7 @@ class DetailsViewModel @Inject constructor(
         viewModelScope.launch {  _addToCart.emit(Resource.Loading()) }
 
         firestore.collection( Constants.USER_COLLECTION ).document( auth.uid!! )
-            .collection( Constants.CART_COLLECTION )
+            .collection( Constants.USER_CART_COLLECTION )
             .whereEqualTo("product.id", cartProduct.product.id )
             .get()
             .addOnSuccessListener {

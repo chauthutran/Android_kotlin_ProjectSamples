@@ -34,7 +34,7 @@ class AddressViewModel @Inject constructor(
         if( validate ) {
             viewModelScope.launch { _addNewAddressStatus.emit( Resource.Loading() ) }
             firestore.collection(Constants.USER_COLLECTION).document(auth.uid!!)
-                .collection(Constants.ADDRESS_COLLECTION).document()
+                .collection(Constants.USER_ADDRESS_COLLECTION).document()
                 .set(address)
                 .addOnSuccessListener {
                     viewModelScope.launch { _addNewAddressStatus.emit( Resource.Success(address)) }

@@ -29,7 +29,7 @@ class BillingViewModel @Inject constructor(
     fun getUserAddress() {
         viewModelScope.launch { _addressList.emit(Resource.Loading()) }
 
-        firestore.collection( Constants.USER_COLLECTION ).document(auth.uid!!).collection( Constants.ADDRESS_COLLECTION )
+        firestore.collection( Constants.USER_COLLECTION ).document(auth.uid!!).collection( Constants.USER_ADDRESS_COLLECTION )
             .addSnapshotListener{ value, error ->
                 if( error != null )
                     viewModelScope.launch { _addressList.emit(Resource.Error(error.message.toString())) }

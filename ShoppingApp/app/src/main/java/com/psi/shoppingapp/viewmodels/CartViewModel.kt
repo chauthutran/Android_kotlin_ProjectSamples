@@ -48,7 +48,7 @@ class CartViewModel @Inject constructor(
         if( index != null && index != -1 )
         {
             val documentId = cartProductDocuments[index].id
-            firestore.collection( Constants.USER_COLLECTION ).document(auth.uid!!).collection(Constants.CART_COLLECTION)
+            firestore.collection( Constants.USER_COLLECTION ).document(auth.uid!!).collection(Constants.USER_CART_COLLECTION)
                 .document(documentId).delete()
         }
     }
@@ -70,7 +70,7 @@ class CartViewModel @Inject constructor(
         }
 
         // When a new product added, this function is called
-        firestore.collection( Constants.USER_COLLECTION).document(auth.uid!!).collection(Constants.CART_COLLECTION)
+        firestore.collection( Constants.USER_COLLECTION).document(auth.uid!!).collection(Constants.USER_CART_COLLECTION)
             .addSnapshotListener { value, error ->
                 if(error != null || value == null ) {
                     viewModelScope.launch { _cartProducts.emit(Resource.Error(error?.message.toString())) }
