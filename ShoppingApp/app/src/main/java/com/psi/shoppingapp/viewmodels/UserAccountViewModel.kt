@@ -111,11 +111,15 @@ class UserAccountViewModel @Inject constructor(
     {
         viewModelScope.launch {
             try {
-                val imageBitmap = MediaStore.Images.Media.getBitmap(getApplication<ShoppingApplication>().contentResolver, imageUri)
+                val imageBitmap = MediaStore.Images.Media.getBitmap(
+                    getApplication<ShoppingApplication>().contentResolver,
+                    imageUri
+                )
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 imageBitmap.compress(Bitmap.CompressFormat.JPEG, 96, byteArrayOutputStream)
                 val imageByteArray = byteArrayOutputStream.toByteArray()
-                val imageDirectory = storage.child("{Constants.PROFILE_USER_COLLECTION}/${auth.uid}/${UUID.randomUUID()}")
+                val imageDirectory =
+                    storage.child("${Constants.PROFILE_USER_COLLECTION}/${auth.uid}/${UUID.randomUUID()}")
                 val result = imageDirectory.putBytes(imageByteArray).await()
                 val imageUrl = result.storage.downloadUrl.await().toString()
                 saveUserInformation(user.copy(imagePath = imageUrl), false)

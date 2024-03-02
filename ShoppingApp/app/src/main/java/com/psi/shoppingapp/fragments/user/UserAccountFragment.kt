@@ -35,10 +35,11 @@ class UserAccountFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        imageActivityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            imageUri = it.data?.data
-            Glide.with(this).load(imageUri).into(binding.imageUser)
-        }
+        imageActivityResultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                imageUri = it.data?.data
+                Glide.with(this).load(imageUri).into(binding.imageUser)
+            }
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
