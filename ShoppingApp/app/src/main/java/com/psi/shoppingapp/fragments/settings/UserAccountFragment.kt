@@ -1,4 +1,4 @@
-package com.psi.shoppingapp.fragments.user
+package com.psi.shoppingapp.fragments.settings
 
 import android.content.Intent
 import android.graphics.Color
@@ -17,11 +17,11 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.psi.shoppingapp.data.User
-import com.psi.shoppingapp.databinding.FragmentUserAccountBinding
 import com.psi.shoppingapp.utils.Resource
 import com.psi.shoppingapp.viewmodels.UserAccountViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import com.psi.shoppingapp.databinding.FragmentUserAccountBinding
 
 @AndroidEntryPoint
 class UserAccountFragment : Fragment() {
@@ -95,7 +95,6 @@ class UserAccountFragment : Fragment() {
         }
 
         binding.buttonSave.setOnClickListener {
-            print("=================== binding.buttonSave.setOnClickListener")
             binding.apply {
                 val firstName = edFirstName.text.toString().trim()
                 val lastName = edLastName.text.toString().trim()

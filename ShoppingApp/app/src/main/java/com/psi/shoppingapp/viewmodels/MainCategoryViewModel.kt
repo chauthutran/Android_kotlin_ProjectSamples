@@ -68,7 +68,6 @@ class MainCategoryViewModel @Inject constructor(
             .get()
             .addOnSuccessListener { result ->
                 var bestDealList = result.toObjects(Product::class.java)
-                println("=== bestDealList: ${bestDealList.size}")
                 viewModelScope.launch {
                     _bestDeals.emit(Resource.Success(bestDealList))
                 }

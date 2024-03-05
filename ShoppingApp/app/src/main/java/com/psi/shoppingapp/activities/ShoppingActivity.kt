@@ -31,13 +31,11 @@ class ShoppingActivity : AppCompatActivity() {
         lifecycleScope.launchWhenStarted {
 
             viewModel.cartProducts.collectLatest {
-                println("==== ShoppingActivity : ${it.data?.size ?: 0}")
                 when( it ) {
                     is Resource.Success -> {
                         val count = it.data?.size ?: 0
                         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
 
-                        println("==== count: ${count}")
                         bottomNavigation.getOrCreateBadge( R.id.cartFragment ).apply {
                             number = count
                             backgroundColor = resources.getColor(R.color.g_blue)

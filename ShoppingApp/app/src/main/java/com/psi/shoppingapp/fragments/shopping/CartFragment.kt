@@ -63,7 +63,7 @@ class CartFragment : Fragment() {
         }
 
         binding.buttonCheckout.setOnClickListener {
-            var action = CartFragmentDirections.actionCartFragmentToBillingFragment( totalPrice, cartProductAdapter.differ.currentList.toTypedArray() )
+            var action = CartFragmentDirections.actionCartFragmentToBillingFragment( totalPrice, cartProductAdapter.differ.currentList.toTypedArray(), true )
             findNavController().navigate(action)
         }
 

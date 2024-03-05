@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/shopping_graph"
-    app:startDestination="@id/userAccountFragment">
+    app:startDestination="@id/homeFragment">
 
     <fragment
         android:id="@+id/homeFragment"
@@ -46,6 +46,12 @@
         <action
             android:id="@+id/action_profileFragment_to_userAccountFragment"
             app:destination="@id/userAccountFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_orderListFragment"
+            app:destination="@id/orderListFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_billingFragment"
+            app:destination="@id/billingFragment" />
     </fragment>
     <fragment
         android:id="@+id/productDetailsFragment"
@@ -60,7 +66,13 @@
         android:id="@+id/addressFragment"
         android:name="com.psi.shoppingapp.fragments.shopping.AddressFragment"
         android:label="fragment_address"
-        tools:layout="@layout/fragment_address" />
+        tools:layout="@layout/fragment_address" >
+        <argument
+            android:name="address"
+            app:argType="com.psi.shoppingapp.data.Address"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
     <fragment
         android:id="@+id/billingFragment"
         android:name="com.psi.shoppingapp.fragments.shopping.BillingFragment"
@@ -75,10 +87,31 @@
         <argument
             android:name="cartProducts"
             app:argType="com.psi.shoppingapp.data.CartProduct[]" />
+        <argument
+            android:name="payment"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/userAccountFragment"
-        android:name="com.psi.shoppingapp.fragments.user.UserAccountFragment"
+        android:name="com.psi.shoppingapp.fragments.settings.UserAccountFragment"
         android:label="fragment_user_account"
         tools:layout="@layout/fragment_user_account" />
+    <fragment
+        android:id="@+id/orderListFragment"
+        android:name="com.psi.shoppingapp.fragments.settings.OrderListFragment"
+        android:label="fragment_order_list"
+        tools:layout="@layout/fragment_order_list" >
+        <action
+            android:id="@+id/action_orderListFragment_to_orderDetailsFragment"
+            app:destination="@id/orderDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderDetailsFragment"
+        android:name="com.psi.shoppingapp.fragments.settings.OrderDetailsFragment"
+        android:label="fragment_order_details"
+        tools:layout="@layout/fragment_order_details" >
+        <argument
+            android:name="order"
+            app:argType="com.psi.shoppingapp.data.order.Order" />
+    </fragment>
 </navigation>
