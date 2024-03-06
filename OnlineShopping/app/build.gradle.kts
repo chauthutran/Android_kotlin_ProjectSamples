@@ -4,8 +4,7 @@ plugins {
     id("kotlin-parcelize")
     id("androidx.navigation.safeargs.kotlin")
     id("dagger.hilt.android.plugin")
-//    id("com.google.gms.google-services")
-
+    id("io.realm.kotlin")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
 }
