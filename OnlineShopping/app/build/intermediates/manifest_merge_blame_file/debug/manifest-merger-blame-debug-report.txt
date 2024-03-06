@@ -1,0 +1,278 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.psi.onlineshop"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="34" />
+10
+11    <!-- Although the *SdkVersion is captured in gradle build files, this is required for non gradle builds -->
+12    <!-- <uses-sdk android:minSdkVersion="14" /> -->
+13    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+13-->[com.google.firebase:firebase-firestore:24.10.1] C:\Users\cthut\.gradle\caches\transforms-3\6932b07f724d92c2a787acb040f6a91b\transformed\firebase-firestore-24.10.1\AndroidManifest.xml:10:5-79
+13-->[com.google.firebase:firebase-firestore:24.10.1] C:\Users\cthut\.gradle\caches\transforms-3\6932b07f724d92c2a787acb040f6a91b\transformed\firebase-firestore-24.10.1\AndroidManifest.xml:10:22-76
+14    <uses-permission android:name="android.permission.INTERNET" />
+14-->[com.google.firebase:firebase-firestore:24.10.1] C:\Users\cthut\.gradle\caches\transforms-3\6932b07f724d92c2a787acb040f6a91b\transformed\firebase-firestore-24.10.1\AndroidManifest.xml:11:5-67
+14-->[com.google.firebase:firebase-firestore:24.10.1] C:\Users\cthut\.gradle\caches\transforms-3\6932b07f724d92c2a787acb040f6a91b\transformed\firebase-firestore-24.10.1\AndroidManifest.xml:11:22-64
+15
+16    <permission
+16-->[androidx.core:core:1.12.0] C:\Users\cthut\.gradle\caches\transforms-3\1b52103811552e4078e1a381351f28af\transformed\core-1.12.0\AndroidManifest.xml:22:5-24:47
+17        android:name="com.psi.onlineshop.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+17-->[androidx.core:core:1.12.0] C:\Users\cthut\.gradle\caches\transforms-3\1b52103811552e4078e1a381351f28af\transformed\core-1.12.0\AndroidManifest.xml:23:9-81
+18        android:protectionLevel="signature" />
+18-->[androidx.core:core:1.12.0] C:\Users\cthut\.gradle\caches\transforms-3\1b52103811552e4078e1a381351f28af\transformed\core-1.12.0\AndroidManifest.xml:24:9-44
+19
+20    <uses-permission android:name="com.psi.onlineshop.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+20-->[androidx.core:core:1.12.0] C:\Users\cthut\.gradle\caches\transforms-3\1b52103811552e4078e1a381351f28af\transformed\core-1.12.0\AndroidManifest.xml:26:5-97
+20-->[androidx.core:core:1.12.0] C:\Users\cthut\.gradle\caches\transforms-3\1b52103811552e4078e1a381351f28af\transformed\core-1.12.0\AndroidManifest.xml:26:22-94
+21
+22    <application
+22-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:5:5-31:19
+23        android:name="com.psi.onlineshop.ShoppingApplication"
+23-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:6:9-44
+24        android:allowBackup="true"
+24-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:7:9-35
+25        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+25-->[androidx.core:core:1.12.0] C:\Users\cthut\.gradle\caches\transforms-3\1b52103811552e4078e1a381351f28af\transformed\core-1.12.0\AndroidManifest.xml:28:18-86
+26        android:dataExtractionRules="@xml/data_extraction_rules"
+26-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:8:9-65
+27        android:debuggable="true"
+28        android:extractNativeLibs="false"
+29        android:fullBackupContent="@xml/backup_rules"
+29-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:9:9-54
+30        android:icon="@mipmap/ic_launcher"
+30-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:10:9-43
+31        android:label="@string/app_name"
+31-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:11:9-41
+32        android:roundIcon="@mipmap/ic_launcher_round"
+32-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:12:9-54
+33        android:supportsRtl="true"
+33-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:13:9-35
+34        android:testOnly="true"
+35        android:theme="@style/Theme.Onlineshop" >
+35-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:14:9-48
+36        <activity
+36-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:17:9-19:40
+37            android:name="com.psi.onlineshop.activities.ShoppingActivity"
+37-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:18:13-56
+38            android:exported="false" />
+38-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:19:13-37
+39        <activity
+39-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:21:9-30:20
+40            android:name="com.psi.onlineshop.activities.LoginActivity"
+40-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:22:13-53
+41            android:exported="true"
+41-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:23:13-36
+42            android:label="@string/app_name" >
+42-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:24:13-45
+43            <intent-filter>
+43-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:25:13-29:29
+44                <action android:name="android.intent.action.MAIN" />
+44-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:26:17-69
+44-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:26:25-66
+45
+46                <category android:name="android.intent.category.LAUNCHER" />
+46-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:28:17-77
+46-->C:\Users\cthut\Documents\GitHub\Android_kotlin_ProjectSamples\OnlineShopping\app\src\main\AndroidManifest.xml:28:27-74
+47            </intent-filter>
+48        </activity>
+49
+50        <service
+50-->[com.google.firebase:firebase-firestore:24.10.1] C:\Users\cthut\.gradle\caches\transforms-3\6932b07f724d92c2a787acb040f6a91b\transformed\firebase-firestore-24.10.1\AndroidManifest.xml:14:9-23:19
+51            android:name="com.google.firebase.components.ComponentDiscoveryService"
+51-->[com.google.firebase:firebase-firestore:24.10.1] C:\Users\cthut\.gradle\caches\transforms-3\6932b07f724d92c2a787acb040f6a91b\transformed\firebase-firestore-24.10.1\AndroidManifest.xml:15:13-84
+52            android:directBootAware="true"
+52-->[com.google.firebase:firebase-common:20.4.2] C:\Users\cthut\.gradle\caches\transforms-3\f01e662b59fffaf6b8e12852af200a3b\transformed\firebase-common-20.4.2\AndroidManifest.xml:32:13-43
+53            android:exported="false" >
+53-->[com.google.firebase:firebase-firestore:24.10.1] C:\Users\cthut\.gradle\caches\transforms-3\6932b07f724d92c2a787acb040f6a91b\transformed\firebase-firestore-24.10.1\AndroidManifest.xml:16:13-37
+54            <meta-data
+54-->[com.google.firebase:firebase-firestore:24.10.1] C:\Users\cthut\.gradle\caches\transforms-3\6932b07f724d92c2a787acb040f6a91b\transformed\firebase-firestore-24.10.1\AndroidManifest.xml:17:13-19:85
+55                android:name="com.google.firebase.components:com.google.firebase.firestore.FirebaseFirestoreKtxRegistrar"
+55-->[com.google.firebase:firebase-firestore:24.10.1] C:\Users\cthut\.gradle\caches\transforms-3\6932b07f724d92c2a787acb040f6a91b\transformed\firebase-firestore-24.10.1\AndroidManifest.xml:18:17-122
+56                android:value="com.google.firebase.components.ComponentRegistrar" />
+56-->[com.google.firebase:firebase-firestore:24.10.1] C:\Users\cthut\.gradle\caches\transforms-3\6932b07f724d92c2a787acb040f6a91b\transformed\firebase-firestore-24.10.1\AndroidManifest.xml:19:17-82
+57            <meta-data
+57-->[com.google.firebase:firebase-firestore:24.10.1] C:\Users\cthut\.gradle\caches\transforms-3\6932b07f724d92c2a787acb040f6a91b\transformed\firebase-firestore-24.10.1\AndroidManifest.xml:20:13-22:85
+58                android:name="com.google.firebase.components:com.google.firebase.firestore.FirestoreRegistrar"
+58-->[com.google.firebase:firebase-firestore:24.10.1] C:\Users\cthut\.gradle\caches\transforms-3\6932b07f724d92c2a787acb040f6a91b\transformed\firebase-firestore-24.10.1\AndroidManifest.xml:21:17-111
+59                android:value="com.google.firebase.components.ComponentRegistrar" />
+59-->[com.google.firebase:firebase-firestore:24.10.1] C:\Users\cthut\.gradle\caches\transforms-3\6932b07f724d92c2a787acb040f6a91b\transformed\firebase-firestore-24.10.1\AndroidManifest.xml:22:17-82
+60            <meta-data
+60-->[com.google.firebase:firebase-storage:20.3.0] C:\Users\cthut\.gradle\caches\transforms-3\ef8161695c18b3e479f72e7b30bc3bec\transformed\firebase-storage-20.3.0\AndroidManifest.xml:30:13-32:85
+61                android:name="com.google.firebase.components:com.google.firebase.storage.FirebaseStorageKtxRegistrar"
+61-->[com.google.firebase:firebase-storage:20.3.0] C:\Users\cthut\.gradle\caches\transforms-3\ef8161695c18b3e479f72e7b30bc3bec\transformed\firebase-storage-20.3.0\AndroidManifest.xml:31:17-118
+62                android:value="com.google.firebase.components.ComponentRegistrar" />
+62-->[com.google.firebase:firebase-storage:20.3.0] C:\Users\cthut\.gradle\caches\transforms-3\ef8161695c18b3e479f72e7b30bc3bec\transformed\firebase-storage-20.3.0\AndroidManifest.xml:32:17-82
+63            <meta-data
+63-->[com.google.firebase:firebase-storage:20.3.0] C:\Users\cthut\.gradle\caches\transforms-3\ef8161695c18b3e479f72e7b30bc3bec\transformed\firebase-storage-20.3.0\AndroidManifest.xml:33:13-35:85
+64                android:name="com.google.firebase.components:com.google.firebase.storage.StorageRegistrar"
+64-->[com.google.firebase:firebase-storage:20.3.0] C:\Users\cthut\.gradle\caches\transforms-3\ef8161695c18b3e479f72e7b30bc3bec\transformed\firebase-storage-20.3.0\AndroidManifest.xml:34:17-107
+65                android:value="com.google.firebase.components.ComponentRegistrar" />
+65-->[com.google.firebase:firebase-storage:20.3.0] C:\Users\cthut\.gradle\caches\transforms-3\ef8161695c18b3e479f72e7b30bc3bec\transformed\firebase-storage-20.3.0\AndroidManifest.xml:35:17-82
+66            <meta-data
+66-->[com.google.firebase:firebase-appcheck:17.1.0] C:\Users\cthut\.gradle\caches\transforms-3\7c8406abf9b93f2a2ff661be07909113\transformed\firebase-appcheck-17.1.0\AndroidManifest.xml:25:13-27:85
+67                android:name="com.google.firebase.components:com.google.firebase.appcheck.FirebaseAppCheckKtxRegistrar"
+67-->[com.google.firebase:firebase-appcheck:17.1.0] C:\Users\cthut\.gradle\caches\transforms-3\7c8406abf9b93f2a2ff661be07909113\transformed\firebase-appcheck-17.1.0\AndroidManifest.xml:26:17-120
+68                android:value="com.google.firebase.components.ComponentRegistrar" />
+68-->[com.google.firebase:firebase-appcheck:17.1.0] C:\Users\cthut\.gradle\caches\transforms-3\7c8406abf9b93f2a2ff661be07909113\transformed\firebase-appcheck-17.1.0\AndroidManifest.xml:27:17-82
+69            <meta-data
+69-->[com.google.firebase:firebase-appcheck:17.1.0] C:\Users\cthut\.gradle\caches\transforms-3\7c8406abf9b93f2a2ff661be07909113\transformed\firebase-appcheck-17.1.0\AndroidManifest.xml:28:13-30:85
+70                android:name="com.google.firebase.components:com.google.firebase.appcheck.FirebaseAppCheckRegistrar"
+70-->[com.google.firebase:firebase-appcheck:17.1.0] C:\Users\cthut\.gradle\caches\transforms-3\7c8406abf9b93f2a2ff661be07909113\transformed\firebase-appcheck-17.1.0\AndroidManifest.xml:29:17-117
+71                android:value="com.google.firebase.components.ComponentRegistrar" />
+71-->[com.google.firebase:firebase-appcheck:17.1.0] C:\Users\cthut\.gradle\caches\transforms-3\7c8406abf9b93f2a2ff661be07909113\transformed\firebase-appcheck-17.1.0\AndroidManifest.xml:30:17-82
+72            <meta-data
+72-->[com.google.firebase:firebase-common-ktx:20.4.2] C:\Users\cthut\.gradle\caches\transforms-3\ac2219b623ca3504b199adfce06f3d30\transformed\firebase-common-ktx-20.4.2\AndroidManifest.xml:12:13-14:85
+73                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar"
+73-->[com.google.firebase:firebase-common-ktx:20.4.2] C:\Users\cthut\.gradle\caches\transforms-3\ac2219b623ca3504b199adfce06f3d30\transformed\firebase-common-ktx-20.4.2\AndroidManifest.xml:13:17-116
+74                android:value="com.google.firebase.components.ComponentRegistrar" />
+74-->[com.google.firebase:firebase-common-ktx:20.4.2] C:\Users\cthut\.gradle\caches\transforms-3\ac2219b623ca3504b199adfce06f3d30\transformed\firebase-common-ktx-20.4.2\AndroidManifest.xml:14:17-82
+75            <meta-data
+75-->[com.google.firebase:firebase-common:20.4.2] C:\Users\cthut\.gradle\caches\transforms-3\f01e662b59fffaf6b8e12852af200a3b\transformed\firebase-common-20.4.2\AndroidManifest.xml:35:13-37:85
+76                android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar"
+76-->[com.google.firebase:firebase-common:20.4.2] C:\Users\cthut\.gradle\caches\transforms-3\f01e662b59fffaf6b8e12852af200a3b\transformed\firebase-common-20.4.2\AndroidManifest.xml:36:17-109
+77                android:value="com.google.firebase.components.ComponentRegistrar" />
+77-->[com.google.firebase:firebase-common:20.4.2] C:\Users\cthut\.gradle\caches\transforms-3\f01e662b59fffaf6b8e12852af200a3b\transformed\firebase-common-20.4.2\AndroidManifest.xml:37:17-82
+78        </service>
+79
+80        <activity
+80-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\cthut\.gradle\caches\transforms-3\b7eae66b6a0b91cfd9d12fc60b43876f\transformed\play-services-base-18.0.1\AndroidManifest.xml:20:9-22:45
+81            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+81-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\cthut\.gradle\caches\transforms-3\b7eae66b6a0b91cfd9d12fc60b43876f\transformed\play-services-base-18.0.1\AndroidManifest.xml:20:19-85
+82            android:exported="false"
+82-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\cthut\.gradle\caches\transforms-3\b7eae66b6a0b91cfd9d12fc60b43876f\transformed\play-services-base-18.0.1\AndroidManifest.xml:22:19-43
+83            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+83-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\cthut\.gradle\caches\transforms-3\b7eae66b6a0b91cfd9d12fc60b43876f\transformed\play-services-base-18.0.1\AndroidManifest.xml:21:19-78
+84
+85        <provider
+85-->[com.google.firebase:firebase-common:20.4.2] C:\Users\cthut\.gradle\caches\transforms-3\f01e662b59fffaf6b8e12852af200a3b\transformed\firebase-common-20.4.2\AndroidManifest.xml:23:9-28:39
+86            android:name="com.google.firebase.provider.FirebaseInitProvider"
+86-->[com.google.firebase:firebase-common:20.4.2] C:\Users\cthut\.gradle\caches\transforms-3\f01e662b59fffaf6b8e12852af200a3b\transformed\firebase-common-20.4.2\AndroidManifest.xml:24:13-77
+87            android:authorities="com.psi.onlineshop.firebaseinitprovider"
+87-->[com.google.firebase:firebase-common:20.4.2] C:\Users\cthut\.gradle\caches\transforms-3\f01e662b59fffaf6b8e12852af200a3b\transformed\firebase-common-20.4.2\AndroidManifest.xml:25:13-72
+88            android:directBootAware="true"
+88-->[com.google.firebase:firebase-common:20.4.2] C:\Users\cthut\.gradle\caches\transforms-3\f01e662b59fffaf6b8e12852af200a3b\transformed\firebase-common-20.4.2\AndroidManifest.xml:26:13-43
+89            android:exported="false"
+89-->[com.google.firebase:firebase-common:20.4.2] C:\Users\cthut\.gradle\caches\transforms-3\f01e662b59fffaf6b8e12852af200a3b\transformed\firebase-common-20.4.2\AndroidManifest.xml:27:13-37
+90            android:initOrder="100" />
+90-->[com.google.firebase:firebase-common:20.4.2] C:\Users\cthut\.gradle\caches\transforms-3\f01e662b59fffaf6b8e12852af200a3b\transformed\firebase-common-20.4.2\AndroidManifest.xml:28:13-36
+91
+92        <activity
+92-->[androidx.compose.ui:ui-test-manifest:1.5.1] C:\Users\cthut\.gradle\caches\transforms-3\6757851c1afe0e62190485a8f27ae3c8\transformed\ui-test-manifest-1.5.1\AndroidManifest.xml:23:9-25:39
+93            android:name="androidx.activity.ComponentActivity"
+93-->[androidx.compose.ui:ui-test-manifest:1.5.1] C:\Users\cthut\.gradle\caches\transforms-3\6757851c1afe0e62190485a8f27ae3c8\transformed\ui-test-manifest-1.5.1\AndroidManifest.xml:24:13-63
+94            android:exported="true" />
+94-->[androidx.compose.ui:ui-test-manifest:1.5.1] C:\Users\cthut\.gradle\caches\transforms-3\6757851c1afe0e62190485a8f27ae3c8\transformed\ui-test-manifest-1.5.1\AndroidManifest.xml:25:13-36
+95        <activity
+95-->[androidx.compose.ui:ui-tooling-android:1.5.1] C:\Users\cthut\.gradle\caches\transforms-3\4e223b2d36834f3bc0d2639c14fd6573\transformed\ui-tooling-release\AndroidManifest.xml:23:9-25:39
+96            android:name="androidx.compose.ui.tooling.PreviewActivity"
+96-->[androidx.compose.ui:ui-tooling-android:1.5.1] C:\Users\cthut\.gradle\caches\transforms-3\4e223b2d36834f3bc0d2639c14fd6573\transformed\ui-tooling-release\AndroidManifest.xml:24:13-71
+97            android:exported="true" />
+97-->[androidx.compose.ui:ui-tooling-android:1.5.1] C:\Users\cthut\.gradle\caches\transforms-3\4e223b2d36834f3bc0d2639c14fd6573\transformed\ui-tooling-release\AndroidManifest.xml:25:13-36
+98
+99        <provider
+99-->[androidx.emoji2:emoji2:1.4.0] C:\Users\cthut\.gradle\caches\transforms-3\903a3c5b1bad1918c46debdd31e46b3b\transformed\emoji2-1.4.0\AndroidManifest.xml:24:9-32:20
+100            android:name="androidx.startup.InitializationProvider"
+100-->[androidx.emoji2:emoji2:1.4.0] C:\Users\cthut\.gradle\caches\transforms-3\903a3c5b1bad1918c46debdd31e46b3b\transformed\emoji2-1.4.0\AndroidManifest.xml:25:13-67
+101            android:authorities="com.psi.onlineshop.androidx-startup"
+101-->[androidx.emoji2:emoji2:1.4.0] C:\Users\cthut\.gradle\caches\transforms-3\903a3c5b1bad1918c46debdd31e46b3b\transformed\emoji2-1.4.0\AndroidManifest.xml:26:13-68
+102            android:exported="false" >
+102-->[androidx.emoji2:emoji2:1.4.0] C:\Users\cthut\.gradle\caches\transforms-3\903a3c5b1bad1918c46debdd31e46b3b\transformed\emoji2-1.4.0\AndroidManifest.xml:27:13-37
+103            <meta-data
+103-->[androidx.emoji2:emoji2:1.4.0] C:\Users\cthut\.gradle\caches\transforms-3\903a3c5b1bad1918c46debdd31e46b3b\transformed\emoji2-1.4.0\AndroidManifest.xml:29:13-31:52
+104                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+104-->[androidx.emoji2:emoji2:1.4.0] C:\Users\cthut\.gradle\caches\transforms-3\903a3c5b1bad1918c46debdd31e46b3b\transformed\emoji2-1.4.0\AndroidManifest.xml:30:17-75
+105                android:value="androidx.startup" />
+105-->[androidx.emoji2:emoji2:1.4.0] C:\Users\cthut\.gradle\caches\transforms-3\903a3c5b1bad1918c46debdd31e46b3b\transformed\emoji2-1.4.0\AndroidManifest.xml:31:17-49
+106            <meta-data
+106-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\cthut\.gradle\caches\transforms-3\b3150e42f831448710c823e9d418b52a\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:29:13-31:52
+107                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+107-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\cthut\.gradle\caches\transforms-3\b3150e42f831448710c823e9d418b52a\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:30:17-78
+108                android:value="androidx.startup" />
+108-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\cthut\.gradle\caches\transforms-3\b3150e42f831448710c823e9d418b52a\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:31:17-49
+109            <meta-data
+109-->[io.realm.kotlin:cinterop-android:1.6.1] C:\Users\cthut\.gradle\caches\transforms-3\e54f3fea63fd1c9254f11a6f55aed5ef\transformed\cinterop-release\AndroidManifest.xml:32:13-34:52
+110                android:name="io.realm.kotlin.internal.RealmInitializer"
+110-->[io.realm.kotlin:cinterop-android:1.6.1] C:\Users\cthut\.gradle\caches\transforms-3\e54f3fea63fd1c9254f11a6f55aed5ef\transformed\cinterop-release\AndroidManifest.xml:33:17-73
+111                android:value="androidx.startup" />
+111-->[io.realm.kotlin:cinterop-android:1.6.1] C:\Users\cthut\.gradle\caches\transforms-3\e54f3fea63fd1c9254f11a6f55aed5ef\transformed\cinterop-release\AndroidManifest.xml:34:17-49
+112            <meta-data
+112-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:29:13-31:52
+113                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+113-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:30:17-85
+114                android:value="androidx.startup" />
+114-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:31:17-49
+115        </provider>
+116
+117        <meta-data
+117-->[com.google.android.gms:play-services-basement:18.1.0] C:\Users\cthut\.gradle\caches\transforms-3\8725a9ac2e053c1fe6c1999ab9dde711\transformed\play-services-basement-18.1.0\AndroidManifest.xml:21:9-23:69
+118            android:name="com.google.android.gms.version"
+118-->[com.google.android.gms:play-services-basement:18.1.0] C:\Users\cthut\.gradle\caches\transforms-3\8725a9ac2e053c1fe6c1999ab9dde711\transformed\play-services-basement-18.1.0\AndroidManifest.xml:22:13-58
+119            android:value="@integer/google_play_services_version" />
+119-->[com.google.android.gms:play-services-basement:18.1.0] C:\Users\cthut\.gradle\caches\transforms-3\8725a9ac2e053c1fe6c1999ab9dde711\transformed\play-services-basement-18.1.0\AndroidManifest.xml:23:13-66
+120
+121        <uses-library
+121-->[androidx.window:window:1.0.0] C:\Users\cthut\.gradle\caches\transforms-3\b24ac2623770673238096b9c27511be9\transformed\window-1.0.0\AndroidManifest.xml:25:9-27:40
+122            android:name="androidx.window.extensions"
+122-->[androidx.window:window:1.0.0] C:\Users\cthut\.gradle\caches\transforms-3\b24ac2623770673238096b9c27511be9\transformed\window-1.0.0\AndroidManifest.xml:26:13-54
+123            android:required="false" />
+123-->[androidx.window:window:1.0.0] C:\Users\cthut\.gradle\caches\transforms-3\b24ac2623770673238096b9c27511be9\transformed\window-1.0.0\AndroidManifest.xml:27:13-37
+124        <uses-library
+124-->[androidx.window:window:1.0.0] C:\Users\cthut\.gradle\caches\transforms-3\b24ac2623770673238096b9c27511be9\transformed\window-1.0.0\AndroidManifest.xml:28:9-30:40
+125            android:name="androidx.window.sidecar"
+125-->[androidx.window:window:1.0.0] C:\Users\cthut\.gradle\caches\transforms-3\b24ac2623770673238096b9c27511be9\transformed\window-1.0.0\AndroidManifest.xml:29:13-51
+126            android:required="false" />
+126-->[androidx.window:window:1.0.0] C:\Users\cthut\.gradle\caches\transforms-3\b24ac2623770673238096b9c27511be9\transformed\window-1.0.0\AndroidManifest.xml:30:13-37
+127
+128        <receiver
+128-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:34:9-52:20
+129            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+129-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:35:13-76
+130            android:directBootAware="false"
+130-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:36:13-44
+131            android:enabled="true"
+131-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:37:13-35
+132            android:exported="true"
+132-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:38:13-36
+133            android:permission="android.permission.DUMP" >
+133-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:39:13-57
+134            <intent-filter>
+134-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:40:13-42:29
+135                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+135-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:41:17-91
+135-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:41:25-88
+136            </intent-filter>
+137            <intent-filter>
+137-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:43:13-45:29
+138                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+138-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:44:17-85
+138-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:44:25-82
+139            </intent-filter>
+140            <intent-filter>
+140-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:46:13-48:29
+141                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+141-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:47:17-88
+141-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:47:25-85
+142            </intent-filter>
+143            <intent-filter>
+143-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:49:13-51:29
+144                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+144-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:50:17-95
+144-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\cthut\.gradle\caches\transforms-3\139182c2112da934c0493b293b558c3c\transformed\profileinstaller-1.3.0\AndroidManifest.xml:50:25-92
+145            </intent-filter>
+146        </receiver> <!-- The activities will be merged into the manifest of the hosting app. -->
+147        <activity
+147-->[com.google.android.play:core-common:2.0.2] C:\Users\cthut\.gradle\caches\transforms-3\42adaf1240072f3dd6b322a91156757d\transformed\core-common-2.0.2\AndroidManifest.xml:14:9-18:65
+148            android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity"
+148-->[com.google.android.play:core-common:2.0.2] C:\Users\cthut\.gradle\caches\transforms-3\42adaf1240072f3dd6b322a91156757d\transformed\core-common-2.0.2\AndroidManifest.xml:15:13-93
+149            android:exported="false"
+149-->[com.google.android.play:core-common:2.0.2] C:\Users\cthut\.gradle\caches\transforms-3\42adaf1240072f3dd6b322a91156757d\transformed\core-common-2.0.2\AndroidManifest.xml:16:13-37
+150            android:stateNotNeeded="true"
+150-->[com.google.android.play:core-common:2.0.2] C:\Users\cthut\.gradle\caches\transforms-3\42adaf1240072f3dd6b322a91156757d\transformed\core-common-2.0.2\AndroidManifest.xml:17:13-42
+151            android:theme="@style/Theme.PlayCore.Transparent" />
+151-->[com.google.android.play:core-common:2.0.2] C:\Users\cthut\.gradle\caches\transforms-3\42adaf1240072f3dd6b322a91156757d\transformed\core-common-2.0.2\AndroidManifest.xml:18:13-62
+152    </application>
+153
+154</manifest>
