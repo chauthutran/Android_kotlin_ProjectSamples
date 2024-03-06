@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "332106413348",
+    "project_id": "onlineshop-a4a25",
+    "storage_bucket": "onlineshop-a4a25.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332106413348:android:453abd701ab57c4907efb1",
+        "android_client_info": {
+          "package_name": "com.psi.onlineshop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA31jDBMwgw4yd-US9P_d41BGjrYdsWAEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
