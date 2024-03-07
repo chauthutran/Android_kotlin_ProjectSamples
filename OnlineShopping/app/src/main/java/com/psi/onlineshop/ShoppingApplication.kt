@@ -8,8 +8,9 @@ import android.content.Context
 //import com.mongodb.ServerApiVersion
 //import com.mongodb.kotlin.client.coroutine.MongoClient
 //import com.mongodb.kotlin.client.coroutine.MongoDatabase
-//import dagger.hilt.android.HiltAndroidApp
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class ShoppingApplication: Application() {
 
     // Replace the placeholder with your MongoDB deployment's connection string
