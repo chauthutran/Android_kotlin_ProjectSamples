@@ -69,13 +69,21 @@ const server = express()
 })
 .post("/users", (req, res) => {
 	
-	const userData = req.body;
+	var action = req.query.action;
+	const body = req.body;
 	try
 	{
 		const userManager = new UserManager();
-		userManager.addUser(userData, function(response){
-			res.send(response);
-		});
+		if( action == Constants.REQUEST_ACTION_ADD ) {
+			userManager.addUser(body, function(response){
+				res.send(response);
+			});
+		}
+		else {
+			userManager.findUsers(body.condition, body.operator, function(response){
+				res.send(response);
+			});
+		}
 	}
 	catch( ex )
 	{

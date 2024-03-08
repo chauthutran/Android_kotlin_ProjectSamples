@@ -85,7 +85,7 @@ class HttpRequest(
     val parameters: Map<String, Any> = mapOf(),
     val headers: Map<String, String> = HttpRequestConfig.DEFAULT_HEADERS,
     val config: ((HttpURLConnection) -> Unit)? = null,
-    val postedData: Any? = null
+    val postedData: String? = null
 ) {
     fun response(completion: (HttpResponse) -> Unit) {
         Executors.newSingleThreadExecutor().execute {
@@ -106,17 +106,14 @@ class HttpRequest(
 
                 config?.let { it(connection) }
 
-                if (method == Method.POST && postedData != null) {
-                    var gson = Gson()
-                    var jsonStr =  gson.toJson(postedData)
+                if (method == Method.POST && !postedData.isNullOrEmpty()) {
+//                    var gson = Gson()
+//                    var jsonStr =  gson.toJson(postedData)
 
                     connection.doOutput = true
-//                    jsonDataStr?.let {
-                        connection.outputStream.use {
-                            it.write(jsonStr.toByteArray(Charsets.UTF_8))
-                            it.flush()
-//                        println(jsonDataStr)
-//                        }
+                    connection.outputStream.use {
+                        it.write(postedData.toByteArray(Charsets.UTF_8))
+                        it.flush()
                     }
                 }
 
@@ -144,13 +141,13 @@ class HttpRequest(
         var json = Json { ignoreUnknownKeys = true }
     }
 
-    inline fun <reified T> json(crossinline completion: (T?, HttpResponse) -> Unit) where T : Any {
+    inline fun json(crossinline completion: (Any?, HttpResponse) -> Unit) {
         response { response ->
             try {
                 val responseJson = JSONObject(response.body)
                 if( responseJson.get("status") == "success") {
-                    val result = json.decodeFromString<T>(responseJson.getJSONObject("data").toString())
-                    completion(result, response)
+//                    val result = json.decodeFromString<T>(responseJson.getJSONObject("data").toString())
+                    completion(responseJson.getJSONObject("data"), response)
                 }
                 else {
                     response.error = responseJson.getJSONObject("data")
@@ -162,6 +159,7 @@ class HttpRequest(
             }
         }
     }
+
 }
 
 enum class Method(val value: String) {

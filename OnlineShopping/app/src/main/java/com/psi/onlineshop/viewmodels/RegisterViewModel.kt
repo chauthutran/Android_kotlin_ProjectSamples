@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.psi.onlineshop.ShoppingApplication
 import com.psi.onlineshop.data.User
 import com.psi.onlineshop.httpRequest.HttpRequest
+import com.psi.onlineshop.httpRequest.HttpRequestConfig
+import com.psi.onlineshop.httpRequest.HttpRequestUtil
 import com.psi.onlineshop.httpRequest.Method
 import com.psi.onlineshop.utils.Constants
 import com.psi.onlineshop.utils.Resource
@@ -47,9 +49,11 @@ class RegisterViewModel(
                 val request = HttpRequest(
                     path = "/users",
                     method = Method.POST,
-                    postedData = user
+                    parameters = mapOf("action" to HttpRequestConfig.REQUEST_ACTION_ADD),
+                    postedData = HttpRequestUtil.convertObjToJsonStr(user)
                 )
-                request.json<User> { result, response ->
+//                request.json<User> { result, response ->
+                request.json { result, response ->
                     if( response.error != null )
                     {
                         val message = response.error?.getString("message") ?: ""
@@ -57,7 +61,8 @@ class RegisterViewModel(
                     }
                     else if(result != null )
                     {
-                        viewModelScope.launch { _register.emit(Resource.Success(result)) }
+                        val user = HttpRequestUtil.convertJsonToObj<User>(result)
+                        viewModelScope.launch { _register.emit(Resource.Success(user)) }
                     }
 //                    println(response.error)
 //                    println(response.success)
