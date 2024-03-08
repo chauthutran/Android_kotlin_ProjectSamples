@@ -1,8 +1,11 @@
 package com.psi.onlineshop.httpRequest
 
 
+import com.google.gson.Gson
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -13,129 +16,109 @@ import java.util.concurrent.Executors
 
 /**
  *
- *         val request = HttpRequest(
- *             url = "http://172.30.1.27:3110/users",
- *             parameters = mapOf("email" to "cthutran@gmail.com")
- *         )
- *
- *         request.json<User> { result, response ->
- *             println("===========================================")
- *             println(response.body)
- *         }
- *
- * ******** POST *************************************
+ * ********* Get ***********************************************************************************
  * val request = HttpRequest(
- *     url = "http://172.30.1.27:3110/users",
+ *     url = "https://httpbin.org/get",
+ *     parameters = mapOf("name" to "Alex")
+ * )
+ * request.json<HttpBin> { result, response ->
+ *     println(result)
+ * }
+ *
+ * ********* Post **********************************************************************************
+ * val request = HttpRequest(
+ *     url = "https://httpbin.org/post",
  *     method = Method.POST,
  *     parameters = mapOf("name" to "Alex"),
  *     headers = mapOf("User-Agent" to "HttpRequest")
  * )
- * request.json<User> { result, response ->
+ * request.json<HttpBin> { result, response ->
  *     println(response.exception)
  *     println(response.success)
  *     println(result)
  * }
  *
- *
- * ******* Config HttpURLConnection ********************
+ * ********* Config HttpURLConnection **************************************************************
  * val request = HttpRequest("https://httpbin.org/get", config = {
  *     it.readTimeout = 1000
  *     it.setRequestProperty("User-Agent", "HttpRequest")
  * })
  *
+ * ********* Json **********************************************************************************
+ * HttpRequest uses Kotlinx Serialization for Json.
+ *
+ * @Serializable data class HttpBin(
+ *     val args: Map<String, String>? = null,
+ *     val form: Map<String, String>? = null,
+ *     val headers: Map<String, String>? = null
+ * )
+ *
+ * val request = HttpRequest("https://httpbin.org/get")
+ * request.json<HttpBin> { result, response ->
+ *     println(result)
+ * }
+ * ********* Custom decoder ************************************************************************
+ *
+ * HttpRequest.json = Json {
+ *     ignoreUnknownKeys = false
+ * }
+ *
+ * ********* String body
+ * HttpRequest("https://httpbin.org/get").response {
+ *      println(Xml.parse(it.body))
+ * }
+ *
+ * ********* Async *********************************************************************************
+ * HttpRequest makes request and parsing asynchronously. Use runOnUiThread to change UI.
+ *
+ * request.json<Post> { post, response ->
+ *     runOnUiThread {
+ *         titleTextView.text = post.title
+ *     }
+ * }
+ *
  *
  */
 class HttpRequest(
-    val url: String,
+    val path: String,
     val method: Method = Method.GET,
     val parameters: Map<String, Any> = mapOf(),
-    val headers: Map<String, String> = mapOf(),
+    val headers: Map<String, String> = HttpRequestConfig.DEFAULT_HEADERS,
     val config: ((HttpURLConnection) -> Unit)? = null,
-    val jsonDataStr: String = ""
+    val postedData: Any? = null
 ) {
     fun response(completion: (HttpResponse) -> Unit) {
         Executors.newSingleThreadExecutor().execute {
             try {
-                val url = if (method == Method.GET && parameters.isNotEmpty()) {
-                    URL("$url?${parameters.query}")
+                val url = if ( parameters.isNotEmpty()) {
+                    URL("${HttpRequestConfig.BASE_URL_MONGODB_SERVICE}${path}?${parameters.query}")
                 } else {
-                    URL(url)
+                    URL("${HttpRequestConfig.BASE_URL_MONGODB_SERVICE}${path}")
                 }
-
-//                val url = if ( parameters.isNotEmpty()) {
-//                    URL("$url?${parameters.query}")
-//                } else {
-//                    URL(url)
-//                }
 
                 val connection = url.openConnection() as HttpURLConnection
 
                 connection.requestMethod = method.value
 
-                //con.setRequestProperty("Content-Type", "application/json");
-                // con.setRequestProperty("Accept", "application/json");
                 headers.forEach { (key, value) ->
                     connection.setRequestProperty(key, value)
                 }
 
                 config?.let { it(connection) }
 
-                if (method == Method.POST && jsonDataStr.isNotEmpty()) {
-//                    connection.doInput  =true
+                if (method == Method.POST && postedData != null) {
+                    var gson = Gson()
+                    var jsonStr =  gson.toJson(postedData)
+
                     connection.doOutput = true
-//
-//                    connection.outputStream.use { os ->
-//                        val input: ByteArray = jsonDataStr.toByteArray(Charsets.UTF_8)
-//                        os.write(input, 0, input.size)
-//                    }
-////                    connection.outputStream.use {
-////                        it.write(parameters.query.toByteArray())
-////                    }
-//
-                    jsonDataStr?.let {
+//                    jsonDataStr?.let {
                         connection.outputStream.use {
-                            it.write(jsonDataStr.toByteArray(Charsets.UTF_8))
+                            it.write(jsonStr.toByteArray(Charsets.UTF_8))
                             it.flush()
-                        println(jsonDataStr)
-                        }
+//                        println(jsonDataStr)
+//                        }
                     }
-
-//                    val jsonObject = JSONObject()
-//                    jsonObject.put("firstName", "last2")
-//                    jsonObject.put("lastName", "last2")
-//                    jsonObject.put("email", "test2@gmail.com")
-//                    jsonObject.put("password", "123456")
-
-
-//                    // Send the JSON we created
-//                    val bw = BufferedWriter(OutputStreamWriter(connection.getOutputStream(), "UTF-8"))
-//                    bw.write(jsonDataStr)
-//                    bw.flush()
-//                    bw.close()
-//
-////                    println(connection.)
-//
-////                    jsonDataStr?.let{
-////                        val bw = BufferedWriter(OutputStreamWriter(connection.outputStream, "UTF-8"))
-////                        bw.write(jsonDataStr)
-////                        bw.flush()
-////                        bw.close()
-////                        println(jsonDataStr)
-////                    }
-
-//                    connection.doOutput = true
-//                    connection.doInput = true
-//                    // Send the JSON we created
-//                    val outputStreamWriter = OutputStreamWriter(connection.outputStream)
-//                    outputStreamWriter.write(jsonDataStr)
-//                    outputStreamWriter.flush()
-
                 }
-
-//                connection.doInput = true
-//                connection.inputStream.bufferedReader().use {
-//                    it.readText()
-//                }
 
                 val responseObj = HttpResponse()
                 responseObj.connection = connection
@@ -148,7 +131,10 @@ class HttpRequest(
                 completion(responseObj)
             } catch (e: Exception) {
                 val responseObj = HttpResponse()
-                responseObj.exception = e
+                var errJson = JSONObject()
+                errJson.put("message", e.message)
+
+                responseObj.error = errJson
                 completion(responseObj)
             }
         }
@@ -161,12 +147,17 @@ class HttpRequest(
     inline fun <reified T> json(crossinline completion: (T?, HttpResponse) -> Unit) where T : Any {
         response { response ->
             try {
-                val body = response.body
-//                println(body)
-                val result = if (body != null) json.decodeFromString<T>(body) else null
-                completion(result, response)
+                val responseJson = JSONObject(response.body)
+                if( responseJson.get("status") == "success") {
+                    val result = json.decodeFromString<T>(responseJson.getJSONObject("data").toString())
+                    completion(result, response)
+                }
+                else {
+                    response.error = responseJson.getJSONObject("data")
+                    completion(null, response)
+                }
+
             } catch (e: Exception) {
-                response.exception = e
                 completion(null, response)
             }
         }
@@ -181,7 +172,7 @@ enum class Method(val value: String) {
 class HttpResponse {
     var connection: HttpURLConnection? = null
     var body: String? = null
-    var exception: Exception? = null
+    var error: JSONObject? = null
     val success: Boolean get() {
         connection?.let { return it.responseCode in 200..299 }
         return false

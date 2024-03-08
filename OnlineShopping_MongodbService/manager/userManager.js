@@ -16,22 +16,29 @@ const UserManager = class {
 			} 
 			else {
                 console.log(result);
+                result._id = 
 				execFunc({status: Constants.RESPONSE_STATUS_SUCCESS, data: result});
 			}
 		});
 	}
 
     
-	findUsers( email, execFunc ) {
+    /**
+     * 
+     * @param condJson {"email": "xxx@gmail.com", "password": "123456"}
+     * @param execFunc 
+     */
+	findUsers( condJson, execFunc ) {
         try{
             UsersCollection.find().or([
-                { email: email }
+                condJson
             ])
             .then(( list ) => {
                 execFunc({status: Constants.RESPONSE_STATUS_SUCCESS, data: list});
             })
         }
         catch(ex){
+            err.message = err._message;
             execFunc({status: Constants.RESPONSE_STATUS_ERROR, data: err});
         }
 	}

@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 //import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import com.psi.onlineshop.ShoppingApplication
 import com.psi.onlineshop.data.User
+import com.psi.onlineshop.httpRequest.HttpRequest
+import com.psi.onlineshop.httpRequest.Method
 import com.psi.onlineshop.utils.Constants
 import com.psi.onlineshop.utils.Resource
 import com.psi.onlineshop.utils.UserRegisterFieldsState
@@ -38,17 +40,30 @@ class RegisterViewModel(
     fun createUserAcccount(user: User) {
         if( checkValidation(user) ) {
 
-            viewModelScope.launch {
-                _register.emit(Resource.Loading())
-            }
+            viewModelScope.launch { _register.emit(Resource.Loading()) }
 
-//            viewModelScope.launch {
-//
-//                var collection = database.getCollection<User>(Constants.USER_COLLECTION)
-//                collection.insertOne(user).also {
-//                    println("Add new user with id : ${it.insertedId}")
-//                }
-//            }
+            viewModelScope.launch {
+
+                val request = HttpRequest(
+                    path = "/users",
+                    method = Method.POST,
+                    postedData = user
+                )
+                request.json<User> { result, response ->
+                    if( response.error != null )
+                    {
+                        val message = response.error?.getString("message") ?: ""
+                        viewModelScope.launch { _register.emit(Resource.Error(message)) }
+                    }
+                    else if(result != null )
+                    {
+                        viewModelScope.launch { _register.emit(Resource.Success(result)) }
+                    }
+//                    println(response.error)
+//                    println(response.success)
+//                    println(result)
+                }
+            }
 
         }
         else

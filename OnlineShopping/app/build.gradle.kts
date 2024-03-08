@@ -5,16 +5,6 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-parcelize")
     id("androidx.navigation.safeargs.kotlin")
-    id("io.realm.kotlin")
-    id("dagger.hilt.android.plugin")
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
-
-//    id("plugin.serialization")
-
-//    id("plugin.serialization").version("1.8.0")
-
-//    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.0'
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
@@ -64,11 +54,7 @@ android {
             excludes += "META-INF/native-image/org.mongodb/bson/native-image.properties"
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
-
     }
-
-
-
 }
 
 dependencies {
@@ -86,8 +72,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("com.google.android.material:material:1.4.0")
-//    implementation("com.google.firebase:firebase-firestore:24.10.1")
-//    implementation("com.google.firebase:firebase-storage:20.3.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -97,9 +81,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
 
-//    apply plugin :"kotlin-kapt"
-
-    //Navigation component
+    // **************** Navigation component
     val nav_version = "2.7.6"
 
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
@@ -108,6 +90,7 @@ dependencies {
     implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
     // Jetpack Compose Integration
     implementation("androidx.navigation:navigation-compose:$nav_version")
+
 
     //loading button
     implementation("br.com.simplepass:loading-button-android:2.2.0")
@@ -127,56 +110,14 @@ dependencies {
     //Android Ktx
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
 
-    //Dagger hilt
-    implementation("com.google.dagger:hilt-android:2.50")
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    kapt("com.google.dagger:hilt-compiler:2.50")
-
-//    //Firebase
-//    implementation("com.google.firebase:firebase-auth:22.3.1")
-
-//    //Coroutines with firebase
-//    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.1")
-
-
     //Color picker
     implementation("com.github.skydoves:colorpickerview:2.2.4")
 
-//    // Mongodb
-////    implementation ("org.mongodb:mongodb-driver-kotlin:1.7.2")
-////    // // https://mvnrepository.com/artifact/org.mongodb/mongodb-driver-kotlin-sync
-////    implementation("org.mongodb:mongodb-driver-kotlin-sync:5.0.0")
-//
-//    // Kotlin coroutine dependency
-//    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-//
-//    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1")
-
     // Kotlin coroutine dependency
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-//
-//    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1") {
-//        exclude(group = "org.mongodb", module = "bson-record-codec")
-//    }
-//    implementation("ch.qos.logback:logback-classic:1.2.11")
-//
-////    testImplementation(kotlin("test"))
-//////    implementation("org.mongodb:bson-kotlinx:4.11.0")
-//
-//    // Mongo Realm
-//    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-//    implementation("io.realm.kotlin:library-sync:1.11.0")// If using Device Sync
-////    implementation ("io.realm.kotlin:library-base:1.6.1")
-
-//    implementation("com.squareup.okhttp3:okhttp:4.9.0")
-
-//    implementation("io.github.rybalkinsd:kohttp:0.12.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+
+    // To convert data class object to json
     implementation("com.google.code.gson:gson:2.8.5")
-}
-
-
-kapt {
-    correctErrorTypes=true
 }
