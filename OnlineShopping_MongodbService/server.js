@@ -2,19 +2,12 @@
 
 const express = require('express');
 var cors = require('cors');
-
-var SocketIOFileUpload = require("socketio-file-upload");
-
-
 const bodyParser = require("body-parser");
-const crypto = require("crypto");
-const randomId = () => crypto.randomBytes(8).toString("hex");
 
+var Constants =  require("./constants/constants");
 
 const mongoose = require("mongoose");
-const MessagesCollection = require("./models/messages");
-const UsersCollection = require("./models/users");
-const UserManagement = require('./utils/userManagement');
+const UserManager = require("./manager/userManager");
 
 const PORT = process.env.PORT || 3110;
 
@@ -22,18 +15,22 @@ const PORT = process.env.PORT || 3110;
 // Mongo Connection
 // ====================
 
-// mongodb+srv://tranchau:Test1234@cluster0.n0jz7.mongodb.net/?retryWrites=true&w=majority
-
-
-const mongoDBUri = "mongodb+srv://tranchau:Test1234@cluster0.n0jz7.mongodb.net/onlineshopping?retryWrites=true&w=majority";
+const mongoDBUri = "mongodb+srv://tranchau:Test1234@cluster0.n0jz7.mongodb.net/onlineshopping?retryWrites=true&w=majority&appName=Cluster0";
+// const mongoDBUri = "mongodb+srv://tranchau:<password>@cluster0.n0jz7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 mongoose.connect(mongoDBUri).then(() => {
-	console.log("============================= mongo connected ");
+	console.log("====== Connected to Mongodb");
 }).catch(err => console.log(err))
 
 
 // MongoClient.connect(mongoDBUri, function(err, db) {
-// 	if (err) throw err;
+// 	if (err) {
+// 		console.log("====== Connect Mongodb FAILED." + err);
+// 	}
+// 	else
+// 	{
+// 		console.log("====== Connected Mongodb");
+// 	}
 // 	// var dbo = db.db("mydb");
 // 	// dbo.createCollection("customers", function(err, res) {
 // 	//   if (err) throw err;
@@ -53,13 +50,38 @@ const server = express()
 .use(bodyParser.urlencoded({ extended: false }))
 .use(bodyParser.json())
 .get('/', (req, res) => {
-	res.send('Chat server started !!!');
+	res.send('Online shopping service is started !!!');
+})
+.get('/users', (req, res) => {
+	var email = req.query.email;
+	try
+	{
+		const userManager = new UserManager();
+		userManager.findUsers(email, function(response){
+			res.send(response);
+		});
+	}
+	catch( ex )
+	{
+		res.send({msg: `The user couldn't be found. ${ex.message}`, "status": Constants.RESPONSE_STATUS_ERROR});
+		console.log(`The user couldn't be found. ${ex.message}`);
+	}
 })
 .post("/users", (req, res) => {
 	
-	const username1 = req.body.username1;
-	const username2 = req.body.username2;
-
+	const userData = req.body;
+	try
+	{
+		const userManager = new UserManager();
+		userManager.addUser(userData, function(response){
+			res.send(response);
+		});
+	}
+	catch( ex )
+	{
+		res.send({msg: `The user couldn't be created. ${ex.message}`, "status": Constants.RESPONSE_STATUS_ERROR});
+		console.log(`The user couldn't be created. ${ex.message}`);
+	}
 })
-.listen(PORT, () => console.log(`Listening on ${PORT}, Client URL : ${clientURL}` ));
+.listen(PORT, () => console.log(`Listening on ${PORT}` ));
 

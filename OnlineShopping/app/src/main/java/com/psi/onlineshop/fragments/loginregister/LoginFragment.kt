@@ -17,7 +17,6 @@ import com.psi.onlineshop.databinding.FragmentLoginBinding
 import com.psi.onlineshop.dialog.setupBottomSheetDialog
 import com.psi.onlineshop.utils.Resource
 import com.psi.onlineshop.viewmodels.LoginViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 
 class LoginFragment : Fragment() {

@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 //import com.mongodb.kotlin.client.coroutine.MongoDatabase
+//import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import com.psi.onlineshop.ShoppingApplication
 import com.psi.onlineshop.data.User
 import com.psi.onlineshop.utils.Constants
@@ -13,7 +14,6 @@ import com.psi.onlineshop.utils.UserRegisterFieldsState
 import com.psi.onlineshop.utils.UserRegisterValidation
 import com.psi.onlineshop.utils.validateEmail
 import com.psi.onlineshop.utils.validatePassword
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 //import org.bson.Document
-import javax.inject.Inject
 
 class RegisterViewModel(
     application: Application
@@ -33,16 +32,18 @@ class RegisterViewModel(
     private val _validation = Channel<UserRegisterFieldsState>()
     val validation = _validation.receiveAsFlow()
 
-//    private var database: MongoDatabase = ShoppingApplication.getDatabase(application.applicationContext)
+//    var database: MongoDatabase = ShoppingApplication.getDatabase(application.applicationContext)
 
-    fun createAcccountWithEmailAndPassword(user: User, password: String) {
-        if( checkValidation(user, password) ) {
+
+    fun createUserAcccount(user: User) {
+        if( checkValidation(user) ) {
 
             viewModelScope.launch {
                 _register.emit(Resource.Loading())
             }
 
 //            viewModelScope.launch {
+//
 //                var collection = database.getCollection<User>(Constants.USER_COLLECTION)
 //                collection.insertOne(user).also {
 //                    println("Add new user with id : ${it.insertedId}")
@@ -52,19 +53,18 @@ class RegisterViewModel(
         }
         else
         {
-            val registerFieldsState = UserRegisterFieldsState( validateEmail(user.email), validatePassword(password))
+            val registerFieldsState = UserRegisterFieldsState( validateEmail(user.email), validatePassword(user.password))
             runBlocking {
                 _validation.send(registerFieldsState)
             }
         }
     }
 
-    private fun checkValidation(user: User, password: String): Boolean {
+    private fun checkValidation(user: User): Boolean {
         val emailValidation = validateEmail(user.email)
-        val passwordValidation = validatePassword(password)
-        val canRegister = emailValidation is UserRegisterValidation.Success && passwordValidation is UserRegisterValidation.Success
+        val passwordValidation = validatePassword(user.password)
 
-        return canRegister
+        return emailValidation is UserRegisterValidation.Success && passwordValidation is UserRegisterValidation.Success
     }
 
 }

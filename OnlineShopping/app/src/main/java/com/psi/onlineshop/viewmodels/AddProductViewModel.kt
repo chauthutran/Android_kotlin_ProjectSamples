@@ -8,17 +8,14 @@ import androidx.lifecycle.viewModelScope
 import com.psi.onlineshop.data.Product
 import com.psi.onlineshop.utils.Constants
 import com.psi.onlineshop.utils.Resource
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 //import kotlinx.coroutines.tasks.await
 import java.io.ByteArrayOutputStream
 import java.util.UUID
-import javax.inject.Inject
 
-@HiltViewModel
-class AddProductViewModel @Inject constructor(
+class AddProductViewModel (
     application: Application
 ): AndroidViewModel(application) {
 

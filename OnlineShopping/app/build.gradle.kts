@@ -1,12 +1,21 @@
+import org.jetbrains.kotlin.ir.backend.js.compile
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-parcelize")
     id("androidx.navigation.safeargs.kotlin")
-    id("dagger.hilt.android.plugin")
     id("io.realm.kotlin")
+    id("dagger.hilt.android.plugin")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+
+//    id("plugin.serialization")
+
+//    id("plugin.serialization").version("1.8.0")
+
+//    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.0'
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -143,18 +152,30 @@ dependencies {
 //
 //    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1")
 
-    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1") {
-        exclude(group = "org.mongodb", module = "bson-record-codec")
-    }
-
-//    testImplementation(kotlin("test"))
-////    implementation("org.mongodb:bson-kotlinx:4.11.0")
-
-    // Mongo Realm
+    // Kotlin coroutine dependency
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+//
+//    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1") {
+//        exclude(group = "org.mongodb", module = "bson-record-codec")
+//    }
+//    implementation("ch.qos.logback:logback-classic:1.2.11")
+//
+////    testImplementation(kotlin("test"))
+//////    implementation("org.mongodb:bson-kotlinx:4.11.0")
+//
+//    // Mongo Realm
 //    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-//    implementation ("io.realm.kotlin:library-base:1.6.1")
+//    implementation("io.realm.kotlin:library-sync:1.11.0")// If using Device Sync
+////    implementation ("io.realm.kotlin:library-base:1.6.1")
 
+//    implementation("com.squareup.okhttp3:okhttp:4.9.0")
+
+//    implementation("io.github.rybalkinsd:kohttp:0.12.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+    implementation("com.google.code.gson:gson:2.8.5")
 }
+
 
 kapt {
     correctErrorTypes=true
