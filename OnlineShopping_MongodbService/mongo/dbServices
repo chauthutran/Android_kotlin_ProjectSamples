@@ -1,0 +1,232 @@
+var Constants =  require("../constants/constants");
+
+const { MongoClient, ServerApiVersion } = require("mongodb");
+var DbConfig =  require("./dbConfigs");
+
+
+const DBServices = class {
+	constructor() {
+		// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+		this.client = new MongoClient(DbConfig.URI,  {
+			serverApi: {
+				version: ServerApiVersion.v1,
+				strict: true,
+				deprecationErrors: true,
+			}
+		});
+	}
+
+	async testDbConnection() {
+		try {
+			// Send a ping to confirm a successful connection
+			const db = this.client.db(DbConfig.DB_NAME)
+			await db.command({ ping: 1 });
+			console.log("Pinged your deployment. You successfully connected to MongoDB!");
+		}
+		catch(ex) {
+			console.log("Mongodb Connection is failed." + ex.message);
+		}
+		finally {
+			// Ensures that the client will close when you finish/error
+			await this.client.close();
+			console.log("Mongodb Connection is closed.");
+		}
+	}
+
+	
+	// ---------------------------------------------------------------------------------------------------
+	// --- Find documents
+
+	/**
+	 * @payloadJson {
+	 * 				"collectionName": "users",
+	 * 				"payload": {"email": "xxxxx", "password": "yyyy"}
+	 * 			}
+	 */
+	async findDocuments(payloadJson) {
+		// findDocument().catch(console.dir);
+		var docs = [];
+		var errMsg = "";
+		try {
+			const collection = this.openDbConnectionAndGetCollection(payloadJson.collectionName);
+			// const options = {
+			// 	// Sort returned documents in ascending order by title (A->Z)
+			// 	sort: { _id: 1 }
+			//   };
+			// Query for collection
+			// const cursor = collection.find(payloadJson.payload, options);
+
+			// Query for collection
+			const cursor = collection.find(payloadJson.payload);
+
+			// Print returned documents
+			for await (const doc of cursor) {
+				docs.push(doc);
+			}
+		}
+		catch(ex) {
+			errMsg = ex.message;
+		} 
+		finally {
+			// Ensures that the client will close when you finish/error
+			this.closeConnection();
+			if( errMsg != "" ) {
+				return { status: Constants.RESPONSE_STATUS_ERROR, data: errMsg };
+			}
+			
+			return { status: Constants.RESPONSE_STATUS_SUCCESS, data: docs };
+		}
+	}
+
+	/**
+	 * @payloadJson {
+	 * 				"collectionName": "users",
+	 * 				"payload": {"firstName": "test1", "lastName": "last1", email": "xxxxx", "password": "yyyy"}
+	 * 			}
+	 */
+	async addDocument(payloadJson) {
+		var result;
+		var errMsg = "";
+		try {
+			const collection = this.openDbConnectionAndGetCollection(payloadJson.collectionName);
+			result = await collection.insertOne(payloadJson.payload);
+		}
+		catch(ex) {
+			errMsg = ex.message;
+		} 
+		finally {
+			// Ensures that the client will close when you finish/error
+			this.closeConnection();
+			if( errMsg != "" ) {
+				return { status: Constants.RESPONSE_STATUS_ERROR, data: errMsg };
+			}
+			
+			return { status: Constants.RESPONSE_STATUS_SUCCESS, data: [result] };
+		}
+	}
+	
+		/**
+	 * @payloadJson {
+	 * 				"collectionName": "users",
+	 * 				"payload": [
+	 * 					{"firstName": "test1", "lastName": "last1", email": "xxxxx", "password": "yyyy"},
+	 * 					{"firstName": "test1", "lastName": "last1", email": "xxxxx", "password": "yyyy"},
+	 *					...
+	 * 				]
+	 * 			}
+	 */
+	async addDocuments(payloadJson) {
+		var result;
+		var errMsg = "";
+		try {
+			const collection = this.openDbConnectionAndGetCollection(payloadJson.collectionName);
+			result = await collection.insertMany(payloadJson.payload);
+		}
+		catch(ex) {
+			errMsg = ex.message;
+		} 
+		finally {
+			// Ensures that the client will close when you finish/error
+			this.closeConnection();
+			if( errMsg != "" ) {
+				return { status: Constants.RESPONSE_STATUS_ERROR, data: errMsg };
+			}
+			
+			return { status: Constants.RESPONSE_STATUS_SUCCESS, data: result };
+		}
+	}
+
+	
+	/**
+	 * @payloadJson {
+	 * 				"collectionName": "users",
+	 * 				"payload": {"_id": "xxx", firstName": "test1", "lastName": "last1", email": "xxxxx", "password": "yyyy"}
+	 * 			}
+	 */
+	async updateDocuments(payloadJson) {
+		// findDocument().catch(console.dir);
+		var result;
+		var errMsg = "";
+		try {
+			const collection = this.openDbConnectionAndGetCollection(payloadJson.collectionName);
+			// Create a filter for movies with the title "Random Harvest"
+			const filter = { title: "Random Harvest" };
+			/* Set the upsert option to insert a document if no documents match the filter */
+			const options = { upsert: true };
+			// Specify the update to set a value for the plot field
+			const updateDoc = { $set: payloadJson.payload };
+			// Update the first document that matches the filter
+			result = await collection.updateOne(filter, updateDoc, options);
+			 
+		}
+		catch(ex) {
+			errMsg = ex.message;
+		} 
+		finally {
+			// Ensures that the client will close when you finish/error
+			this.closeConnection();
+			if( errMsg != "" ) {
+				return { status: Constants.RESPONSE_STATUS_ERROR, data: errMsg };
+			}
+			
+			return { status: Constants.RESPONSE_STATUS_SUCCESS, data: [result] };
+		}
+	}
+	
+	/**
+	 * @payloadJson {
+	 * 				"collectionName": "users",
+	 * 				"payload": {"_id": "xxx"}
+	 * 			}
+	 */
+	async deleteDocuments(payloadJson) {
+		var result;
+		var errMsg = "";
+		try {
+			const collection = this.openDbConnectionAndGetCollection(payloadJson.collectionName);
+			
+			/* Delete the first document in the collection that matches the specified query document */
+			const query = payloadJson.payload;
+			result = await collection.deleteMany(query);
+		}
+		catch(ex) {
+			errMsg = ex.message;
+		} 
+		finally {
+			// Ensures that the client will close when you finish/error
+			this.closeConnection();
+			
+			if( errMsg != "" ) {
+				return { status: Constants.RESPONSE_STATUS_ERROR, data: errMsg };
+			}
+			
+			return { status: Constants.RESPONSE_STATUS_SUCCESS, data: [result] };
+		}
+	}
+
+
+	// ---------------------------------------------------------------------------------------------------
+	// --- Supportive methods
+
+	openDbConnectionAndGetCollection(name) {
+		// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+		this.client = new MongoClient(DbConfig.URI,  {
+			serverApi: {
+				version: ServerApiVersion.v1,
+				strict: true,
+				deprecationErrors: true,
+			}
+		});
+
+		this.client.db(DbConfig.DB_NAME);
+		const database = this.client.db(DbConfig.DB_NAME);
+		return database.collection(name);
+	}
+
+	async closeConnection() {
+		await this.client.close();
+	}
+
+}
+
+module.exports = DBServices;

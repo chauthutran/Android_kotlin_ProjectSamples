@@ -5,90 +5,75 @@ var cors = require('cors');
 const bodyParser = require("body-parser");
 
 var Constants =  require("./constants/constants");
-
-const mongoose = require("mongoose");
-const UserManager = require("./manager/userManager");
+var DBServices =  require("./mongo/dbServices");
+const dbServices = new DBServices();
 
 const PORT = process.env.PORT || 3110;
-
-// =======================================================================================================
-// Mongo Connection
-// ====================
-
-const mongoDBUri = "mongodb+srv://tranchau:Test1234@cluster0.n0jz7.mongodb.net/onlineshopping?retryWrites=true&w=majority&appName=Cluster0";
-// const mongoDBUri = "mongodb+srv://tranchau:<password>@cluster0.n0jz7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-
-mongoose.connect(mongoDBUri).then(() => {
-	console.log("====== Connected to Mongodb");
-}).catch(err => console.log(err))
-
-
-// MongoClient.connect(mongoDBUri, function(err, db) {
-// 	if (err) {
-// 		console.log("====== Connect Mongodb FAILED." + err);
-// 	}
-// 	else
-// 	{
-// 		console.log("====== Connected Mongodb");
-// 	}
-// 	// var dbo = db.db("mydb");
-// 	// dbo.createCollection("customers", function(err, res) {
-// 	//   if (err) throw err;
-// 	//   console.log("Collection created!");
-// 	//   db.close();
-// 	// });
-// });
-
-
-// ====================
-// Mongo Connection
-// =======================================================================================================
 
 
 const server = express()
 .use(cors())
 .use(bodyParser.urlencoded({ extended: false }))
 .use(bodyParser.json())
-.get('/', (req, res) => {
-	res.send('Online shopping service is started !!!');
-})
-.get('/users', (req, res) => {
-	var email = req.query.email;
-	try
-	{
-		const userManager = new UserManager();
-		userManager.findUsers(email, function(response){
-			res.send(response);
-		});
-	}
-	catch( ex )
-	{
-		res.send({msg: `The user couldn't be found. ${ex.message}`, "status": Constants.RESPONSE_STATUS_ERROR});
-		console.log(`The user couldn't be found. ${ex.message}`);
-	}
-})
-.post("/users", (req, res) => {
+.get('/', async(req, res) => {
 	
+	// var doc = dbServices.findDocuments({ payload: { firstName: 'Test1' }, collectionName: 'users' });
+	// res.send(doc);
+	res.send("The service is started");	
+})
+.post("/", async(req, res) => {
+	
+	console.log("===== action : " + req.query.action);
+	console.log(req.body);
+
 	var action = req.query.action;
 	const body = req.body;
 	try
 	{
-		const userManager = new UserManager();
-		if( action == Constants.REQUEST_ACTION_ADD ) {
-			userManager.addUser(body, function(response){
-				res.send(response);
-			});
+		var result;
+		if( action == Constants.REQUEST_ACTION_ADD_ONE ) {
+			result= await dbServices.addDocument( body );
 		}
-		else {
-			userManager.findUsers(body.condition, body.operator, function(response){
-				res.send(response);
-			});
+		else if( action == Constants.REQUEST_ACTION_ADD_MANY ) {
+			result= await dbServices.addDocuments( body );
 		}
+		else if( action == Constants.REQUEST_ACTION_FIND ) {
+			result = await dbServices.findDocuments(body);
+		}
+
+		res.send(result);
 	}
 	catch( ex )
 	{
-		res.send({msg: `The user couldn't be created. ${ex.message}`, "status": Constants.RESPONSE_STATUS_ERROR});
-		console.log(`The user couldn't be created. ${ex.message}`);
+		res.send({"status": Constants.RESPONSE_STATUS_ERROR, data: ex.message});
+		console.log(ex.message);
+	}
+})
+.put("/", async(req, res) => {
+	try
+	{
+		var result = await dbServices.updateDocuments(req.body);
+		res.send(result);
+	}
+	catch( ex )
+	{
+		res.send({"status": Constants.RESPONSE_STATUS_ERROR, data: ex.message});
+		console.log(ex.message);
+	}
+})
+
+// .delete("/:id", (req, res) => {
+// 	var id = req.params.id;
+.delete("/", async(req, res) => {
+	try
+	{
+		var documents = await dbServices.deleteDocuments(req.body);
+		res.send(documents);
+	}
+	catch( ex )
+	{
+		res.send({"status": Constants.RESPONSE_STATUS_ERROR, data: ex.message});
+		console.log(ex.message);
 	}
 })
 .listen(PORT, () => console.log(`Listening on ${PORT}` ));

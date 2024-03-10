@@ -2,7 +2,8 @@
 
 module.exports = Object.freeze({
 
-    REQUEST_ACTION_ADD: "add",
+    REQUEST_ACTION_ADD_ONE: "addOne",
+    REQUEST_ACTION_ADD_MANY: "addMany",
     REQUEST_ACTION_UPDATE: "update",
     REQUEST_ACTION_FIND: "find",
 

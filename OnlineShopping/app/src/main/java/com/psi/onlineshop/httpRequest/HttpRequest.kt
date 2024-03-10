@@ -80,7 +80,7 @@ import java.util.concurrent.Executors
  *
  */
 class HttpRequest(
-    val path: String,
+    val path: String = "",
     val method: Method = Method.GET,
     val parameters: Map<String, Any> = mapOf(),
     val headers: Map<String, String> = HttpRequestConfig.DEFAULT_HEADERS,
@@ -141,13 +141,14 @@ class HttpRequest(
         var json = Json { ignoreUnknownKeys = true }
     }
 
-    inline fun json(crossinline completion: (Any?, HttpResponse) -> Unit) {
+    inline fun <reified T> json(crossinline completion: (Any?, HttpResponse) -> Unit) {
         response { response ->
             try {
                 val responseJson = JSONObject(response.body)
                 if( responseJson.get("status") == "success") {
-//                    val result = json.decodeFromString<T>(responseJson.getJSONObject("data").toString())
-                    completion(responseJson.getJSONObject("data"), response)
+                    val result = json.decodeFromString<List<T>>(responseJson.getJSONArray("data").toString())
+                    println(result)
+                    completion(result, response)
                 }
                 else {
                     response.error = responseJson.getJSONObject("data")

@@ -2,17 +2,12 @@ package com.psi.onlineshop.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-//import com.mongodb.kotlin.client.coroutine.MongoDatabase
-//import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import com.psi.onlineshop.ShoppingApplication
 import com.psi.onlineshop.data.User
 import com.psi.onlineshop.httpRequest.HttpRequest
 import com.psi.onlineshop.httpRequest.HttpRequestConfig
 import com.psi.onlineshop.httpRequest.HttpRequestUtil
 import com.psi.onlineshop.httpRequest.Method
-import com.psi.onlineshop.utils.Constants
 import com.psi.onlineshop.utils.Resource
 import com.psi.onlineshop.utils.UserRegisterFieldsState
 import com.psi.onlineshop.utils.UserRegisterValidation
@@ -24,7 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-//import org.bson.Document
+import org.json.JSONObject
 
 class RegisterViewModel(
     application: Application
@@ -36,8 +31,6 @@ class RegisterViewModel(
     private val _validation = Channel<UserRegisterFieldsState>()
     val validation = _validation.receiveAsFlow()
 
-//    var database: MongoDatabase = ShoppingApplication.getDatabase(application.applicationContext)
-
 
     fun createUserAcccount(user: User) {
         if( checkValidation(user) ) {
@@ -46,27 +39,25 @@ class RegisterViewModel(
 
             viewModelScope.launch {
 
+                var payload = JSONObject()
+                payload.put("payload", HttpRequestUtil.convertObjToJson(user))
+                payload.put("collectionName", "users")
+
                 val request = HttpRequest(
-                    path = "/users",
                     method = Method.POST,
-                    parameters = mapOf("action" to HttpRequestConfig.REQUEST_ACTION_ADD),
-                    postedData = HttpRequestUtil.convertObjToJsonStr(user)
+                    parameters = mapOf("action" to HttpRequestConfig.REQUEST_ACTION_ADD_ONE),
+                    postedData = payload.toString()
                 )
-//                request.json<User> { result, response ->
-                request.json { result, response ->
+                request.json<User>{ result, response ->
                     if( response.error != null )
                     {
                         val message = response.error?.getString("message") ?: ""
                         viewModelScope.launch { _register.emit(Resource.Error(message)) }
                     }
-                    else if(result != null )
+                    else if(result != null && result is List<*>)
                     {
-                        val user = HttpRequestUtil.convertJsonToObj<User>(result)
-                        viewModelScope.launch { _register.emit(Resource.Success(user)) }
+                        viewModelScope.launch { _register.emit(Resource.Success(result.get(0) as User)) }
                     }
-//                    println(response.error)
-//                    println(response.success)
-//                    println(result)
                 }
             }
 

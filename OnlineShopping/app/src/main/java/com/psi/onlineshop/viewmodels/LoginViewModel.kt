@@ -35,72 +35,37 @@ class LoginViewModel (
             searchConditions.put("password", password)
 
             var searchData = JSONObject()
-            searchData.put("operator", HttpRequestConfig.SEARCH_OPERATOR_AND)
-            searchData.put("condition", searchConditions)
+            searchData.put("payload", searchConditions)
+            searchData.put("collectionName", "users")
 
             val request = HttpRequest(
-                path = "/users",
                 method = Method.POST,
                 parameters = mapOf("action" to HttpRequestConfig.REQUEST_ACTION_FIND),
                 postedData = searchData.toString()
-//                parameters = mapOf( "email" to email, "password" to password )
             )
-            request.json{ result, response ->
-                println("====================== ")
-                println(response.error)
-                    println(response.success)
-                    println(result)
-
+            request.json<User> { result, response ->
                 if( response.error != null )
                 {
                     val message = response.error?.getString("message") ?: ""
                     viewModelScope.launch { _login.emit(Resource.Error(message)) }
                 }
-                else if(result != null )
+                else if(result != null && result is List<*> )
                 {
-                    val users = HttpRequestUtil.convertJsonToObj<List<User>>(result)
-                    if( users.isEmpty() ) {
+                    if( result.isEmpty()) {
                         viewModelScope.launch { _login.emit(Resource.Error("The email or password is wrong")) }
                     }
                     else {
-                        viewModelScope.launch { _login.emit(Resource.Success(users.get(0))) }
+                        viewModelScope.launch { _login.emit(Resource.Success(result.get(0) as User)) }
                     }
                 }
             }
         }
-
-//
-//        var query = Filters.and(
-//            listOf(
-//                Filters.eq("email", email),
-//                Filters.eq("password", password)
-//            )
-//        )
-//
-//        viewModelScope.launch {
-//           var result = database.getCollection<User>(Constants.USER_COLLECTION).find<User>(filter = query)
-//            result.collect {
-//                println(it)
-//            }
-//        }
 
     }
 
     fun resetPassword(email: String) {
         viewModelScope.launch {
             _resetPassword.emit(Resource.Loading())
-
-//            firebaseAuth.sendPasswordResetEmail(email)
-//                .addOnSuccessListener {
-//                    viewModelScope.launch {
-//                        _resetPassword.emit(Resource.Success(email))
-//                    }
-//                }
-//                .addOnFailureListener {
-//                    viewModelScope.launch {
-//                        _resetPassword.emit(Resource.Error(it.message.toString()))
-//                    }
-//                }
         }
     }
 }

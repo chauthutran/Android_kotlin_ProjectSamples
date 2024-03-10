@@ -7,23 +7,16 @@ import org.json.JSONObject
 
 class HttpRequestUtil {
     companion object {
-        fun convertObjToJsonStr(obj: Any): String {
+        fun convertObjToJson(obj: Any): JSONObject {
             var gson = Gson()
-            return gson.toJson(obj)
+            var jsonString = gson.toJson(obj)
+            return JSONObject(jsonString)
         }
 
-//        inline fun <reified T> convertJsonToObj(responseJson: Any)  where T : T {
+//        inline fun <reified T> convertJsonToObj(responseJson: Any) : T {
 //            var json = Json { ignoreUnknownKeys = true }
-//
-////            var gson = Gson()
-////            return gson.toJson(obj)
-//
 //            return json.decodeFromString(responseJson.toString())
 //        }
-        inline fun <reified T> convertJsonToObj(responseJson: Any) : T {
-            var json = Json { ignoreUnknownKeys = true }
-            return json.decodeFromString(responseJson.toString())
-        }
 
     }
 

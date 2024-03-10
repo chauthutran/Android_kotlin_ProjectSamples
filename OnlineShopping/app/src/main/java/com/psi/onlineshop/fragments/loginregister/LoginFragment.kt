@@ -55,6 +55,30 @@ class LoginFragment : Fragment() {
         }
 
         lifecycleScope.launchWhenStarted {
+            viewModel.login.collect { it ->
+                when (it) {
+                    is Resource.Loading -> {
+                        binding.buttonLoginLogin.startAnimation()
+                    }
+
+                    is Resource.Success -> {
+                        Intent(requireActivity(), ShoppingActivity::class.java).also { intent ->
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            startActivity(intent) // Click Back button of Android phone to come back the Login page
+                        }
+                    }
+
+                    is Resource.Error -> {
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                        binding.buttonLoginLogin.revertAnimation()
+                    }
+
+                    else -> Unit
+                }
+            }
+        }
+
+        lifecycleScope.launchWhenStarted {
             viewModel.resetPassword.collect {
                 when (it) {
                     is Resource.Loading -> {
@@ -78,29 +102,7 @@ class LoginFragment : Fragment() {
             }
         }
 
-        lifecycleScope.launchWhenStarted {
-            viewModel.login.collect { it ->
-                when (it) {
-                    is Resource.Loading -> {
-                        binding.buttonLoginLogin.startAnimation()
-                    }
 
-                    is Resource.Success -> {
-                        Intent(requireActivity(), ShoppingActivity::class.java).also { intent ->
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                            startActivity(intent) // Click Back button of Android phone to come back the Login page
-                        }
-                    }
-
-                    is Resource.Error -> {
-                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
-                        binding.buttonLoginLogin.revertAnimation()
-                    }
-
-                    else -> Unit
-                }
-            }
-        }
     }
 
 }
