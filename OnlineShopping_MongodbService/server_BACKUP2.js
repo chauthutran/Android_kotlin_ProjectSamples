@@ -4,9 +4,7 @@ const express = require('express');
 var cors = require('cors');
 const bodyParser = require("body-parser");
 
-const multer = require("multer")
-const { GridFsStorage } = require("multer-gridfs-storage")
-require("dotenv").config()
+const multer = require('multer');
 
 var Constants =  require("./constants/constants");
 var DBServices =  require("./mongo/dbServices");
@@ -19,53 +17,9 @@ const PORT = process.env.PORT || 3110;
 // For Upload image
 
 var url =  process.env.MONGO_DB_URL;
-// Create a storage object with a given configuration
-const storage = new GridFsStorage({
-	url,
-	file: (req, file) => {
-	//   //If it is an image, save to photos bucket
-	//   if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
-	// 	return {
-	// 	  bucketName: "photos",
-	// 	  filename: `${Date.now()}_${file.originalname}`,
-	// 	}
-	//   } else {
-	// 	//Otherwise save to default bucket
-	// 	return `${Date.now()}_${file.originalname}`
-	//   }
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
-		// Generate a unique file name, you can use any method to generate it.
-		// In this example we are using Date.now() to generate unique name
-		const filename = `${Date.now()}_${file.originalname}`;
-		// Create an object containing the file information
-		// It will be used by multer-gridfs-storage to save the file in MongoDB
-		const fileInfo = {
-			filename: filename,
-			bucketName: "photos" // specify the bucket name
-		};
-		return fileInfo;
-	},
-  })
-  
-//   // Set multer storage engine to the newly created object
-//   const uploadFiles  = multer({ storage: storage })
-
-const imageFilter = (req, file, cb) => {
-	// Accept images only
-	if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-	  // Create an error message to be returned in case validation fails
-	  req.fileValidationError = 'Invalid image format. Only jpeg, jpg, png and gif images are allowed.';
-	  return cb(new Error('Invalid image format'), false);
-	}
-
-	console.log(file);
-	console.log(cb);
-	cb(null, true);
-};
-
-// Create a multer instance with the storage and fileFilter options
-const upload = multer({ storage, fileFilter: imageFilter });
-upload.single("avatar");
 
 // ================================================================================================================
 
@@ -79,20 +33,26 @@ const server = express()
 	// res.send(doc);
 	res.send("The service is started");	
 })
-.post("/upload", upload.single("avatar"), (req, res) => {
+.post("/upload/image", upload.single("avatar"), async(req, res) => {
 
-	console.log(" ============= ");
-	console.log(res);
-	const file = req.file;
-
-	console.log(file);
-	// Respond with the file details
-	res.send({
-	  message: "Uploaded",
-	  id: file.id,
-	  name: file.filename,
-	  contentType: file.contentType,
-	})
+	try {
+        const gfs = new Grid(mongoose.connection.db, mongoose.mongo);
+        const writeStream = gfs.createWriteStream({
+            filename: req.file.originalname,
+            mode: 'w',
+            content_type: req.file.mimetype,
+        });
+        fs.createReadStream(req.file.path).pipe(writeStream);
+        writeStream.on('close', (file) => {
+            fs.unlink(req.file.path, (err) => {
+                if (err) throw err;
+                return res.json({ file });
+            });
+        });
+    } catch (err) {
+		console.log(err);
+        return res.status(400).json({ message: 'Error uploading file', error: err });
+    }
   })
 .post("/", async(req, res) => {
 	
