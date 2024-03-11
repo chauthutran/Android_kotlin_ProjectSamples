@@ -1,5 +1,6 @@
 'use strict';
 
+var ObjectId = require('mongodb').ObjectId; 
 const express = require('express');
 var cors = require('cors');
 const bodyParser = require("body-parser");
@@ -12,60 +13,9 @@ var Constants =  require("./constants/constants");
 var DBServices =  require("./mongo/dbServices");
 const dbServices = new DBServices();
 
+var uploadFilesMiddleware =  require("./mongo/dbUpload");
+
 const PORT = process.env.PORT || 3110;
-
-
-// ================================================================================================================
-// For Upload image
-
-var url =  process.env.MONGO_DB_URL;
-// Create a storage object with a given configuration
-const storage = new GridFsStorage({
-	url,
-	file: (req, file) => {
-	//   //If it is an image, save to photos bucket
-	//   if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
-	// 	return {
-	// 	  bucketName: "photos",
-	// 	  filename: `${Date.now()}_${file.originalname}`,
-	// 	}
-	//   } else {
-	// 	//Otherwise save to default bucket
-	// 	return `${Date.now()}_${file.originalname}`
-	//   }
-
-		// Generate a unique file name, you can use any method to generate it.
-		// In this example we are using Date.now() to generate unique name
-		const filename = `${Date.now()}_${file.originalname}`;
-		// Create an object containing the file information
-		// It will be used by multer-gridfs-storage to save the file in MongoDB
-		const fileInfo = {
-			filename: filename,
-			bucketName: "photos" // specify the bucket name
-		};
-		return fileInfo;
-	},
-  })
-  
-//   // Set multer storage engine to the newly created object
-//   const uploadFiles  = multer({ storage: storage })
-
-const imageFilter = (req, file, cb) => {
-	// Accept images only
-	if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-	  // Create an error message to be returned in case validation fails
-	  req.fileValidationError = 'Invalid image format. Only jpeg, jpg, png and gif images are allowed.';
-	  return cb(new Error('Invalid image format'), false);
-	}
-
-	console.log(file);
-	console.log(cb);
-	cb(null, true);
-};
-
-// Create a multer instance with the storage and fileFilter options
-const upload = multer({ storage, fileFilter: imageFilter });
-upload.single("avatar");
 
 // ================================================================================================================
 
@@ -79,21 +29,43 @@ const server = express()
 	// res.send(doc);
 	res.send("The service is started");	
 })
-.post("/upload", upload.single("avatar"), (req, res) => {
+.post("/file",  async(req, res) => {
+	try
+	{
+		// var payload = {"collectionName": "images.chunks",
+		//  				"payload": {"files_id": new ObjectId("65ee6f1c5e5d5bc99538f84b")} };
+		// var result = await dbServices.getFiles(payload);
 
-	console.log(" ============= ");
-	console.log(res);
-	const file = req.file;
+		var result = await dbServices.getFiles(res.body);
+		res.send(result);
+	}
+	catch(ex)
+	{
+		res.send({status : Constants.RESPONSE_STATUS_ERROR, data: ex.message});
+	}
+})
+.post("/upload",  async (req, res) => {
+	try
+	{
+		await uploadFilesMiddleware(req, res);
+		const file = req.file;
 
-	console.log(file);
-	// Respond with the file details
-	res.send({
-	  message: "Uploaded",
-	  id: file.id,
-	  name: file.filename,
-	  contentType: file.contentType,
-	})
-  })
+		console.log(file);
+		res.send({
+			status : Constants.RESPONSE_STATUS_SUCCESS, 
+			data : {
+				message: "Uploaded", 
+				id: file.id,
+				name: file.filename,
+				contentType: file.contentType,
+			}
+		})
+	}
+	catch(ex)
+	{
+		res.send({status : Constants.RESPONSE_STATUS_ERROR, data: ex.message});
+	}
+})
 .post("/", async(req, res) => {
 	
 	console.log("===== action : " + req.query.action);
@@ -105,10 +77,10 @@ const server = express()
 	{
 		var result;
 		if( action == Constants.REQUEST_ACTION_ADD_ONE ) {
-			result= await dbServices.addDocument( body );
+			result = await dbServices.addDocument( body );
 		}
 		else if( action == Constants.REQUEST_ACTION_ADD_MANY ) {
-			result= await dbServices.addDocuments( body );
+			result = await dbServices.addDocuments( body );
 		}
 		else if( action == Constants.REQUEST_ACTION_FIND ) {
 			result = await dbServices.findDocuments(body);
@@ -118,7 +90,7 @@ const server = express()
 	}
 	catch( ex )
 	{
-		res.send({"status": Constants.RESPONSE_STATUS_ERROR, data: ex.message});
+		res.send({"status": Constants.RESPONSE_STATUS_ERROR, data: {msg: ex.message}});
 		console.log(ex.message);
 	}
 })
@@ -130,7 +102,7 @@ const server = express()
 	}
 	catch( ex )
 	{
-		res.send({"status": Constants.RESPONSE_STATUS_ERROR, data: ex.message});
+		res.send({"status": Constants.RESPONSE_STATUS_ERROR, data: {msg: ex.message}});
 		console.log(ex.message);
 	}
 })
@@ -145,7 +117,7 @@ const server = express()
 	}
 	catch( ex )
 	{
-		res.send({"status": Constants.RESPONSE_STATUS_ERROR, data: ex.message});
+		res.send({"status": Constants.RESPONSE_STATUS_ERROR, data: {msg: ex.message}});
 		console.log(ex.message);
 	}
 })

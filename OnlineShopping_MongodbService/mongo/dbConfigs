@@ -3,5 +3,5 @@ module.exports = Object.freeze({
     DB_NAME : "onlineshopping",
 
     URI_DB : "mongodb+srv://tranchau:Test1234@cluster0.n0jz7.mongodb.net/onlineshopping?retryWrites=true&w=majority&appName=Cluster0",
-    imgBucket: "photos"
+    imgBucket: "images"
 });

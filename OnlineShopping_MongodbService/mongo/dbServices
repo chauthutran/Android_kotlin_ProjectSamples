@@ -44,7 +44,7 @@ const DBServices = class {
 	/**
 	 * @payloadJson {
 	 * 				"collectionName": "users",
-	 * 				"payload": {"email": "xxxxx", "password": "yyyy"}
+	 * 				"payload": {"email": "xxxxx", "password": "yyyy"}  // If "payload" is null, then load all documents in the collection
 	 * 			}
 	 */
 	async findDocuments(payloadJson) {
@@ -61,12 +61,14 @@ const DBServices = class {
 			// const cursor = collection.find(payloadJson.payload, options);
 
 			// Query for collection
-			const cursor = collection.find(payloadJson.payload);
+			const cursor = (payloadJson.payload) ? collection.find(payloadJson.payload) : collection.find();
 
 			// Print returned documents
 			for await (const doc of cursor) {
 				docs.push(doc);
 			}
+
+			console.log(docs);
 		}
 		catch(ex) {
 			errMsg = ex.message;
@@ -209,29 +211,42 @@ const DBServices = class {
 	}
 
 
-	// uploadImage = () {
-	// 	const url = DbConfig.URI;
+	/**
+	 * @payloadJson {
+	 * 				"collectionName": "images.chunks",
+	 * 				"payload": {"_id": new ObjectId("65ee6f1c5e5d5bc99538f84b")}
+	 * 			}
+	 */
+	async getFiles(payloadJson) {
+		
+		var result = [];
+		var errMsg = "";
+		try {
+			const collection = this.openDbConnectionAndGetCollection(payloadJson.collectionName);
+			
+			// Query for collection
+			const cursor = collection.find(payloadJson.payload);
 
-	// 	// Create a storage object with a given configuration
-	// 	const storage = new GridFsStorage({
-	// 		url,
-	// 		file: (req, file) => {
-	// 			//If it is an image, save to photos bucket
-	// 			if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
-	// 			return {
-	// 				bucketName: "photos",
-	// 				filename: `${Date.now()}_${file.originalname}`,
-	// 			}
-	// 			} else {
-	// 			//Otherwise save to default bucket
-	// 			return `${Date.now()}_${file.originalname}`
-	// 			}
-	// 		},
-	// 	})
+			// Print returned documents
+			for await (const file of cursor) {
+				result.push( file );
+			}
+		}
+		catch(ex) {
+			errMsg = ex.message;
+		} 
+		finally {
+			// Ensures that the client will close when you finish/error
+			this.closeConnection();
+			
+			if( errMsg != "" ) {
+				return { status: Constants.RESPONSE_STATUS_ERROR, data: errMsg };
+			}
+			
+			return { status: Constants.RESPONSE_STATUS_SUCCESS, data: result };
+		}
 
-	// 	// Set multer storage engine to the newly created object
-	// 	const upload = multer({ storage })
-	// }
+	}
 
 	
 

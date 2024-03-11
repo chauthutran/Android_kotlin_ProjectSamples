@@ -13,6 +13,10 @@ class HttpRequestConfig {
         const val RESPONSE_STATUS_SUCCESS ="success"
         const val RESPONSE_STATUS_ERROR = "error"
 
+        const val COLLECTION_USERS = "users"
+        const val COLLECTION_PRODUCTS = "products"
+        const val COLLECTION_IMAGES = "images"
+
 
     }
 }

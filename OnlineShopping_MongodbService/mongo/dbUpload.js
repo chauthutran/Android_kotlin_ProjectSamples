@@ -5,18 +5,18 @@ var DbConfig =  require("./dbConfigs");
 
 var storage = new GridFsStorage({
   url: DbConfig.URI_DB,
-  options: { useNewUrlParser: true, useUnifiedTopology: true },
+  // options: { useNewUrlParser: true, useUnifiedTopology: true },
   file: (req, file) => {
-    const match = ["image/png", "image/jpeg"];
+    // const match = ["image/png", "image/jpeg"];
 
-    if (match.indexOf(file.mimetype) === -1) {
-      const filename = `${Date.now()}-bezkoder-${file.originalname}`;
-      return filename;
-    }
+    // if (match.indexOf(file.mimetype) === -1) {
+    //   const filename = `${Date.now()}-onlineshopping-${file.originalname}`;
+    //   return filename;
+    // }
 
     return {
       bucketName: DbConfig.imgBucket,
-      filename: `${Date.now()}-bezkoder-${file.originalname}`
+      filename: `${Date.now()}-onlineshopping-${file.originalname}`
     };
   }
 });

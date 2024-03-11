@@ -64,11 +64,10 @@ class AddProductFragment : Fragment() {
                     images
                 )
             viewModel.saveProduct( product, imagesByteArrays  )
+//            viewModel.saveProduct( product, selectedImages  )
         }
 
 
-
-        //4
         binding.buttonColorPicker.setOnClickListener {
             ColorPickerDialog
                 .Builder(requireContext())

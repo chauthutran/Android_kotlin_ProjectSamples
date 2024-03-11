@@ -41,7 +41,7 @@ class RegisterViewModel(
 
                 var payload = JSONObject()
                 payload.put("payload", HttpRequestUtil.convertObjToJson(user))
-                payload.put("collectionName", "users")
+                payload.put("collectionName", HttpRequestConfig.COLLECTION_USERS)
 
                 val request = HttpRequest(
                     method = Method.POST,

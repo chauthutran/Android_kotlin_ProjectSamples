@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -85,7 +86,7 @@ class HttpRequest(
     val parameters: Map<String, Any> = mapOf(),
     val headers: Map<String, String> = HttpRequestConfig.DEFAULT_HEADERS,
     val config: ((HttpURLConnection) -> Unit)? = null,
-    val postedData: String? = null
+    val postedData: String? = null,
 ) {
     fun response(completion: (HttpResponse) -> Unit) {
         Executors.newSingleThreadExecutor().execute {
@@ -145,9 +146,23 @@ class HttpRequest(
         response { response ->
             try {
                 val responseJson = JSONObject(response.body)
+
                 if( responseJson.get("status") == "success") {
-                    val result = json.decodeFromString<List<T>>(responseJson.getJSONArray("data").toString())
+                    println("===========")
+                    println(responseJson.getJSONArray("data"))
+
+                    val result = ArrayList<T>()
+                    val list = responseJson.getJSONArray ("data")
+                    for (i in 0 until list.length()) { // for (i in 0 until list.length()) {
+                        result.add( json.decodeFromString<T>(list.getJSONObject(i).toString()) )
+                        // Your code here
+                    }
+
+//                    val result = json.decodeFromString<List<T>>(responseJson.getJSONArray("data").toString())
+
                     println(result)
+
+
                     completion(result, response)
                 }
                 else {

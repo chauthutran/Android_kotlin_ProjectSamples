@@ -36,7 +36,7 @@ class LoginViewModel (
 
             var searchData = JSONObject()
             searchData.put("payload", searchConditions)
-            searchData.put("collectionName", "users")
+            searchData.put("collectionName", HttpRequestConfig.COLLECTION_USERS)
 
             val request = HttpRequest(
                 method = Method.POST,
