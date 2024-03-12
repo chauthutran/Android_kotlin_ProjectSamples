@@ -29,14 +29,20 @@ const server = express()
 	// res.send(doc);
 	res.send("The service is started");	
 })
+.get('/download/:filename', async(req, res) => {
+	
+	var result = await dbServices.getFile(req.params.filename);
+	res.send(result);
+})
 .post("/file",  async(req, res) => {
 	try
 	{
 		// var payload = {"collectionName": "images.chunks",
 		//  				"payload": {"files_id": new ObjectId("65ee6f1c5e5d5bc99538f84b")} };
 		// var result = await dbServices.getFiles(payload);
-
-		var result = await dbServices.getFiles(res.body);
+// console.log("--------------- req.body");
+// console.log(req.body)
+		var result = await dbServices.getFiles(req.body);
 		res.send(result);
 	}
 	catch(ex)
@@ -44,7 +50,7 @@ const server = express()
 		res.send({status : Constants.RESPONSE_STATUS_ERROR, data: ex.message});
 	}
 })
-.post("/upload",  async (req, res) => {
+.post("/upload", async(req, res) => {
 	try
 	{
 		console.log("========================= POST UPLOAD req");
@@ -72,7 +78,7 @@ const server = express()
 .post("/", async(req, res) => {
 	
 	console.log("===== action : " + req.query.action);
-	console.log(req.body);
+	// console.log(req.body);
 
 	var action = req.query.action;
 	const body = req.body;

@@ -4,9 +4,8 @@ require("dotenv").config()
 
 var Constants =  require("../constants/constants");
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, GridFSBucket } = require("mongodb");
 var DbConfig =  require("./dbConfigs");
-
 
 const DBServices = class {
 	constructor() {
@@ -233,6 +232,7 @@ const DBServices = class {
 			}
 		}
 		catch(ex) {
+			console.log(ex)
 			errMsg = ex.message;
 		} 
 		finally {
@@ -248,14 +248,52 @@ const DBServices = class {
 
 	}
 
-	
+	async getFile(fileName) {
+		try {
+			// await mongoClient.connect()
+		
+			// const database = mongoClient.db("images")
+		
+			const database = this.openDbConnection();
+		
+
+			const imageBucket = new GridFSBucket(database, {
+			  bucketName: DbConfig.imgBucket,
+			})
+		
+			let downloadStream = imageBucket.openDownloadStreamByName(
+				fileName
+			)
+		
+			downloadStream.on("data", function (data) {
+				return {status: "success", data: data};
+			//   return res.status(200).write(data)
+			})
+		
+			downloadStream.on("error", function (data) {
+				return {status: "error", data: "Image not found"};
+			//   return res.status(404).send({ error: "Image not found" })
+			})
+		
+			// downloadStream.on("end", () => {
+			//   return res.end()
+			// })
+		  } catch (error) {
+			console.log(error)
+			return {status: "error", data: "Error Something went wrong"};
+			// res.status(500).send({
+			//   message: "Error Something went wrong",
+			//   error,
+			// })
+		  }
+	}
 
 	
 
 	// ---------------------------------------------------------------------------------------------------
 	// --- Supportive methods
 
-	openDbConnectionAndGetCollection(name) {
+	openDbConnection() {
 		// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 		this.client = new MongoClient(DbConfig.URI,  {
 			serverApi: {
@@ -266,7 +304,15 @@ const DBServices = class {
 		});
 
 		this.client.db(DbConfig.DB_NAME);
+		return this.client.db(DbConfig.DB_NAME);
+	}
+
+	openDbConnectionAndGetCollection(name) {
+		// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+		this.openDbConnection();
+
 		const database = this.client.db(DbConfig.DB_NAME);
+		console.log(" ---------- collection : " + name);
 		return database.collection(name);
 	}
 

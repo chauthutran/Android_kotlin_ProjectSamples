@@ -4,10 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.psi.onlineshop.data.User
-import com.psi.onlineshop.httpRequest.HttpRequest
 import com.psi.onlineshop.httpRequest.HttpRequestConfig
 import com.psi.onlineshop.httpRequest.HttpRequestUtil
-import com.psi.onlineshop.httpRequest.Method
 import com.psi.onlineshop.utils.Resource
 import com.psi.onlineshop.utils.UserRegisterFieldsState
 import com.psi.onlineshop.utils.UserRegisterValidation
@@ -25,6 +23,9 @@ class RegisterViewModel(
     application: Application
 ): AndroidViewModel(application) {
 
+    private val context = getApplication<Application>().applicationContext
+
+
     private var _register = MutableStateFlow<Resource<User>>(Resource.UnSpecified())
     var register: Flow<Resource<User>> = _register
 
@@ -39,26 +40,40 @@ class RegisterViewModel(
 
             viewModelScope.launch {
 
-                var payload = JSONObject()
-                payload.put("payload", HttpRequestUtil.convertObjToJson(user))
-                payload.put("collectionName", HttpRequestConfig.COLLECTION_USERS)
+                var payload = HttpRequestUtil.convertObjToJson(user)
 
-                val request = HttpRequest(
-                    method = Method.POST,
-                    parameters = mapOf("action" to HttpRequestConfig.REQUEST_ACTION_ADD_ONE),
-                    postedData = payload.toString()
-                )
-                request.json<User>{ result, response ->
-                    if( response.error != null )
+                HttpRequestUtil.sendPOSTRequest(context, HttpRequestConfig.REQUEST_ACTION_ADD_ONE, HttpRequestConfig.COLLECTION_USERS, payload) { response ->
+                    if( response is JSONObject)
                     {
-                        val message = response.error?.getString("message") ?: ""
-                        viewModelScope.launch { _register.emit(Resource.Error(message)) }
-                    }
-                    else if(result != null && result is List<*>)
-                    {
-                        viewModelScope.launch { _register.emit(Resource.Success(result.get(0) as User)) }
+                        var status = response.getString("status")
+                        var data = response.getJSONArray("data")
+                        if( status == HttpRequestConfig.RESPONSE_STATUS_SUCCESS && data.length() > 0 ) {
+                            val user = HttpRequestUtil.convertJsonToObj<User>(data.getJSONObject(0))
+                            viewModelScope.launch { _register.emit(Resource.Success(user)) }
+                        }
+                        else {
+                            val message = response.getString("status")
+                            viewModelScope.launch { _register.emit(Resource.Error(message)) }
+                        }
                     }
                 }
+
+//                val request = HttpRequest(
+//                    method = Method.POST,
+//                    parameters = mapOf("action" to HttpRequestConfig.REQUEST_ACTION_ADD_ONE),
+//                    postedData = payload.toString()
+//                )
+//                request.json<User>{ result, response ->
+//                    if( response.error != null )
+//                    {
+//                        val message = response.error?.getString("message") ?: ""
+//                        viewModelScope.launch { _register.emit(Resource.Error(message)) }
+//                    }
+//                    else if(result != null && result is List<*>)
+//                    {
+//                        viewModelScope.launch { _register.emit(Resource.Success(result.get(0) as User)) }
+//                    }
+//                }
             }
 
         }

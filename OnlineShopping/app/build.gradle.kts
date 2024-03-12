@@ -120,4 +120,6 @@ dependencies {
 
     // To convert data class object to json
     implementation("com.google.code.gson:gson:2.8.5")
+
+    implementation("com.android.volley:volley:1.2.1")
 }

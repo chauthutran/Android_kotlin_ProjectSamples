@@ -27,7 +27,7 @@ class AddProductFragment : Fragment() {
     private val viewModel by viewModels<AddProductViewModel>()
 
     val selectedColors = mutableListOf<Int>()
-    var selectedImages = mutableListOf<Uri>()
+    var selectedImages = mutableListOf<ByteArray>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,8 +50,6 @@ class AddProductFragment : Fragment() {
             val price = binding.edPrice.text.toString().trim()
             val offerPercentage = binding.edOfferPercentage.text.toString().trim()
 
-            val imagesByteArrays = getImagesByteArrays()
-
             val product = Product(
                     UUID.randomUUID().toString(),
                     name,
@@ -63,8 +61,7 @@ class AddProductFragment : Fragment() {
                     sizes,
                     images
                 )
-            viewModel.saveProduct( product, imagesByteArrays  )
-//            viewModel.saveProduct( product, selectedImages  )
+            viewModel.saveProduct( product, selectedImages  )
         }
 
 
@@ -97,14 +94,25 @@ class AddProductFragment : Fragment() {
                         val count = intent.clipData?.itemCount ?: 0
                         (0 until count).forEach {
                             val imagesUri = intent.clipData?.getItemAt(it)?.uri
-                            imagesUri?.let { selectedImages.add(it) }
+                            imagesUri?.let {
+                                val inputStream = requireContext().contentResolver.openInputStream(imagesUri)
+                                inputStream?.buffered()?.use {
+                                    selectedImages.add( it.readBytes() )
+                                }
+                            }
+                        }
+                    }
+                    else {  //One images was selected
+                        val imageUri = intent?.data
+                        imageUri?.let {
+                            val inputStream = requireContext().contentResolver.openInputStream(imageUri)
+                            inputStream?.buffered()?.use {
+                                selectedImages.add( it.readBytes() )
+                            }
                         }
 
-                        //One images was selected
-                    } else {
-                        val imageUri = intent?.data
-                        imageUri?.let { selectedImages.add(it) }
                     }
+
                     updateImages()
                 }
             }
@@ -141,16 +149,16 @@ class AddProductFragment : Fragment() {
         binding.tvSelectedImages.setText(selectedImages.size.toString())
     }
 
-    private fun getImagesByteArrays(): List<ByteArray> {
-        val imagesByteArray = mutableListOf<ByteArray>()
-        selectedImages.forEach {
-            val stream = ByteArrayOutputStream()
-            val imageBmp = MediaStore.Images.Media.getBitmap( requireContext().contentResolver, it)
-            if (imageBmp.compress(Bitmap.CompressFormat.JPEG, 85, stream)) {
-                val imageAsByteArray = stream.toByteArray()
-                imagesByteArray.add(imageAsByteArray)
-            }
-        }
-        return imagesByteArray
-    }
+//    private fun getImagesByteArrays(): List<ByteArray> {
+//        val imagesByteArray = mutableListOf<ByteArray>()
+//        selectedImages.forEach {
+//            val stream = ByteArrayOutputStream()
+//            val imageBmp = MediaStore.Images.Media.getBitmap( requireContext().contentResolver, it)
+//            if (imageBmp.compress(Bitmap.CompressFormat.JPEG, 85, stream)) {
+//                val imageAsByteArray = stream.toByteArray()
+//                imagesByteArray.add(imageAsByteArray)
+//            }
+//        }
+//        return imagesByteArray
+//    }
 }
