@@ -47,10 +47,13 @@ const server = express()
 .post("/upload",  async (req, res) => {
 	try
 	{
-		await uploadFilesMiddleware(req, res);
-		const file = req.file;
+		console.log("========================= POST UPLOAD req");
+		console.log(req.body);
 
-		console.log(file);
+		await uploadFilesMiddleware(req, res);
+		const file = req.body.payload.file;
+
+		// console.log(file);
 		res.send({
 			status : Constants.RESPONSE_STATUS_SUCCESS, 
 			data : {
