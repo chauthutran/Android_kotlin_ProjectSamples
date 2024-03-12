@@ -22,10 +22,10 @@
             android:name=".activities.UploadImageActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.ShoppingActivity"
+            android:name=".activities.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.LoginActivity"
+            android:name=".activities.ShoppingActivity"
             android:exported="true"
             android:label="@string/app_name">
             <intent-filter>
