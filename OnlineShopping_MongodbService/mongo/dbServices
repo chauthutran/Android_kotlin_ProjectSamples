@@ -4,7 +4,7 @@ require("dotenv").config()
 
 var Constants =  require("../constants/constants");
 
-const { MongoClient, ServerApiVersion, GridFSBucket } = require("mongodb");
+const { MongoClient, ServerApiVersion, GridFSBucket, ObjectId } = require("mongodb");
 var DbConfig =  require("./dbConfigs");
 
 const DBServices = class {
@@ -47,11 +47,15 @@ const DBServices = class {
 	 * 			}
 	 */
 	async findDocuments(payloadJson) {
-		// findDocument().catch(console.dir);
 		var docs = [];
+		var images = {};
 		var errMsg = "";
+
 		try {
-			const collection = this.openDbConnectionAndGetCollection(payloadJson.collectionName);
+			// const collection = this.openDbConnectionAndGetCollection(payloadJson.collectionName);
+			const database = this.openDbConnection();
+			const collection = database.collection(payloadJson.collectionName);
+
 			// const options = {
 			// 	// Sort returned documents in ascending order by title (A->Z)
 			// 	sort: { _id: 1 }
@@ -63,11 +67,35 @@ const DBServices = class {
 			const cursor = (payloadJson.payload) ? collection.find(payloadJson.payload) : collection.find();
 
 			// Print returned documents
+			var imgFileIdList = [];
 			for await (const doc of cursor) {
 				docs.push(doc);
+
+				// Get all image file ids of documents ( products ) if any
+				var imgFileIds = doc.imgFileIds;
+				if( imgFileIds ) {
+					for( var i=0; i< imgFileIds.length; i++ ) {
+						imgFileIdList.push( new ObjectId(imgFileIds[i]));
+					}
+				}
 			}
 
-			console.log(docs);
+			// Get images of the product
+			if( imgFileIdList.length > 0  ) {
+				
+				var imgPayload = { "files_id": { "$in": imgFileIdList } };
+
+				console.log(`${DbConfig.imgBucket}.chunks`);
+				console.log(imgFileIdList);
+				// Query for collection
+				const imgCollection = database.collection(`${DbConfig.imgBucket}.chunks`);
+				const imgCursor = imgCollection.find(imgPayload);
+				// Print returned images
+				for await (const img of imgCursor) {
+					images[img.files_id] = img;
+				}
+			}
+				
 		}
 		catch(ex) {
 			errMsg = ex.message;
@@ -79,7 +107,7 @@ const DBServices = class {
 				return { status: Constants.RESPONSE_STATUS_ERROR, data: errMsg };
 			}
 			
-			return { status: Constants.RESPONSE_STATUS_SUCCESS, data: docs };
+			return { status: Constants.RESPONSE_STATUS_SUCCESS, data: docs, images: images };
 		}
 	}
 
@@ -209,86 +237,6 @@ const DBServices = class {
 		}
 	}
 
-
-	/**
-	 * @payloadJson {
-	 * 				"collectionName": "images.chunks",
-	 * 				"payload": {"_id": new ObjectId("65ee6f1c5e5d5bc99538f84b")}
-	 * 			}
-	 */
-	async getFiles(payloadJson) {
-		
-		var result = [];
-		var errMsg = "";
-		try {
-			const collection = this.openDbConnectionAndGetCollection(payloadJson.collectionName);
-			
-			// Query for collection
-			const cursor = collection.find(payloadJson.payload);
-
-			// Print returned documents
-			for await (const file of cursor) {
-				result.push( file );
-			}
-		}
-		catch(ex) {
-			console.log(ex)
-			errMsg = ex.message;
-		} 
-		finally {
-			// Ensures that the client will close when you finish/error
-			this.closeConnection();
-			
-			if( errMsg != "" ) {
-				return { status: Constants.RESPONSE_STATUS_ERROR, data: errMsg };
-			}
-			
-			return { status: Constants.RESPONSE_STATUS_SUCCESS, data: result };
-		}
-
-	}
-
-	async getFile(fileName) {
-		try {
-			// await mongoClient.connect()
-		
-			// const database = mongoClient.db("images")
-		
-			const database = this.openDbConnection();
-		
-
-			const imageBucket = new GridFSBucket(database, {
-			  bucketName: DbConfig.imgBucket,
-			})
-		
-			let downloadStream = imageBucket.openDownloadStreamByName(
-				fileName
-			)
-		
-			downloadStream.on("data", function (data) {
-				return {status: "success", data: data};
-			//   return res.status(200).write(data)
-			})
-		
-			downloadStream.on("error", function (data) {
-				return {status: "error", data: "Image not found"};
-			//   return res.status(404).send({ error: "Image not found" })
-			})
-		
-			// downloadStream.on("end", () => {
-			//   return res.end()
-			// })
-		  } catch (error) {
-			console.log(error)
-			return {status: "error", data: "Error Something went wrong"};
-			// res.status(500).send({
-			//   message: "Error Something went wrong",
-			//   error,
-			// })
-		  }
-	}
-
-	
 
 	// ---------------------------------------------------------------------------------------------------
 	// --- Supportive methods

@@ -13,6 +13,7 @@ class TodayProposalsAdapter : RecyclerView.Adapter<TodayProposalsAdapter.TodayPr
     inner class TodayProposalsViewHolder(private val binding: RvProductItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(product: Product) {
             binding.apply {
+                println( "=======: ${product.images.isNotEmpty()}")
                 if(product.images.isNotEmpty())
                 {
                     Glide.with(itemView).load(product.images[0]).into(imageSpecialRvItem)

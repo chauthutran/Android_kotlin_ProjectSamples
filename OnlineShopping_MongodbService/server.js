@@ -1,21 +1,23 @@
 'use strict';
 
-var ObjectId = require('mongodb').ObjectId; 
 const express = require('express');
 var cors = require('cors');
 const bodyParser = require("body-parser");
-
 const multer = require("multer")
-const { GridFsStorage } = require("multer-gridfs-storage")
 require("dotenv").config()
 
 var Constants =  require("./constants/constants");
 var DBServices =  require("./mongo/dbServices");
 const dbServices = new DBServices();
 
-var uploadFilesMiddleware =  require("./mongo/dbUpload");
 
+const path = require("path");
+
+
+var uploadFileToStorage = require("./middleware/storageUpload");
+var uploadFilesToDbMiddleware =  require("./mongo/dbUpload");
 const PORT = process.env.PORT || 3110;
+
 
 // ================================================================================================================
 
@@ -23,51 +25,45 @@ const server = express()
 .use(cors())
 .use(bodyParser.urlencoded({ extended: false }))
 .use(bodyParser.json())
-.get('/', async(req, res) => {
-	
-	// var doc = dbServices.findDocuments({ payload: { firstName: 'Test1' }, collectionName: 'users' });
-	// res.send(doc);
-	res.send("The service is started");	
+
+// // View Engine Setup
+// .set("views", path.join(__dirname, "views"))
+// .set("view engine", "ejs")
+
+.get('/', (req, res) => {
+	res.sendFile(__dirname + "/index.html")
+	// res.send("The service is started");	
 })
-.get('/download/:filename', async(req, res) => {
-	
-	var result = await dbServices.getFile(req.params.filename);
-	res.send(result);
-})
-.post("/file",  async(req, res) => {
+.post("/uploadFileToStorage", async(req, res) => {
 	try
 	{
-		// var payload = {"collectionName": "images.chunks",
-		//  				"payload": {"files_id": new ObjectId("65ee6f1c5e5d5bc99538f84b")} };
-		// var result = await dbServices.getFiles(payload);
-// console.log("--------------- req.body");
-// console.log(req.body)
-		var result = await dbServices.getFiles(req.body);
-		res.send(result);
+		uploadFileToStorage(req, res, function (err) {
+		
+        if (err) {
+            res.send(err);
+        } else {
+            // SUCCESS, image successfully uploaded
+			console.log(res.req.file);
+			res.send("success");
+            // res.send({status: Constants.RESPONSE_STATUS_SUCCESS, data: });
+
+        }
+
+    });
 	}
 	catch(ex)
 	{
 		res.send({status : Constants.RESPONSE_STATUS_ERROR, data: ex.message});
 	}
 })
-.post("/upload", async(req, res) => {
+.post("/uploadFileToDb", async(req, res) => {
 	try
 	{
-		console.log("========================= POST UPLOAD req");
-		console.log(req.body);
-
-		await uploadFilesMiddleware(req, res);
-		const file = req.body.payload.file;
-
-		// console.log(file);
+		await uploadFilesToDbMiddleware(req, res);
+		// console.log(res.req.file);
 		res.send({
 			status : Constants.RESPONSE_STATUS_SUCCESS, 
-			data : {
-				message: "Uploaded", 
-				id: file.id,
-				name: file.filename,
-				contentType: file.contentType,
-			}
+			data : res.req.file
 		})
 	}
 	catch(ex)
@@ -76,10 +72,9 @@ const server = express()
 	}
 })
 .post("/", async(req, res) => {
-	
-	console.log("===== action : " + req.query.action);
-	// console.log(req.body);
 
+	console.log(" ============== POST /");
+	console.log(req.body);
 	var action = req.query.action;
 	const body = req.body;
 	try
@@ -94,7 +89,7 @@ const server = express()
 		else if( action == Constants.REQUEST_ACTION_FIND ) {
 			result = await dbServices.findDocuments(body);
 		}
-
+		
 		res.send(result);
 	}
 	catch( ex )

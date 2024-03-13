@@ -1,8 +1,10 @@
 package com.psi.onlineshop.httpRequest
 
 import android.R
+import android.app.Application
 import android.content.Context
 import com.android.volley.Request
+import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
@@ -11,6 +13,7 @@ import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.util.UUID
 
 
 class HttpRequestUtil {
@@ -23,7 +26,7 @@ class HttpRequestUtil {
             return JSONObject(jsonString)
         }
 
-        inline fun sendPOSTRequest(context: Context, actionName: String, collectionName: String, payloadJson: JSONObject, crossinline completion: (Any?) -> Unit) {
+        inline fun sendPOSTRequest(context: Context, actionName: String, collectionName: String, payloadJson: JSONObject, crossinline completion: (JSONObject) -> Unit) {
 
             try {
                 // Make new json object and put params in it
@@ -43,7 +46,11 @@ class HttpRequestUtil {
                     }
                 ) {
                     // Handle the error
-                    completion(it)
+                    var errJson = JSONObject()
+                    errJson.put("status", HttpRequestConfig.RESPONSE_STATUS_ERROR)
+                    errJson.put("data", it.message)
+
+                    completion( errJson )
                 }
 
 
@@ -51,9 +58,40 @@ class HttpRequestUtil {
 
             } catch (ex: JSONException) {
                 // Catch if something went wrong with the params
-                completion(ex)
+                var errJson = JSONObject()
+                errJson.put("status", HttpRequestConfig.RESPONSE_STATUS_ERROR)
+                errJson.put("data", ex.message)
+
+                completion( errJson )
             }
 
+        }
+
+        inline fun uploadImage(context: Context, imageData: ByteArray, crossinline completion: (JSONObject) -> Unit ) {
+            val queue = Volley.newRequestQueue(context)
+            val url = "${HttpRequestConfig.BASE_URL_MONGODB_SERVICE}/uploadFileToStorage"
+
+            val stringRequest = object : VolleyFileUploadRequest(
+                Method.POST,
+                url,
+                Response.Listener { response ->
+                    completion( JSONObject(String(response.data)) )
+                },
+                Response.ErrorListener {
+                    var errJson = JSONObject()
+                    errJson.put("status", HttpRequestConfig.RESPONSE_STATUS_ERROR)
+                    errJson.put("data", it.message)
+                    completion( errJson )
+                }
+            ) {
+
+                override fun getByteData(): MutableMap<String, FileDataPart> {
+                    var params = HashMap<String, FileDataPart>()
+                    params.put("file", FileDataPart("img-${UUID.randomUUID()}", imageData, "jpg"))
+                    return params
+                }
+            }
+            queue.add(stringRequest)
         }
 
         inline fun <reified T> convertJsonToObj(data: JSONObject) : T {

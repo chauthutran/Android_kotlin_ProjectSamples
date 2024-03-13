@@ -1,7 +1,8 @@
 module.exports = Object.freeze({
-    URI : "mongodb+srv://tranchau:Test1234@cluster0.n0jz7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+    URI : "mongodb+srv://tranchau:Test1234@cluster0.n0jz7.mongodb.net/onlineshopping?retryWrites=true&w=majority&appName=Cluster0",
     DB_NAME : "onlineshopping",
 
-    URI_DB : "mongodb+srv://tranchau:Test1234@cluster0.n0jz7.mongodb.net/onlineshopping?retryWrites=true&w=majority&appName=Cluster0",
+    COLLECTION_PRODUCTS : "products",
+
     imgBucket: "images"
 });

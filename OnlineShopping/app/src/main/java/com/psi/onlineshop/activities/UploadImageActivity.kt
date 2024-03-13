@@ -97,7 +97,7 @@ println("============================== uri : ${uri}")
                     Method.POST,
                     url,
                     Response.Listener { response ->
-                        println("-------------------- response : $response")
+                        println("-------------------- response : ${response.data}")
 //                        if( response == "success") {
 //                            Toast.makeText(applicationContext, "Image uploaded", Toast.LENGTH_SHORT).show()
 //                        }

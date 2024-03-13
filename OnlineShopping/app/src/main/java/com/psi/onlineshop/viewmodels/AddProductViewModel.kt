@@ -1,6 +1,7 @@
 package com.psi.onlineshop.viewmodels
 
 import android.app.Application
+import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
@@ -24,11 +25,15 @@ class AddProductViewModel (
     application: Application
 ): AndroidViewModel(application) {
 
-    private val context = getApplication<Application>().applicationContext
+    val context = getApplication<Application>().applicationContext
 
 
     private val _addNewProduct = MutableStateFlow<Resource<Product>>(Resource.UnSpecified())
     val addNewProduct = _addNewProduct.asStateFlow()
+
+    var imageFileIds = ArrayList<String>()
+    var progressingImgIdx = 0
+    var totalImg = 0
 
     fun saveProduct(product: Product, imagesByteArrays: List<ByteArray>) {
 
@@ -38,19 +43,14 @@ class AddProductViewModel (
 
         viewModelScope.launch {
 
-            // Generate the image name
-            val imgNameList = createImageNames(imagesByteArrays.size, product.name)
+            imageFileIds = ArrayList<String>()
+            progressingImgIdx = 0
+            totalImg = imagesByteArrays.size
 
             // saveImages
-            uploadImages(imagesByteArrays, imgNameList)
-
-            // Save products
-            product.images = imgNameList
-            var payload = HttpRequestUtil.convertObjToJson(product)
-
-            HttpRequestUtil.sendPOSTRequest(context, HttpRequestConfig.REQUEST_ACTION_ADD_ONE, HttpRequestConfig.COLLECTION_PRODUCTS, payload) { response ->
-                if( response is JSONObject)
-                {
+            uploadImages(imagesByteArrays) { fileIds ->
+                // Add Product
+                addProduct( product, fileIds) { response ->
                     var status = response.getString("status")
                     var data = response.getJSONArray("data")
                     if( status == HttpRequestConfig.RESPONSE_STATUS_SUCCESS && data.length() > 0 ) {
@@ -64,74 +64,39 @@ class AddProductViewModel (
                 }
             }
 
-
-//            val request = HttpRequest(
-//                method = Method.POST,
-//                parameters = mapOf("action" to HttpRequestConfig.REQUEST_ACTION_ADD_ONE),
-//                postedData = payload.toString()
-//            )
-//            request.json<Product>{ result, response ->
-//                if( response.error != null )
-//                {
-//                    val message = response.error?.getString("message") ?: ""
-//                    viewModelScope.launch { _addNewProduct.emit(Resource.Error(message)) }
-//                }
-//                else if(result != null && result is List<*>)
-//                {
-//                    viewModelScope.launch { _addNewProduct.emit(Resource.Success(result.get(0) as Product)) }
-//                }
-//            }
-
-
         }
 
     }
 
-    private fun createImageNames ( count: Int, productName: String ): ArrayList<String>
-    {
-        var imgNameList = ArrayList<String>()
-        (0 until count).forEach {
-            imgNameList.add("${productName}-${UUID.randomUUID()}-img")
-        }
-        return imgNameList;
-    }
-    fun uploadImages( imagesByteArrays: List<ByteArray>, imgNameList: ArrayList<String> ) {
+
+    private inline fun uploadImages(imagesByteArrays: List<ByteArray>, crossinline completion: (ArrayList<String>) -> Unit )  {
+
         (0 until imagesByteArrays.size).forEach {
             val imageData = imagesByteArrays.get(it)
 
-            val queue = Volley.newRequestQueue(getApplication<Application>().applicationContext)
-            val url = "${HttpRequestConfig.BASE_URL_MONGODB_SERVICE}/upload"
-
-            val stringRequest = object : VolleyFileUploadRequest(
-                Method.POST,
-                url,
-                Response.Listener { response ->
-                    println("-------------------- response : $response")
-                    //                        if( response == "success") {
-                    //                            Toast.makeText(applicationContext, "Image uploaded", Toast.LENGTH_SHORT).show()
-                    //                        }
-                    //                        else {
-                    //                            Toast.makeText(applicationContext, "Fail to upload image", Toast.LENGTH_SHORT).show()
-                    //                        }
-
-                },
-                Response.ErrorListener {
-                    println("-------------------- response : $it.message")
-                    //                Toast.makeText(, it.message, Toast.LENGTH_SHORT).show()
+            HttpRequestUtil.uploadImage(context, imageData ) { response ->
+                var status = response.getString("status")
+                if( status == HttpRequestConfig.RESPONSE_STATUS_SUCCESS ) {
+                    var fileId = response.getJSONObject("data").getString("id")
+                    imageFileIds.add(fileId)
                 }
-            ) {
 
-                override fun getByteData(): MutableMap<String, FileDataPart> {
-                    var params = HashMap<String, FileDataPart>()
-
-                    params.put("file", FileDataPart("${imgNameList.get(it)}", imageData!!, "jpg"))
-
-                    return params
+                progressingImgIdx++
+                if( progressingImgIdx == totalImg ) {
+                    completion(imageFileIds)
                 }
             }
-            queue.add(stringRequest)
         }
 
     }
 
+    private inline fun addProduct(product: Product, fileIds: ArrayList<String>, crossinline completion: (JSONObject) -> Unit ) {
+
+        product.imgFileIds = fileIds
+        var payload = HttpRequestUtil.convertObjToJson(product)
+
+        HttpRequestUtil.sendPOSTRequest(context, HttpRequestConfig.REQUEST_ACTION_ADD_ONE, HttpRequestConfig.COLLECTION_PRODUCTS, payload) { response ->
+            completion( response )
+        }
+    }
 }

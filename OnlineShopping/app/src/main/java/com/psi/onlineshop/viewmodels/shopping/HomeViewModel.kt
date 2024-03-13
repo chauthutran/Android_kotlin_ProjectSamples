@@ -2,10 +2,8 @@ package com.psi.onlineshop.viewmodels.shopping
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.psi.onlineshop.data.Product
-import com.psi.onlineshop.data.User
 import com.psi.onlineshop.httpRequest.HttpRequestConfig
 import com.psi.onlineshop.httpRequest.HttpRequestUtil
 import com.psi.onlineshop.utils.Resource
@@ -40,9 +38,17 @@ class HomeViewModel (
                 {
                     var status = response.getString("status")
                     var data = response.getJSONArray("data")
+                    var imgMap = response.getJSONObject("images")
 
                     if( status == HttpRequestConfig.RESPONSE_STATUS_SUCCESS && data.length() > 0 ) {
-                        val products = HttpRequestUtil.convertJsonArrToListObj<Product>(data)
+//                        val products = HttpRequestUtil.convertJsonArrToListObj<Product>(data)
+                        var products = ArrayList<Product>()
+                        (0 until data.length()).forEach {
+                            var product = HttpRequestUtil.convertJsonToObj<Product>(data.getJSONObject(it.toInt()))
+                            product.setImageList(imgMap)
+
+                            products.add(product)
+                        }
                         viewModelScope.launch { _todayProposals.emit(Resource.Success(products)) }
                     }
                     else {
@@ -55,5 +61,6 @@ class HomeViewModel (
         }
 
     }
+
 
 }
