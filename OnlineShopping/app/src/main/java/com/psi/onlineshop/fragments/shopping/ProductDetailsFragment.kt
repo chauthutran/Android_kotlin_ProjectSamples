@@ -6,7 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.navArgs
-import com.psi.onlineshop.adapters.ProductSizesAdapterr
+import com.psi.onlineshop.adapters.ProductColorsAdapter
+import com.psi.onlineshop.adapters.ProductSizesAdapter
 import com.psi.onlineshop.databinding.FragmentProductDetailsBinding
 
 class ProductDetailsFragment : Fragment() {
@@ -17,7 +18,7 @@ class ProductDetailsFragment : Fragment() {
 
     private val sizesAdapter by lazy { ProductSizesAdapter() }
 
-    private val colorsAdapter by lazy {ColorsAdapter()}
+    private val colorsAdapter by lazy { ProductColorsAdapter() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,6 +31,20 @@ class ProductDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val product = args.product
 
+        binding.apply {
+            tvProductName.text = product.name
+            tvProductPrice.text = "$ ${product.price}"
+            tvProductDescription.text = product.description
+
+            if( product.colors.isNullOrEmpty() ) {
+                binding.tvProductColors.visibility = View.GONE
+            }
+
+            if( product.sizes.isNullOrEmpty() ) {
+                binding.tvProductSize.visibility = View.GONE
+            }
+        }
     }
 }
