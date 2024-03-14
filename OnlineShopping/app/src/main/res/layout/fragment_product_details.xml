@@ -124,13 +124,11 @@
                 android:id="@+id/topLine"
                 android:layout_width="match_parent"
                 android:layout_height="5dp"
+                android:layout_marginTop="10dp"
                 android:background="@color/g_line"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvProductRealPrice"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginTop="10dp"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvProductRealPrice" />
 
 
             <TextView
@@ -140,9 +138,7 @@
                 android:layout_height="wrap_content"
                 android:text="Color:"
                 android:textColor="@color/black"
-
-                app:layout_constraintStart_toEndOf="@id/topLine"
-                app:layout_constraintStart_toStartOf="@id/topLine"
+                app:layout_constraintStart_toStartOf="@id/guidelineLoginLeft"
                 app:layout_constraintTop_toBottomOf="@id/topLine" />
 
             <TextView
@@ -172,6 +168,7 @@
                 android:textSize="12sp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:text="Size"
                 android:textColor="@color/black"
                 app:layout_constraintTop_toBottomOf="@id/rvColors"
