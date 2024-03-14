@@ -12,6 +12,9 @@ import com.psi.onlineshop.data.Product
 import com.psi.onlineshop.databinding.RvProductItemBinding
 import com.psi.onlineshop.httpRequest.HttpRequestConfig
 import com.psi.onlineshop.httpRequest.HttpRequestUtil
+import com.psi.onlineshop.utils.formatNumber
+import com.psi.onlineshop.utils.getOfferPercentagePrice
+import com.psi.onlineshop.utils.getPercentage
 
 class TodayProposalsAdapter : RecyclerView.Adapter<TodayProposalsAdapter.TodayProposalsViewHolder>() {
     inner class TodayProposalsViewHolder(private val binding: RvProductItemBinding): RecyclerView.ViewHolder(binding.root) {
@@ -29,15 +32,15 @@ class TodayProposalsAdapter : RecyclerView.Adapter<TodayProposalsAdapter.TodayPr
                 if( product.offerPercentage == null ) {
                     tvProductOriginalPrice.visibility = View.GONE
                     tvOfferPercentage.visibility = View.GONE
-                    tvProductRealPrice.text = "$ ${String.format("%.2f", product.price)}"
+                    tvProductRealPrice.text = "$ ${product.price.formatNumber()}"
                 }
                 else {
-                    tvProductOriginalPrice.text = "$ ${String.format("%.2f", product.price)}"
-                    tvOfferPercentage.text = "${String.format("%.2f", product.offerPercentage * 100)}%"
+                    tvProductOriginalPrice.text = "$ ${product.price.formatNumber()}"
+                    tvOfferPercentage.text = "${product.offerPercentage.getPercentage().formatNumber()}%"
                     tvProductOriginalPrice.paintFlags = tvProductOriginalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
 
-                    val newPrice = product.price * (1f - product.offerPercentage)
-                    tvProductRealPrice.text = "$ ${String.format("%.2f", newPrice)}"
+                    val newPrice = product.price.getOfferPercentagePrice( product.offerPercentage )
+                    tvProductRealPrice.text = "$ ${newPrice.formatNumber()}"
                 }
 
 

@@ -123,8 +123,8 @@
             <View
                 android:id="@+id/topLine"
                 android:layout_width="match_parent"
-                android:layout_height="5dp"
-                android:layout_marginTop="10dp"
+                android:layout_height="15dp"
+                android:layout_marginTop="0dp"
                 android:background="@color/g_line"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -133,7 +133,6 @@
 
             <TextView
                 android:id="@+id/tvProductColors"
-                android:textSize="12sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Color:"
@@ -148,7 +147,6 @@
                 android:text="Red"
                 android:paddingLeft="10dp"
                 android:textColor="@color/black"
-                android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@id/topLine"
                 app:layout_constraintStart_toEndOf="@id/tvProductColors"
@@ -165,15 +163,27 @@
 
             <TextView
                 android:id="@+id/tvProductSize"
-                android:textSize="12sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Size:"
+                android:textColor="@color/black"
+                app:layout_constraintStart_toStartOf="@+id/guidelineLoginLeft"
+                app:layout_constraintTop_toBottomOf="@id/rvColors" />
+
+            <TextView
+                android:id="@+id/tvProductSelectedSize"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Size"
+                android:text="S"
+                android:paddingLeft="10dp"
                 android:textColor="@color/black"
-                app:layout_constraintTop_toBottomOf="@id/rvColors"
-                app:layout_constraintStart_toStartOf="@+id/guidelineLoginLeft"
-                app:layout_constraintEnd_toEndOf="@+id/guidelineLoginRight" />
+                android:textStyle="bold"
+
+                app:layout_constraintEnd_toEndOf="@id/rvColors"
+                app:layout_constraintStart_toEndOf="@id/tvProductSize"
+                app:layout_constraintTop_toBottomOf="@id/rvColors" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_sizes"

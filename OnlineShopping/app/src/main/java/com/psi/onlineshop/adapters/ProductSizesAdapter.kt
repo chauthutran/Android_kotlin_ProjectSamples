@@ -1,32 +1,37 @@
 package com.psi.onlineshop.adapters
 
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.psi.onlineshop.R
 import com.psi.onlineshop.databinding.ProductSizeItemBinding
+
 
 class ProductSizesAdapter( ) : RecyclerView.Adapter<ProductSizesAdapter.SizesViewHolder>() {
 
     private var selectedPosition = -1
 
-    inner class SizesViewHolder(private val binding: ProductSizeItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(size: String, position: Int) {
-            binding.tvSize.text = size
+    inner class SizesViewHolder(private val binding: ProductSizeItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
-            if (position == selectedPosition) // The Size is selected
-            {
-                binding.apply {
-                    imageShadow.visibility = View.VISIBLE
-                }
-            } else // The Size is NOT selected
-            {
-                binding.apply {
-                    imageShadow.visibility = View.INVISIBLE
-                }
+        fun bind(size: String, position: Int) {
+
+            binding.tvSize.text = size
+            val background: GradientDrawable = binding.tvSize.getBackground() as GradientDrawable
+
+            var resources = itemView.resources
+            // The Size is selected
+            if (position == selectedPosition) {
+                val colorBlue = resources.getColor(R.color.l_blue)
+                background.setStroke(6, colorBlue)
+//              background.colors = intArrayOf(colorWhite, colorBlue) // Change background color
+            }
+            // The Size is NOT selected
+            else {
+                val colorBlack = resources.getColor(R.color.black)
+                background.setStroke(4, colorBlack)
             }
         }
     }
