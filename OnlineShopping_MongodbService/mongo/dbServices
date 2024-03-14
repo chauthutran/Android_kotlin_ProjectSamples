@@ -70,32 +70,7 @@ const DBServices = class {
 			var imgFileIdList = [];
 			for await (const doc of cursor) {
 				docs.push(doc);
-
-				// Get all image file ids of documents ( products ) if any
-				var imgFileIds = doc.imgFileIds;
-				if( imgFileIds ) {
-					for( var i=0; i< imgFileIds.length; i++ ) {
-						imgFileIdList.push( new ObjectId(imgFileIds[i]));
-					}
-				}
 			}
-
-			// Get images of the product
-			if( imgFileIdList.length > 0  ) {
-				
-				var imgPayload = { "files_id": { "$in": imgFileIdList } };
-
-				console.log(`${DbConfig.imgBucket}.chunks`);
-				console.log(imgFileIdList);
-				// Query for collection
-				const imgCollection = database.collection(`${DbConfig.imgBucket}.chunks`);
-				const imgCursor = imgCollection.find(imgPayload);
-				// Print returned images
-				for await (const img of imgCursor) {
-					images[img.files_id] = img;
-				}
-			}
-				
 		}
 		catch(ex) {
 			errMsg = ex.message;
@@ -107,7 +82,7 @@ const DBServices = class {
 				return { status: Constants.RESPONSE_STATUS_ERROR, data: errMsg };
 			}
 			
-			return { status: Constants.RESPONSE_STATUS_SUCCESS, data: docs, images: images };
+			return { status: Constants.RESPONSE_STATUS_SUCCESS, data: docs };
 		}
 	}
 

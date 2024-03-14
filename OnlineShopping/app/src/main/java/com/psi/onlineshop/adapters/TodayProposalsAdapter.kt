@@ -1,6 +1,8 @@
 package com.psi.onlineshop.adapters
 
+import android.graphics.Paint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -8,19 +10,37 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.psi.onlineshop.data.Product
 import com.psi.onlineshop.databinding.RvProductItemBinding
+import com.psi.onlineshop.httpRequest.HttpRequestConfig
+import com.psi.onlineshop.httpRequest.HttpRequestUtil
 
 class TodayProposalsAdapter : RecyclerView.Adapter<TodayProposalsAdapter.TodayProposalsViewHolder>() {
     inner class TodayProposalsViewHolder(private val binding: RvProductItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(product: Product) {
             binding.apply {
-                println( "=======: ${product.images.isNotEmpty()}")
-                if(product.images.isNotEmpty())
+                if(product.imgFileIds.isNotEmpty())
                 {
-                    Glide.with(itemView).load(product.images[0]).into(imageSpecialRvItem)
+                    var url = "${HttpRequestConfig.BASE_URL_MONGODB_SERVICE}/file/${product.imgFileIds[0]}"
+                    Glide.with(itemView).load(url).into(imageProduct)
                 }
 
-                tvSpecialProductName.text = product.name
-                tvSpecialPrdouctPrice.text = product.price.toString()
+                tvProductName.text = product.name
+
+
+                if( product.offerPercentage == null ) {
+                    tvProductOriginalPrice.visibility = View.GONE
+                    tvOfferPercentage.visibility = View.GONE
+                    tvProductRealPrice.text = "$ ${String.format("%.2f", product.price)}"
+                }
+                else {
+                    tvProductOriginalPrice.text = "$ ${String.format("%.2f", product.price)}"
+                    tvOfferPercentage.text = "${String.format("%.2f", product.offerPercentage * 100)}%"
+                    tvProductOriginalPrice.paintFlags = tvProductOriginalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+
+                    val newPrice = product.price * (1f - product.offerPercentage)
+                    tvProductRealPrice.text = "$ ${String.format("%.2f", newPrice)}"
+                }
+
+
             }
         }
     }

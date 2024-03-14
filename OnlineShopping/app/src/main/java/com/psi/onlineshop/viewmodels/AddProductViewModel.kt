@@ -77,8 +77,8 @@ class AddProductViewModel (
             HttpRequestUtil.uploadImage(context, imageData ) { response ->
                 var status = response.getString("status")
                 if( status == HttpRequestConfig.RESPONSE_STATUS_SUCCESS ) {
-                    var fileId = response.getJSONObject("data").getString("id")
-                    imageFileIds.add(fileId)
+                    var fileName = response.getJSONObject("data").getString("filename")
+                    imageFileIds.add(fileName)
                 }
 
                 progressingImgIdx++

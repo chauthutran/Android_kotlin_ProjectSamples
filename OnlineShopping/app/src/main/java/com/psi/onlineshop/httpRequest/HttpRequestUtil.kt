@@ -13,6 +13,7 @@ import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
 import java.util.UUID
 
 
@@ -87,7 +88,8 @@ class HttpRequestUtil {
 
                 override fun getByteData(): MutableMap<String, FileDataPart> {
                     var params = HashMap<String, FileDataPart>()
-                    params.put("file", FileDataPart("img-${UUID.randomUUID()}", imageData, "jpg"))
+                    println("imagName: img-${UUID.randomUUID()}.jpg")
+                    params.put("uploadfile", FileDataPart("img-${UUID.randomUUID()}.jpg", imageData, "jpg"))
                     return params
                 }
             }
@@ -101,13 +103,19 @@ class HttpRequestUtil {
 
         inline fun <reified T> convertJsonArrToListObj(data: JSONArray) : List<T> {
             var result = ArrayList<T>()
-            var json = Json { ignoreUnknownKeys = true }
-            for (i in 0 until data.length()) { // for (i in 0 until list.length()) {
-                result.add( json.decodeFromString<T>(data.getJSONObject(i).toString()) )
-                // Your code here
+            try {
+                var json = Json { ignoreUnknownKeys = true }
+                for (i in 0 until data.length()) { // for (i in 0 until list.length()) {
+                    result.add( json.decodeFromString<T>(data.getJSONObject(i).toString()) )
+                    // Your code here
+                }
             }
-
-            return result
+            catch (e: Exception) {
+                e.printStackTrace()
+            }
+            finally {
+                return result
+            }
         }
 
     }

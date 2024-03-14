@@ -38,17 +38,9 @@ class HomeViewModel (
                 {
                     var status = response.getString("status")
                     var data = response.getJSONArray("data")
-                    var imgMap = response.getJSONObject("images")
 
                     if( status == HttpRequestConfig.RESPONSE_STATUS_SUCCESS && data.length() > 0 ) {
-//                        val products = HttpRequestUtil.convertJsonArrToListObj<Product>(data)
-                        var products = ArrayList<Product>()
-                        (0 until data.length()).forEach {
-                            var product = HttpRequestUtil.convertJsonToObj<Product>(data.getJSONObject(it.toInt()))
-                            product.setImageList(imgMap)
-
-                            products.add(product)
-                        }
+                        val products = HttpRequestUtil.convertJsonArrToListObj<Product>(data)
                         viewModelScope.launch { _todayProposals.emit(Resource.Success(products)) }
                     }
                     else {

@@ -121,5 +121,11 @@ dependencies {
     // To convert data class object to json
     implementation("com.google.code.gson:gson:2.8.5")
 
+    // volley lib - To make request to server
     implementation("com.android.volley:volley:1.2.1")
+
+    // dependency for slider view
+    implementation("com.github.smarteist:autoimageslider:1.3.9")
+    // dependency for loading image from url
+    implementation("com.github.bumptech.glide:glide:4.11.0")
 }

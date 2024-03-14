@@ -14,7 +14,8 @@ const dbServices = new DBServices();
 const path = require("path");
 
 
-var uploadFileToStorage = require("./middleware/storageUpload");
+var uploadFileToStorage = require("./middleware/storageUploadFile");
+var uploadAdvFileToStorage = require("./middleware/uploadAdvFileToStorage");
 var uploadFilesToDbMiddleware =  require("./mongo/dbUpload");
 const PORT = process.env.PORT || 3110;
 
@@ -34,19 +35,19 @@ const server = express()
 	res.sendFile(__dirname + "/index.html")
 	// res.send("The service is started");	
 })
+.get('/file/:fileName', (req, res) => {
+	res.sendFile(__dirname + "/uploaded_files/" + req.params.fileName);
+})
 .post("/uploadFileToStorage", async(req, res) => {
 	try
 	{
 		uploadFileToStorage(req, res, function (err) {
 		
         if (err) {
-            res.send(err);
+			console.log(err);
+            res.send({status: Constants.RESPONSE_STATUS_ERROR, data: err});
         } else {
-            // SUCCESS, image successfully uploaded
-			console.log(res.req.file);
-			res.send("success");
-            // res.send({status: Constants.RESPONSE_STATUS_SUCCESS, data: });
-
+            res.send({status: Constants.RESPONSE_STATUS_SUCCESS, data: res.req.file});
         }
 
     });
@@ -60,7 +61,6 @@ const server = express()
 	try
 	{
 		await uploadFilesToDbMiddleware(req, res);
-		// console.log(res.req.file);
 		res.send({
 			status : Constants.RESPONSE_STATUS_SUCCESS, 
 			data : res.req.file
@@ -72,9 +72,6 @@ const server = express()
 	}
 })
 .post("/", async(req, res) => {
-
-	console.log(" ============== POST /");
-	console.log(req.body);
 	var action = req.query.action;
 	const body = req.body;
 	try

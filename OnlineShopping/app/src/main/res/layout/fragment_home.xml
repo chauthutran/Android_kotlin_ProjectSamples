@@ -6,16 +6,23 @@
     android:layout_height="match_parent"
     tools:context=".fragments.shopping.HomeFragment">
 
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:id="@+id/nestedScrollMainCategory">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
 
         <TextView
             android:id="@+id/tvAppName"
             style="@style/h3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="35dp"
             android:drawableStart="@drawable/ic_shopping_30"
             android:drawablePadding="6dp"
             android:text="ABC Shop"
@@ -28,11 +35,11 @@
         <ImageView
             android:id="@+id/imgAlarm"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="26dp"
             android:src="@drawable/ic_bell_26"
             app:layout_constraintBottom_toTopOf="@+id/guidelineHomeTop"
             app:layout_constraintEnd_toStartOf="@+id/guidelineHomeRight"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/tvAppName" />
 
         <android.widget.SearchView
             android:id="@+id/searchProduct"
@@ -42,114 +49,158 @@
             android:background="@drawable/input"
             android:queryHint="Enter a product"
             app:defaultQueryHint="Enter a product"
-            app:layout_constraintBottom_toTopOf="@+id/cartView"
+            app:layout_constraintBottom_toTopOf="@+id/sliderView"
             app:layout_constraintEnd_toStartOf="@+id/guidelineHomeRight"
             app:layout_constraintStart_toStartOf="@+id/guidelineHomeLeft"
             app:layout_constraintTop_toBottomOf="@+id/tvAppName" />
 
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cartView"
+<!--        <androidx.cardview.widget.CardView-->
+<!--            android:id="@+id/cartView"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="150dp"-->
+<!--            app:cardElevation="0dp"-->
+<!--            app:strokeColor="@color/g_gray700"-->
+<!--            app:strokeWidth="5dp"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            app:layout_constraintEnd_toStartOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/searchProduct">-->
+
+<!--            <androidx.viewpager2.widget.ViewPager2-->
+<!--                android:id="@+id/viewPagerProductImages"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent" />-->
+
+<!--        </androidx.cardview.widget.CardView>-->
+
+        <com.smarteist.autoimageslider.SliderView
+            android:id="@+id/sliderView"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            app:cardElevation="0dp"
             app:strokeColor="@color/g_gray700"
             app:strokeWidth="5dp"
             android:layout_marginTop="10dp"
             app:layout_constraintEnd_toStartOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/searchProduct">
+            app:layout_constraintTop_toBottomOf="@+id/searchProduct"
+            android:layout_centerInParent="true"
+            app:sliderAnimationDuration="600"
+            app:sliderAutoCycleDirection="back_and_forth"
+            app:sliderIndicatorAnimationDuration="600"
+            app:sliderIndicatorEnabled="true"
+            app:sliderIndicatorGravity="center_horizontal|bottom"
+            app:sliderIndicatorMargin="15dp"
+            app:sliderIndicatorOrientation="horizontal"
+            app:sliderIndicatorPadding="3dp"
+            app:sliderIndicatorRadius="2dp"
+            app:sliderIndicatorSelectedColor="#5A5A5A"
+            app:sliderIndicatorUnselectedColor="#FFF"
+            app:sliderScrollTimeInSec="1"
+            tools:ignore="MissingConstraints" />
 
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/viewPagerProductImages"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
 
-        </androidx.cardview.widget.CardView>
+        <!--        <androidx.recyclerview.widget.RecyclerView-->
+<!--            android:id="@+id/rvCategories"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="80dp"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/guidelineHomeRight"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/guidelineHomeLeft"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/cartView" />-->
 
-
-        <androidx.recyclerview.widget.RecyclerView
+        <include
             android:id="@+id/rvCategories"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            app:layout_constraintEnd_toStartOf="@+id/guidelineHomeRight"
-            app:layout_constraintStart_toStartOf="@+id/guidelineHomeLeft"
-            app:layout_constraintTop_toBottomOf="@+id/cartView" />
+            layout="@layout/home_caterories"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
 
-        <TextView
-            android:id="@+id/tvTodayProposals"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:fontFamily="@font/poppins_thin"
-            android:text="Today Proposals"
-            android:textColor="@color/black"
-            android:textSize="22sp"
-            app:layout_constraintEnd_toEndOf="@+id/guidelineHomeRight"
-            app:layout_constraintStart_toStartOf="@+id/guidelineHomeLeft"
-            app:layout_constraintTop_toBottomOf="@id/rvCategories" />
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sliderView"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvTodayProposals"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            app:layout_constraintEnd_toStartOf="@+id/guidelineHomeRight"
-            app:layout_constraintStart_toStartOf="@+id/guidelineHomeLeft"
-            app:layout_constraintTop_toBottomOf="@+id/tvTodayProposals" />
+<!--            app:layout_constraintEnd_toStartOf="@+id/guidelineHomeRight"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/sliderView"-->
+            />
 
+                <TextView
+                    android:id="@+id/tvTodayProposals"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/poppins_thin"
+                    android:text="Today Proposals"
+                    android:textColor="@color/black"
+                    android:textSize="22sp"
+                    app:layout_constraintEnd_toEndOf="@+id/guidelineHomeRight"
+                    app:layout_constraintStart_toStartOf="@+id/guidelineHomeLeft"
+                    app:layout_constraintTop_toBottomOf="@id/rvCategories" />
 
-        <TextView
-            android:id="@+id/tvSuggestions"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:fontFamily="@font/poppins_thin"
-            android:text="Now Suggestions"
-            android:textColor="@color/black"
-            android:textSize="22sp"
-            app:layout_constraintEnd_toEndOf="@+id/guidelineHomeRight"
-            app:layout_constraintStart_toStartOf="@+id/guidelineHomeLeft"
-            app:layout_constraintTop_toBottomOf="@id/rvTodayProposals" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvSuggestions"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            app:layout_constraintEnd_toStartOf="@+id/guidelineHomeRight"
-            app:layout_constraintStart_toStartOf="@+id/guidelineHomeLeft"
-            app:layout_constraintTop_toBottomOf="@+id/tvSuggestions" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvTodayProposals"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:scrollbarSize="5dp"
+                    android:scrollbarStyle="outsideInset"
+                    android:scrollbars="horizontal"
+                    app:layout_constraintEnd_toStartOf="@+id/guidelineHomeRight"
+                    app:layout_constraintStart_toStartOf="@+id/guidelineHomeLeft"
+                    app:layout_constraintTop_toBottomOf="@+id/tvTodayProposals" />
 
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineHomeTop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.04" />
+                <TextView
+                    android:id="@+id/tvSuggestions"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/poppins_thin"
+                    android:text="Now Suggestions"
+                    android:textColor="@color/black"
+                    android:textSize="22sp"
+                    app:layout_constraintEnd_toEndOf="@+id/guidelineHomeRight"
+                    app:layout_constraintStart_toStartOf="@+id/guidelineHomeLeft"
+                    app:layout_constraintTop_toBottomOf="@id/rvTodayProposals" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvSuggestions"
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    app:layout_constraintEnd_toStartOf="@+id/guidelineHomeRight"
+                    app:layout_constraintStart_toStartOf="@+id/guidelineHomeLeft"
+                    app:layout_constraintTop_toBottomOf="@+id/tvSuggestions" />
 
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineHomeBottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.05" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineHomeLeft"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.05" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineHomeRight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.95" />
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guidelineHomeTop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.04" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guidelineHomeBottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.05" />
 
-</FrameLayout>
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guidelineHomeLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.05" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guidelineHomeRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.95" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.core.widget.NestedScrollView>
+        </FrameLayout>

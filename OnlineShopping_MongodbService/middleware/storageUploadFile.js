@@ -1,7 +1,4 @@
-const util = require("util");
 const multer = require("multer");
-const path = require("path");
-const Constants = require("../constants/constants");
 
 var storageFile = multer.diskStorage({
     destination: function (req, file, cb) {
