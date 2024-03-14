@@ -3,17 +3,29 @@ package com.psi.onlineshop.utils
 import com.psi.onlineshop.adapters.SliderImageAdapter
 import com.smarteist.autoimageslider.SliderView
 
-fun SliderView.setupSliderImages(imageUrlList: ArrayList<String>, autoCycle: Boolean) {
+fun SliderView.setupSliderImages(basedUrl: String?, imageUrlList: ArrayList<String>, autoCycle: Boolean) {
+//fun SliderView.setupSliderImages( imageUrlList: ArrayList<String>, autoCycle: Boolean) {
 
-    // slider adapter and adding our list to it.
-    val sliderAdapter = SliderImageAdapter(imageUrlList)
+    // slider adapter and adding our list to it
+    if( basedUrl != null ) {
+        var urls = ArrayList<String>()
+        (0..<imageUrlList.size).forEach {
+            urls.add("${basedUrl}${imageUrlList[it]}")
+        }
+
+        val sliderAdapter = SliderImageAdapter(urls)
+        setSliderAdapter(sliderAdapter)
+    }
+    else {
+        val sliderAdapter = SliderImageAdapter(imageUrlList)
+        setSliderAdapter(sliderAdapter)
+    }
+
     // Set auto cycle direction for our slider view from left to right.
     autoCycleDirection = SliderView.LAYOUT_DIRECTION_LTR
     // Set auto cycle direction for our slider view from left to right.
     autoCycleDirection = SliderView.LAYOUT_DIRECTION_LTR
 
-    // on below line we are setting adapter for our slider.
-    setSliderAdapter(sliderAdapter)
 
     if( autoCycle )
     {

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.psi.onlineshop.adapters.ProductColorsAdapter
 import com.psi.onlineshop.adapters.ProductSizesAdapter
 import com.psi.onlineshop.databinding.FragmentProductDetailsBinding
+import com.psi.onlineshop.httpRequest.HttpRequestConfig
 import com.psi.onlineshop.utils.formatNumber
 import com.psi.onlineshop.utils.getOfferPercentagePrice
 import com.psi.onlineshop.utils.getPercentage
@@ -40,7 +41,7 @@ class ProductDetailsFragment : Fragment() {
         val product = args.product
 
         binding.apply {
-            productSliderView.setupSliderImages(product.imgFileIds, false)
+            productSliderView.setupSliderImages("${HttpRequestConfig.BASE_URL_MONGODB_SERVICE}/file/", product.imgFileIds, false)
 
             tvProductName.text = product.name
             tvProductDescription.text = product.description

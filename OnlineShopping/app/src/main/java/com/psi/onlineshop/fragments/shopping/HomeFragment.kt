@@ -56,7 +56,8 @@ class HomeFragment : Fragment() {
             (imageUrlList + "https://practice.geeksforgeeks.org/_next/image?url=https%3A%2F%2Fmedia.geeksforgeeks.org%2Fimg-practice%2Fbanner%2Ffull-stack-node-thumbnail.png&w=1920&q=75") as ArrayList<String>
 
 
-        binding.sliderView.setupSliderImages(imageUrlList, true)
+//        binding.sliderView.setupSliderImages("", imageUrlList, true)
+        binding.sliderView.setupSliderImages(null, imageUrlList, true)
 
         // -----------------------------------------------------------------------------------------
 
