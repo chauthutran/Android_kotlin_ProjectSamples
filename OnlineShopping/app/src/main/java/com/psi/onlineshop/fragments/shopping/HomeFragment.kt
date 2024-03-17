@@ -17,6 +17,7 @@ import com.psi.onlineshop.databinding.FragmentHomeBinding
 import com.psi.onlineshop.utils.Resource
 import com.psi.onlineshop.utils.SpacesItemDecoration
 import com.psi.onlineshop.utils.setupSliderImages
+import com.psi.onlineshop.utils.showBottomNavigationView
 import com.psi.onlineshop.viewmodels.shopping.HomeViewModel
 import com.smarteist.autoimageslider.SliderView
 import kotlinx.coroutines.flow.collectLatest
@@ -27,7 +28,6 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
 
     private val todayProposalsAdapter: TodayProposalsAdapter by lazy { TodayProposalsAdapter() }
-    private lateinit var sliderAdapter: SliderImageAdapter
 
     private val viewModel by viewModels<HomeViewModel>()
     private lateinit var sliderView: SliderView
@@ -56,7 +56,6 @@ class HomeFragment : Fragment() {
             (imageUrlList + "https://practice.geeksforgeeks.org/_next/image?url=https%3A%2F%2Fmedia.geeksforgeeks.org%2Fimg-practice%2Fbanner%2Ffull-stack-node-thumbnail.png&w=1920&q=75") as ArrayList<String>
 
 
-//        binding.sliderView.setupSliderImages("", imageUrlList, true)
         binding.sliderView.setupSliderImages(null, imageUrlList, true)
 
         // -----------------------------------------------------------------------------------------
@@ -90,12 +89,17 @@ class HomeFragment : Fragment() {
 
     private fun setTodayProposalsAdapter() {
 
-        binding.rvTodayProposals.addItemDecoration( SpacesItemDecoration(60));
+        binding.rvTodayProposals.addItemDecoration( SpacesItemDecoration(60))
 
         binding.rvTodayProposals.apply {
             adapter = todayProposalsAdapter
             layoutManager = GridLayoutManager(activity, 2, GridLayoutManager.HORIZONTAL, false)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        showBottomNavigationView()
     }
 
     private fun hideLoading() {

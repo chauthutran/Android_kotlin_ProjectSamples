@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/setFavorite"
+        android:icon="@drawable/ic_heart_30"
+        android:title="Add To Card" />
+
+    <item
+        android:id="@+id/add_to_cart"
+        android:icon="@drawable/reactangle_radius_black"
+        android:title="Add To Card" />
+</menu>

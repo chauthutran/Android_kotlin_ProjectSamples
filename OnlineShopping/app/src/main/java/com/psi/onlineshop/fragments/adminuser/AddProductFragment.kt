@@ -3,6 +3,7 @@ package com.psi.onlineshop.fragments.adminuser
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -10,10 +11,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.psi.onlineshop.R
+import com.psi.onlineshop.activities.ShoppingActivity
 import com.psi.onlineshop.data.Product
+import com.psi.onlineshop.data.ProductVariant
 import com.psi.onlineshop.databinding.FragmentAddProductBinding
+import com.psi.onlineshop.utils.Resource
+import com.psi.onlineshop.utils.getCurrentDateStr
 import com.psi.onlineshop.viewmodels.AddProductViewModel
 import com.skydoves.colorpickerview.ColorEnvelope
 import com.skydoves.colorpickerview.ColorPickerDialog
@@ -26,8 +34,9 @@ class AddProductFragment : Fragment() {
     private lateinit var binding: FragmentAddProductBinding
     private val viewModel by viewModels<AddProductViewModel>()
 
-    val selectedColors = mutableListOf<Int>()
-    var selectedImages = mutableListOf<ByteArray>()
+    var selectedImages = mutableMapOf<String,ByteArray>()
+//    var productVariant = ProductVariant()
+    var productVariantList = ArrayList<ProductVariant>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,31 +49,39 @@ class AddProductFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setUpButtonColorPicker()
+        setUpButtonImagePicker()
+        setUpButtonAddDetails()
+        setUpButtonSaveProduct()
 
-        binding.buttonSaveProduct.setOnClickListener {
-            val sizes = getSizesList(binding.edSizes.text.toString().trim())
-            val name = binding.edName.text.toString().trim()
-            val images = ArrayList<String>()
-            val category = binding.edCategory.text.toString().trim()
-            val productDescription = binding.edDescription.text.toString().trim()
-            val price = binding.edPrice.text.toString().trim()
-            val offerPercentage = binding.edOfferPercentage.text.toString().trim()
 
-            val product = Product(
-                    UUID.randomUUID().toString(),
-                    name,
-                    category,
-                    price.toFloat(),
-                    if (offerPercentage.isEmpty()) null else offerPercentage.toFloat(),
-                    if (productDescription.isEmpty()) null else productDescription,
-                    selectedColors,
-                    sizes,
-                    images
-                )
-            viewModel.saveProduct( product, selectedImages  )
+        lifecycleScope.launchWhenStarted {
+            viewModel.addNewProduct.collect { it ->
+                when (it) {
+                    is Resource.Loading -> {
+                        binding.progressbar.visibility = View.VISIBLE
+                    }
+
+                    is Resource.Success -> {
+                        binding.progressbar.visibility = View.GONE
+                        productVariantList = ArrayList<ProductVariant>()
+                    }
+
+                    is Resource.Error -> {
+                        binding.progressbar.visibility = View.GONE
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                    }
+
+                    else -> Unit
+                }
+            }
         }
 
 
+
+    }
+
+    private fun setUpButtonColorPicker() {
         binding.buttonColorPicker.setOnClickListener {
             ColorPickerDialog
                 .Builder(requireContext())
@@ -73,8 +90,11 @@ class AddProductFragment : Fragment() {
 
                     override fun onColorSelected(envelope: ColorEnvelope?, fromUser: Boolean) {
                         envelope?.let {
-                            selectedColors.add(it.color)
-                            updateColors()
+
+//                            productVariant.color = it
+                            val colorDrawable = ColorDrawable(it.color)
+                            binding.edSelectedColor.background = colorDrawable
+                            binding.edSelectedColor.setText( it.color.toString() )
                         }
                     }
 
@@ -82,24 +102,28 @@ class AddProductFragment : Fragment() {
                     colorPicker.dismiss()
                 }.show()
         }
+    }
 
-
+    private fun setUpButtonImagePicker() {
         val selectImagesActivityResult =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
                     val intent = result.data
 
+                    var imgName = "img-${UUID.randomUUID()}.jpg"
+
                     //Multiple images selected
                     if (intent?.clipData != null) {
-                        val count = intent.clipData?.itemCount ?: 0
-                        (0 until count).forEach {
-                            val imagesUri = intent.clipData?.getItemAt(it)?.uri
+                        val count = intent.clipData?.itemCount ?: 1
+                            val imagesUri = intent.clipData?.getItemAt(count - 1)?.uri
                             imagesUri?.let {
                                 val inputStream = requireContext().contentResolver.openInputStream(imagesUri)
                                 inputStream?.buffered()?.use {
-                                    selectedImages.add( it.readBytes() )
+                                    var imgByteArr = it.readBytes()
+
+                                    selectedImages[imgName] = imgByteArr
+                                    binding.tvSelectedImage.text = imgName
                                 }
-                            }
                         }
                     }
                     else {  //One images was selected
@@ -107,58 +131,67 @@ class AddProductFragment : Fragment() {
                         imageUri?.let {
                             val inputStream = requireContext().contentResolver.openInputStream(imageUri)
                             inputStream?.buffered()?.use {
-                                selectedImages.add( it.readBytes() )
+                                var imgByteArr = it.readBytes()
+
+                                selectedImages[imgName] = imgByteArr
+                                binding.tvSelectedImage.text = imgName
                             }
                         }
 
                     }
 
-                    updateImages()
+                    // Update image selected
+                    binding.tvSelectedImage.text = imgName
                 }
             }
 
         binding.buttonImagesPicker.setOnClickListener {
             val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
             intent.type = "image/*"
             selectImagesActivityResult.launch(intent)
         }
-
-
     }
 
+    private fun setUpButtonAddDetails() {
+        binding.buttonAddDetails.setOnClickListener {
 
+            val size = binding.edSize.text.toString().trim()
+            val stockQuantity = binding.edQuantity.text.toString().trim().toInt()
+            val price = binding.edPrice.text.toString().trim().toFloat()
+            val color = binding.edSelectedColor.text.toString().toInt()
+            var imageName = binding.tvSelectedImage.text.toString()
+            var offerPercentage: Float? = null
+println(" -========= color : $color ")
+            binding.edOfferPercentage.text?.let {
+                offerPercentage = binding.edOfferPercentage.text.toString().trim().toFloat()
+            }
 
-    private fun getSizesList(sizes: String): List<String>? {
-        if (sizes.isEmpty())
-            return null
-        val sizesList = sizes.split(",").map { it.trim() }
-        return sizesList
-    }
+            val productVariant = ProductVariant( price, offerPercentage, stockQuantity, imageName, color, size )
 
+            productVariantList.add(productVariant)
 
-    private fun updateColors() {
-        var colors = ""
-        selectedColors.forEach {
-            colors = "$colors ${Integer.toHexString(it)}, "
+            // Reset data
+            binding.tvSelectedImage.text = ""
+            val colorDrawable = ColorDrawable(resources.getColor(R.color.white))
+            binding.edSelectedColor.background = colorDrawable
         }
-        binding.tvSelectedColors.text = colors
     }
 
-    private fun updateImages() {
-        binding.tvSelectedImages.setText(selectedImages.size.toString())
-    }
+    private fun setUpButtonSaveProduct() {
+        binding.buttonSaveProduct.setOnClickListener {
+            val name = binding.edName.text.toString().trim()
+            val category = binding.edCategory.text.toString().trim()
+            val productDescription = binding.edDescription.text.toString().trim()
 
-//    private fun getImagesByteArrays(): List<ByteArray> {
-//        val imagesByteArray = mutableListOf<ByteArray>()
-//        selectedImages.forEach {
-//            val stream = ByteArrayOutputStream()
-//            val imageBmp = MediaStore.Images.Media.getBitmap( requireContext().contentResolver, it)
-//            if (imageBmp.compress(Bitmap.CompressFormat.JPEG, 85, stream)) {
-//                val imageAsByteArray = stream.toByteArray()
-//                imagesByteArray.add(imageAsByteArray)
-//            }
-//        }
-//        return imagesByteArray
-//    }
+            val product = Product(
+                UUID.randomUUID().toString(),
+                name,
+                if (productDescription.isEmpty()) null else productDescription,
+                category,
+                productVariantList
+            )
+            viewModel.saveProduct( product, selectedImages  )
+        }
+    }
 }

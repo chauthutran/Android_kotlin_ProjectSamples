@@ -20,29 +20,29 @@ class TodayProposalsAdapter : RecyclerView.Adapter<TodayProposalsAdapter.TodayPr
     inner class TodayProposalsViewHolder(private val binding: RvProductItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(product: Product) {
             binding.apply {
-                if(product.imgFileIds.isNotEmpty())
-                {
-                    var url = "${HttpRequestConfig.BASE_URL_MONGODB_SERVICE}/file/${product.imgFileIds[0]}"
+                if(product.variants.isNotEmpty()) {
+                    var firstVariant = product.variants[0]
+                    var url = "${HttpRequestConfig.BASE_URL_MONGODB_SERVICE}/file/${firstVariant.imageName}"
                     Glide.with(itemView).load(url).into(imageProduct)
+
+                    tvProductName.text = product.name
+
+
+                    if (firstVariant.offerPercentage == null) {
+                        tvProductOriginalPrice.visibility = View.GONE
+                        tvOfferPercentage.visibility = View.GONE
+                        tvProductRealPrice.text = "$ ${firstVariant.price.formatNumber()}"
+                    } else {
+                        tvProductOriginalPrice.text = "$ ${firstVariant.price.formatNumber()}"
+                        tvOfferPercentage.text = "${firstVariant.offerPercentage!!.getPercentage().formatNumber()}%"
+                        tvProductOriginalPrice.paintFlags =
+                            tvProductOriginalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+
+                        val newPrice = firstVariant.price.getOfferPercentagePrice(firstVariant.offerPercentage!!)
+                        tvProductRealPrice.text = "$ ${newPrice.formatNumber()}"
+                    }
+
                 }
-
-                tvProductName.text = product.name
-
-
-                if( product.offerPercentage == null ) {
-                    tvProductOriginalPrice.visibility = View.GONE
-                    tvOfferPercentage.visibility = View.GONE
-                    tvProductRealPrice.text = "$ ${product.price.formatNumber()}"
-                }
-                else {
-                    tvProductOriginalPrice.text = "$ ${product.price.formatNumber()}"
-                    tvOfferPercentage.text = "${product.offerPercentage.getPercentage().formatNumber()}%"
-                    tvProductOriginalPrice.paintFlags = tvProductOriginalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-
-                    val newPrice = product.price.getOfferPercentagePrice( product.offerPercentage )
-                    tvProductRealPrice.text = "$ ${newPrice.formatNumber()}"
-                }
-
 
             }
         }

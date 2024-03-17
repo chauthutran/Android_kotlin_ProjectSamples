@@ -17,16 +17,15 @@ class ProductSizesAdapter( ) : RecyclerView.Adapter<ProductSizesAdapter.SizesVie
     inner class SizesViewHolder(private val binding: ProductSizeItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(size: String, position: Int) {
-
+println("------------ bind size ")
             binding.tvSize.text = size
-            val background: GradientDrawable = binding.tvSize.getBackground() as GradientDrawable
+            val background: GradientDrawable = binding.tvSize.background as GradientDrawable
 
             var resources = itemView.resources
             // The Size is selected
             if (position == selectedPosition) {
                 val colorBlue = resources.getColor(R.color.l_blue)
                 background.setStroke(6, colorBlue)
-//              background.colors = intArrayOf(colorWhite, colorBlue) // Change background color
             }
             // The Size is NOT selected
             else {

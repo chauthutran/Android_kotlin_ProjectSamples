@@ -15,7 +15,6 @@ const path = require("path");
 
 
 var uploadFileToStorage = require("./middleware/storageUploadFile");
-var uploadAdvFileToStorage = require("./middleware/uploadAdvFileToStorage");
 var uploadFilesToDbMiddleware =  require("./mongo/dbUpload");
 const PORT = process.env.PORT || 3110;
 

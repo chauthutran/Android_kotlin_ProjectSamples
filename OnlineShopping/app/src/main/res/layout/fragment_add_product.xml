@@ -21,148 +21,206 @@
             app:layout_constraintStart_toStartOf="parent"
             android:visibility="invisible"/>
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/productsInfo"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tvAppName"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="10dp"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
+            style="@style/h3"
+            android:layout_marginTop="10dp"
+            android:drawableStart="@drawable/ic_shopping_30"
+            android:drawablePadding="6dp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="Add Product"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Product general information:"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+        <EditText
+            android:id="@+id/edName"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/edittextHeight"
+            android:hint="Name"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRegisterRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineRegisterLeft"
+            app:layout_constraintTop_toBottomOf="@id/tvAppName"/>
 
-            <EditText
-                android:id="@+id/edName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:hint="Name" />
+        <EditText
+            android:id="@+id/edDescription"
+            android:layout_width="0dp"
+            android:hint="Product description (Optional)"
+            android:layout_height="@dimen/edittextHeight"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRegisterRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineRegisterLeft"
+            app:layout_constraintTop_toBottomOf="@id/edName" />
 
 
-            <EditText
-                android:id="@+id/edCategory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Category" />
-
-            <EditText
-                android:id="@+id/edDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Product description (Optional)" />
-
-            <EditText
-                android:id="@+id/edPrice"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Price"
-                android:inputType="numberDecimal" />
-
-            <EditText
-                android:id="@+id/edOfferPercentage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Offer Percentage (Optional)"
-                android:inputType="numberDecimal" />
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
+        <EditText
+            android:id="@+id/edCategory"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/edittextHeight"
+            android:hint="Category"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRegisterRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineRegisterLeft"
+            app:layout_constraintTop_toBottomOf="@id/edDescription"/>
 
 
         <LinearLayout
+            android:id="@+id/linearSelectedImageDetails"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="@id/productsInfo"
-            app:layout_constraintStart_toStartOf="@id/productsInfo"
-            app:layout_constraintTop_toBottomOf="@id/productsInfo">
+            android:layout_height="@dimen/edittextHeight"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRegisterRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineRegisterLeft"
+            app:layout_constraintTop_toBottomOf="@id/edCategory" >
+            >
 
             <TextView
+                android:id="@+id/tvSelectedDetails"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Product details:"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:hint="Image - Color - size - Quantity"
+                android:textSize="14sp" />
 
-            <EditText
-                android:id="@+id/edSizes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Sizes (Optional) | use , between each new size"
-                android:inputType="text" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearProductVariant"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRegisterRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineRegisterLeft"
+            app:layout_constraintTop_toBottomOf="@id/linearSelectedImageDetails"
+            android:background="@drawable/reactangle_radius_black">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/linearColorPicker"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal" >
+
+                <EditText
+                    android:id="@+id/edSelectedColor"
+                    android:layout_width="270dp"
+                    android:layout_height="@dimen/edittextHeight"
+                    android:hint="Color"
+                    android:textSize="14sp" />
 
                 <Button
                     android:id="@+id/buttonColorPicker"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Colors"
+                    android:layout_marginStart="10dp"
+                    android:text="+"
+                    android:backgroundTint="@color/purple_200"
                     android:textSize="14sp" />
 
-                <TextView
-                    android:id="@+id/tvSelectedColors"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="20dp"
-                    android:gravity="center"
-                    android:textSize="14sp" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/linearImagePicker"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvSelectedImage"
+                    android:layout_width="270dp"
+                    android:layout_height="@dimen/edittextHeight"
+                    android:hint="Image"
+                    android:textSize="14sp" />
 
                 <Button
                     android:id="@+id/buttonImagesPicker"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Images"
+                    android:layout_marginStart="10dp"
+                    android:text="+"
+                    android:backgroundTint="@color/purple_200"
+                    android:textColor="@color/white"
                     android:textSize="14sp" />
 
-                <TextView
-                    android:id="@+id/tvSelectedImages"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="20dp"
-                    android:gravity="center"
-                    android:textSize="14sp" />
-            </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/buttonSaveProduct"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Save"
-                    android:textSize="14sp" />
 
             </LinearLayout>
 
+            <EditText
+                android:id="@+id/edSize"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/edittextHeight"
+                android:hint="Size"/>
+
+            <EditText
+                android:id="@+id/edQuantity"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/edittextHeight"
+                android:hint="Quantity"
+                android:inputType="numberSigned"/>
+
+            <EditText
+                android:id="@+id/edPrice"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/edittextHeight"
+                android:hint="Price"
+                android:inputType="numberDecimal"
+                app:layout_constraintEnd_toEndOf="@id/guidelineRegisterRight"
+                app:layout_constraintStart_toStartOf="@id/guidelineRegisterLeft"
+                app:layout_constraintTop_toBottomOf="@id/edDescription" />
+
+            <EditText
+                android:id="@+id/edOfferPercentage"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/edittextHeight"
+                android:hint="Offer Percentage (Optional)"
+                android:inputType="numberDecimal"
+                app:layout_constraintEnd_toEndOf="@id/guidelineRegisterRight"
+                app:layout_constraintStart_toStartOf="@id/guidelineRegisterLeft"
+                app:layout_constraintTop_toBottomOf="@id/edPrice"/>
+
+
+            <Button
+                android:id="@+id/buttonAddDetails"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/edittextHeight"
+                android:layout_marginTop="10dp"
+                android:text="Add details"
+                android:textSize="14sp"
+                style="@style/blueButtonStyle"
+                app:spinning_bar_color="@color/white"
+                android:backgroundTint="#F5B041" />
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/buttonSaveProduct"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/edittextHeight"
+            android:layout_marginTop="10dp"
+            android:text="Save"
+            android:textSize="14sp"
+            style="@style/blueButtonStyle"
+            app:spinning_bar_color="@color/white"
+            android:backgroundTint="#3498DB"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRegisterRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineRegisterLeft"
+            app:layout_constraintTop_toBottomOf="@id/linearProductVariant" />
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineRegisterLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.09" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineRegisterRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.91" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

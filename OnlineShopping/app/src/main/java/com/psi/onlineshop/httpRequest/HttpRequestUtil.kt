@@ -68,7 +68,7 @@ class HttpRequestUtil {
 
         }
 
-        inline fun uploadImage(context: Context, imageData: ByteArray, crossinline completion: (JSONObject) -> Unit ) {
+        inline fun uploadImage(context: Context, imageName: String, imageData: ByteArray, crossinline completion: (JSONObject) -> Unit ) {
             val queue = Volley.newRequestQueue(context)
             val url = "${HttpRequestConfig.BASE_URL_MONGODB_SERVICE}/uploadFileToStorage"
 
@@ -89,7 +89,7 @@ class HttpRequestUtil {
                 override fun getByteData(): MutableMap<String, FileDataPart> {
                     var params = HashMap<String, FileDataPart>()
                     println("imagName: img-${UUID.randomUUID()}.jpg")
-                    params.put("uploadfile", FileDataPart("img-${UUID.randomUUID()}.jpg", imageData, "jpg"))
+                    params.put("uploadfile", FileDataPart(imageName, imageData, "jpg"))
                     return params
                 }
             }

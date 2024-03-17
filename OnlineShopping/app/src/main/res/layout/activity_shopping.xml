@@ -23,7 +23,6 @@
         android:layout_width="match_parent"
         android:layout_height="70dp"
         app:elevation="0dp"
-
         app:itemRippleColor="@color/white"
         app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"

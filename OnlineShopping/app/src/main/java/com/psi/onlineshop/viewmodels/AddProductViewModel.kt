@@ -35,7 +35,7 @@ class AddProductViewModel (
     var progressingImgIdx = 0
     var totalImg = 0
 
-    fun saveProduct(product: Product, imagesByteArrays: List<ByteArray>) {
+    fun saveProduct(product: Product, imagesByteArrays: MutableMap<String,ByteArray>) {
 
 //    fun saveProduct(product: Product, imageUris: List<Uri>) {
         viewModelScope.launch { _addNewProduct.emit( Resource.Loading() ) }
@@ -50,7 +50,7 @@ class AddProductViewModel (
             // saveImages
             uploadImages(imagesByteArrays) { fileIds ->
                 // Add Product
-                addProduct( product, fileIds) { response ->
+                addProduct( product ) { response ->
                     var status = response.getString("status")
                     var data = response.getJSONArray("data")
                     if( status == HttpRequestConfig.RESPONSE_STATUS_SUCCESS && data.length() > 0 ) {
@@ -69,12 +69,13 @@ class AddProductViewModel (
     }
 
 
-    private inline fun uploadImages(imagesByteArrays: List<ByteArray>, crossinline completion: (ArrayList<String>) -> Unit )  {
+    private inline fun uploadImages(imagesByteArrays: MutableMap<String,ByteArray>, crossinline completion: (ArrayList<String>) -> Unit )  {
 
-        (0 until imagesByteArrays.size).forEach {
-            val imageData = imagesByteArrays.get(it)
+        imagesByteArrays.forEach {
+            val imgName = it.key
+            val imgData = it.value
 
-            HttpRequestUtil.uploadImage(context, imageData ) { response ->
+            HttpRequestUtil.uploadImage(context, imgName, imgData ) { response ->
                 var status = response.getString("status")
                 if( status == HttpRequestConfig.RESPONSE_STATUS_SUCCESS ) {
                     var fileName = response.getJSONObject("data").getString("filename")
@@ -90,9 +91,8 @@ class AddProductViewModel (
 
     }
 
-    private inline fun addProduct(product: Product, fileIds: ArrayList<String>, crossinline completion: (JSONObject) -> Unit ) {
+    private inline fun addProduct(product: Product, crossinline completion: (JSONObject) -> Unit ) {
 
-        product.imgFileIds = fileIds
         var payload = HttpRequestUtil.convertObjToJson(product)
 
         HttpRequestUtil.sendPOSTRequest(context, HttpRequestConfig.REQUEST_ACTION_ADD_ONE, HttpRequestConfig.COLLECTION_PRODUCTS, payload) { response ->
