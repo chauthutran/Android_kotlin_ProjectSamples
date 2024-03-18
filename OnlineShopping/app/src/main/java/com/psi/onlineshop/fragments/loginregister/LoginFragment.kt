@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.psi.onlineshop.R
+import com.psi.onlineshop.ShoppingApplication
 import com.psi.onlineshop.activities.ShoppingActivity
 import com.psi.onlineshop.databinding.FragmentLoginBinding
 import com.psi.onlineshop.dialog.setupBottomSheetDialog
@@ -62,6 +63,7 @@ class LoginFragment : Fragment() {
                     }
 
                     is Resource.Success -> {
+                        ShoppingApplication.saveUserData(requireContext(), it.data!!)
                         Intent(requireActivity(), ShoppingActivity::class.java).also { intent ->
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                             startActivity(intent) // Click Back button of Android phone to come back the Login page
