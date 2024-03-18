@@ -34,6 +34,7 @@ class HomeViewModel (
 
         viewModelScope.launch {
             HttpRequestUtil.sendPOSTRequest(context, HttpRequestConfig.REQUEST_ACTION_FIND, HttpRequestConfig.COLLECTION_PRODUCTS, JSONObject()) { response ->
+                println("============================== response : ${response}")
                 if( response is JSONObject)
                 {
                     var status = response.getString("status")

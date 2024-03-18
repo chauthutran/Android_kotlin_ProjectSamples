@@ -143,7 +143,7 @@ class ProductDetailsFragment : Fragment() {
                     // Navigate to home fragment or perform desired action
                     true
                 }
-                R.id.add_to_cart -> {
+                R.id.addToCart -> {
                     // Navigate to dashboard fragment or perform desired action
                     true
                 }

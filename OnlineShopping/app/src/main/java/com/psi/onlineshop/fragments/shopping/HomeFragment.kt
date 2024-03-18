@@ -11,8 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.psi.onlineshop.R
-import com.psi.onlineshop.adapters.SliderImageAdapter
-import com.psi.onlineshop.adapters.TodayProposalsAdapter
+import com.psi.onlineshop.adapters.ProductListAdapter
 import com.psi.onlineshop.databinding.FragmentHomeBinding
 import com.psi.onlineshop.utils.Resource
 import com.psi.onlineshop.utils.SpacesItemDecoration
@@ -27,7 +26,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
 
-    private val todayProposalsAdapter: TodayProposalsAdapter by lazy { TodayProposalsAdapter() }
+    private val todayProposalsAdapter: ProductListAdapter by lazy { ProductListAdapter() }
 
     private val viewModel by viewModels<HomeViewModel>()
     private lateinit var sliderView: SliderView

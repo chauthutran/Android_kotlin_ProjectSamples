@@ -11,12 +11,11 @@ import com.bumptech.glide.Glide
 import com.psi.onlineshop.data.Product
 import com.psi.onlineshop.databinding.RvProductItemBinding
 import com.psi.onlineshop.httpRequest.HttpRequestConfig
-import com.psi.onlineshop.httpRequest.HttpRequestUtil
 import com.psi.onlineshop.utils.formatNumber
 import com.psi.onlineshop.utils.getOfferPercentagePrice
 import com.psi.onlineshop.utils.getPercentage
 
-class TodayProposalsAdapter : RecyclerView.Adapter<TodayProposalsAdapter.TodayProposalsViewHolder>() {
+class ProductListAdapter : RecyclerView.Adapter<ProductListAdapter.TodayProposalsViewHolder>() {
     inner class TodayProposalsViewHolder(private val binding: RvProductItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(product: Product) {
             binding.apply {

@@ -3,6 +3,7 @@ package com.psi.onlineshop.data
 import com.psi.onlineshop.utils.getCurrentDateStr
 import kotlinx.serialization.Serializable
 import org.json.JSONObject
+import java.util.Date
 
 @Serializable
 data class Product (
@@ -11,7 +12,8 @@ data class Product (
     val description: String? = null,
     val category: String = "",
     var variants: ArrayList<ProductVariant> = ArrayList(),
-    val date: String = getCurrentDateStr()
+    val createdDate: String = getCurrentDateStr(),
+    val lastUpdatedDate: String = getCurrentDateStr()
 ): java.io.Serializable
 
 @Serializable

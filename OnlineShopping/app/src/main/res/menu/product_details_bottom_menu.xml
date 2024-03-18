@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/setFavorite"
-        android:icon="@drawable/ic_heart_30"
-        android:title="Add To Card" />
+        android:icon="@drawable/ic_heart_35"
+        app:showAsAction="always"
+        android:title="Like" />
 
     <item
-        android:id="@+id/add_to_cart"
-        android:icon="@drawable/reactangle_radius_black"
-        android:title="Add To Card" />
+        android:id="@+id/addToCart"
+        android:icon="@drawable/ic_cart_plus_35"
+        app:showAsAction="always"
+        android:title="Add to cart" />
+
+<!--    <item-->
+<!--        android:id="@+id/add_to_cart"-->
+<!--        app:showAsAction="always"-->
+<!--        android:title=""-->
+<!--        app:actionLayout="@layout/button_menu_item" />-->
+
+<!--    app:actionLayout="@layout/button_menu_item"-->
 </menu>
