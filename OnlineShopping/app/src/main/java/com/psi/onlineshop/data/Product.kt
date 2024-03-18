@@ -2,19 +2,18 @@ package com.psi.onlineshop.data
 
 import com.psi.onlineshop.utils.getCurrentDateStr
 import kotlinx.serialization.Serializable
-import org.json.JSONObject
-import java.util.Date
+import java.util.UUID
 
 @Serializable
 data class Product (
-    val _id: String? = null,
+    val id: String = UUID.randomUUID().toString(),
     val name: String = "",
     val description: String? = null,
     val category: String = "",
     var variants: ArrayList<ProductVariant> = ArrayList(),
     val createdDate: String = getCurrentDateStr(),
     val lastUpdatedDate: String = getCurrentDateStr()
-): java.io.Serializable
+): java.io.Serializable // java.io.Serializable --> Use to transfer product data between fragments
 
 @Serializable
 data class ProductVariant (

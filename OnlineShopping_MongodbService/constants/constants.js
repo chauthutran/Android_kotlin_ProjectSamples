@@ -6,6 +6,7 @@ module.exports = Object.freeze({
     REQUEST_ACTION_ADD_MANY: "addMany",
     REQUEST_ACTION_UPDATE: "update",
     REQUEST_ACTION_FIND: "find",
+    REQUEST_ACTION_DELETE: "delete",
 
     RESPONSE_STATUS_SUCCESS : "success",
     RESPONSE_STATUS_ERROR :"error",

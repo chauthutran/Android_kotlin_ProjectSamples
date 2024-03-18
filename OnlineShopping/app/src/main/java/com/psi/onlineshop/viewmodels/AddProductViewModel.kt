@@ -58,7 +58,7 @@ class AddProductViewModel (
                         viewModelScope.launch { _addNewProduct.emit(Resource.Success(product)) }
                     }
                     else {
-                        val message = response.getString("status")
+                        val message = response.getString("data")
                         viewModelScope.launch { _addNewProduct.emit(Resource.Error(message)) }
                     }
                 }

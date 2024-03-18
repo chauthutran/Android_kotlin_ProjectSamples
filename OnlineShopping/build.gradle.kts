@@ -13,6 +13,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
+        classpath("com.android.tools.build:gradle:4.1.3")
+
         val nav_version = "2.7.6"
         classpath("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
     }

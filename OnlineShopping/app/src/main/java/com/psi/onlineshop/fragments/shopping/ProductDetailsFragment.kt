@@ -13,10 +13,13 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.view.get
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,9 +29,11 @@ import com.psi.onlineshop.R
 import com.psi.onlineshop.adapters.ProductColorsAdapter
 import com.psi.onlineshop.adapters.ProductSizesAdapter
 import com.psi.onlineshop.data.Product
+import com.psi.onlineshop.data.ProductLike
 import com.psi.onlineshop.data.ProductVariant
 import com.psi.onlineshop.databinding.FragmentProductDetailsBinding
 import com.psi.onlineshop.httpRequest.HttpRequestConfig
+import com.psi.onlineshop.utils.Resource
 import com.psi.onlineshop.utils.SpacesItemDecoration
 import com.psi.onlineshop.utils.formatNumber
 import com.psi.onlineshop.utils.getItem
@@ -36,6 +41,8 @@ import com.psi.onlineshop.utils.getOfferPercentagePrice
 import com.psi.onlineshop.utils.getPercentage
 import com.psi.onlineshop.utils.hideBottomNavigationView
 import com.psi.onlineshop.utils.setupSliderImages
+import com.psi.onlineshop.viewmodels.shopping.ProductDetailsViewModel
+import kotlinx.coroutines.launch
 import java.util.Collections
 
 class ProductDetailsFragment : Fragment() {
@@ -43,12 +50,18 @@ class ProductDetailsFragment : Fragment() {
     private val args by navArgs<ProductDetailsFragmentArgs>()
 
     private lateinit var binding: FragmentProductDetailsBinding
+    private lateinit var product: Product
 
     private val sizesAdapter by lazy { ProductSizesAdapter() }
     private val colorsAdapter by lazy { ProductColorsAdapter() }
 
     private var selectedSize: String? = null
     private var selectedColor: Int? = null
+    private var productLike: ProductLike? = null
+
+    private val productDetailsViewModel by viewModels<ProductDetailsViewModel>()
+
+    private lateinit var likeMenuItem: MenuItem
 
 
     override fun onCreateView(
@@ -63,11 +76,11 @@ class ProductDetailsFragment : Fragment() {
         val toolbar = binding.toolbar
         (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
         setHasOptionsMenu(true)
-//
-//        toolbar.setNavigationOnClickListener {
-//            // Handle navigation icon click (e.g., navigate back)
-//            requireActivity().onBackPressed()
-//        }
+
+        toolbar.setNavigationOnClickListener {
+            // Handle navigation icon click (e.g., navigate back)
+            requireActivity().onBackPressed()
+        }
 
         return binding.root
     }
@@ -76,7 +89,7 @@ class ProductDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setUpBottomNavigation()
 
-        val product = args.product
+        product = args.product
 
         binding.apply {
 
@@ -110,11 +123,67 @@ class ProductDetailsFragment : Fragment() {
             displaySelectedVariant( product, it )
         }
 
+        // Get like if any
+        productDetailsViewModel.getLike(product) { state ->
+            productLike = state
+
+            productLike?.let {
+                likeMenuItem.setIcon(R.drawable.ic_heart_red_35);
+            }
+        }
+
+        lifecycleScope.launch{
+            productDetailsViewModel.liked.collect { it ->
+                when (it) {
+                    is Resource.Loading -> {
+                        binding.progressbar.visibility = View.VISIBLE
+                    }
+
+                    is Resource.Success -> {
+                        binding.progressbar.visibility = View.GONE
+                        productLike = it.data
+                        likeMenuItem.setIcon(R.drawable.ic_heart_red_35)
+                    }
+
+                    is Resource.Error -> {
+                        binding.progressbar.visibility = View.GONE
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                    }
+
+                    else -> Unit
+                }
+            }
+        }
+
+        lifecycleScope.launch{
+            productDetailsViewModel.unliked.collect { it ->
+                when (it) {
+                    is Resource.Loading -> {
+                        binding.progressbar.visibility = View.VISIBLE
+                    }
+
+                    is Resource.Success -> {
+                        binding.progressbar.visibility = View.GONE
+                        likeMenuItem.setIcon(R.drawable.ic_heart_35)
+                    }
+
+                    is Resource.Error -> {
+                        binding.progressbar.visibility = View.GONE
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                    }
+
+                    else -> Unit
+                }
+            }
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.product_details_top_menu, menu)
+
         super.onCreateOptionsMenu(menu, inflater)
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -137,10 +206,15 @@ class ProductDetailsFragment : Fragment() {
 
     private fun setUpBottomNavigation() {
         val bottomNavigationView = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation_product_details)
+
+
+        likeMenuItem = bottomNavigationView.menu.findItem(R.id.setFavorite)
+
+
         bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.setFavorite -> {
-                    // Navigate to home fragment or perform desired action
+                    setLikeToggle()
                     true
                 }
                 R.id.addToCart -> {
@@ -149,6 +223,15 @@ class ProductDetailsFragment : Fragment() {
                 }
                 else -> false
             }
+        }
+    }
+
+    private fun setLikeToggle() {
+        if( productLike == null ) {
+            productDetailsViewModel.setLike(product)
+        }
+        else {
+            productDetailsViewModel.setUnlike(productLike!!.id)
         }
     }
 

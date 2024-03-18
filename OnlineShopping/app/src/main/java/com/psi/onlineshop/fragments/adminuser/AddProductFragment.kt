@@ -90,8 +90,6 @@ class AddProductFragment : Fragment() {
 
                     override fun onColorSelected(envelope: ColorEnvelope?, fromUser: Boolean) {
                         envelope?.let {
-
-//                            productVariant.color = it
                             val colorDrawable = ColorDrawable(it.color)
                             binding.edSelectedColor.background = colorDrawable
                             binding.edSelectedColor.setText( it.color.toString() )
@@ -162,8 +160,9 @@ class AddProductFragment : Fragment() {
             val color = binding.edSelectedColor.text.toString().toInt()
             var imageName = binding.tvSelectedImage.text.toString()
             var offerPercentage: Float? = null
-println(" -========= color : $color ")
-            binding.edOfferPercentage.text?.let {
+
+
+            if(binding.edOfferPercentage.text.toString().isNotEmpty()) {
                 offerPercentage = binding.edOfferPercentage.text.toString().trim().toFloat()
             }
 
@@ -185,11 +184,10 @@ println(" -========= color : $color ")
             val productDescription = binding.edDescription.text.toString().trim()
 
             val product = Product(
-                UUID.randomUUID().toString(),
-                name,
-                if (productDescription.isEmpty()) null else productDescription,
-                category,
-                productVariantList
+                name = name,
+                description = if (productDescription.isEmpty()) null else productDescription,
+                category = category,
+                variants =productVariantList
             )
             viewModel.saveProduct( product, selectedImages  )
         }

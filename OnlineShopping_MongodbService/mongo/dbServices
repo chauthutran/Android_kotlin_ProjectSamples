@@ -79,7 +79,7 @@ const DBServices = class {
 			// Ensures that the client will close when you finish/error
 			this.closeConnection();
 			if( errMsg != "" ) {
-				return { status: Constants.RESPONSE_STATUS_ERROR, data: errMsg };
+				return { status: Constants.RESPONSE_STATUS_ERROR, message: errMsg };
 			}
 			
 			return { status: Constants.RESPONSE_STATUS_SUCCESS, data: docs };
@@ -184,10 +184,11 @@ const DBServices = class {
 	/**
 	 * @payloadJson {
 	 * 				"collectionName": "users",
-	 * 				"payload": {"_id": "xxx"}
+	 * 				"payload": {"id": "xxx"}
 	 * 			}
 	 */
 	async deleteDocuments(payloadJson) {
+		
 		var result;
 		var errMsg = "";
 		try {
@@ -235,7 +236,6 @@ const DBServices = class {
 		this.openDbConnection();
 
 		const database = this.client.db(DbConfig.DB_NAME);
-		console.log(" ---------- collection : " + name);
 		return database.collection(name);
 	}
 

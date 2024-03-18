@@ -49,7 +49,7 @@ class ProductListAdapter : RecyclerView.Adapter<ProductListAdapter.TodayProposal
 
     val diffCallBack = object: DiffUtil.ItemCallback<Product>() {
         override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
-            return oldItem._id == newItem._id
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {

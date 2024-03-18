@@ -85,7 +85,15 @@ const server = express()
 		else if( action == Constants.REQUEST_ACTION_FIND ) {
 			result = await dbServices.findDocuments(body);
 		}
+		else if( action == Constants.REQUEST_ACTION_DELETE ) {
+			result = await dbServices.deleteDocuments(body);
+		}
 		
+		console.log("============================ ");
+		console.log(body);
+		console.log(result);
+
+
 		res.send(result);
 	}
 	catch( ex )

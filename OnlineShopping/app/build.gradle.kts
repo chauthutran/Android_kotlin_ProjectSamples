@@ -128,4 +128,8 @@ dependencies {
     implementation("com.github.smarteist:autoimageslider:1.3.9")
     // dependency for loading image from url
     implementation("com.github.bumptech.glide:glide:4.11.0")
+
+//    implementation("org.mongodb:mongodb-driver-sync:5.0.0")
+//    implementation("io.realm.kotlin:library-base:1.11.0")
+//   implementation("io.realm.kotlin:library-sync:1.11.0")
 }

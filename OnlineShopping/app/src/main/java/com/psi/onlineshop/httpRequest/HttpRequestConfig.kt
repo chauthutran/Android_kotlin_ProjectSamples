@@ -9,12 +9,14 @@ class HttpRequestConfig {
         const val REQUEST_ACTION_ADD_MANY = "addMany"
         const val REQUEST_ACTION_UPDATE = "update"
         const val REQUEST_ACTION_FIND ="find"
+        const val REQUEST_ACTION_DELETE ="delete"
 
         const val RESPONSE_STATUS_SUCCESS ="success"
         const val RESPONSE_STATUS_ERROR = "error"
 
         const val COLLECTION_USERS = "users"
         const val COLLECTION_PRODUCTS = "products"
+        const val COLLECTION_PRODUCT_LIKES = "productlikes"
         const val COLLECTION_IMAGES = "images"
 
 

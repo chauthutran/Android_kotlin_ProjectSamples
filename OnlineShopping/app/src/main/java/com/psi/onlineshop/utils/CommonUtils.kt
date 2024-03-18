@@ -6,7 +6,7 @@ import java.util.Date
 
 fun getCurrentDateStr() : String {
     val currentDate = Date()
-    return "${currentDate.year}-${currentDate.month }-${currentDate.date}T${currentDate.hours}:${currentDate.minutes}:${currentDate.seconds}"
+    return "${currentDate.toLocaleString()}"
 }
 
 fun Float.getOfferPercentagePrice( offerPercentage: Float ): Float {

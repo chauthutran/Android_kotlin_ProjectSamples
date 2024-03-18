@@ -34,7 +34,6 @@ class HomeViewModel (
 
         viewModelScope.launch {
             HttpRequestUtil.sendPOSTRequest(context, HttpRequestConfig.REQUEST_ACTION_FIND, HttpRequestConfig.COLLECTION_PRODUCTS, JSONObject()) { response ->
-                println("============================== response : ${response}")
                 if( response is JSONObject)
                 {
                     var status = response.getString("status")
@@ -45,7 +44,7 @@ class HomeViewModel (
                         viewModelScope.launch { _todayProposals.emit(Resource.Success(products)) }
                     }
                     else {
-                        val message = response.getString("status")
+                        val message = response.getString("data")
                         viewModelScope.launch { _todayProposals.emit(Resource.Error(message)) }
                     }
                 }
@@ -55,8 +54,4 @@ class HomeViewModel (
 
     }
 
-
-    private fun getLike() {
-
-    }
 }

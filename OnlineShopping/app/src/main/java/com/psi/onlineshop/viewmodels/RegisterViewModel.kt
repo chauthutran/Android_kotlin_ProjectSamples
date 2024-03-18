@@ -52,7 +52,7 @@ class RegisterViewModel(
                             viewModelScope.launch { _register.emit(Resource.Success(user)) }
                         }
                         else {
-                            val message = response.getString("status")
+                            val message = response.getString("data")
                             viewModelScope.launch { _register.emit(Resource.Error(message)) }
                         }
                     }

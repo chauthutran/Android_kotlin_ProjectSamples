@@ -38,7 +38,7 @@ class HttpRequestUtil {
 
                 // Building a request
                 val request = JsonObjectRequest(
-                    Request.Method.POST,  // Using a variable for the domain is great for testing
+                    Request.Method.POST,
                     "${HttpRequestConfig.BASE_URL_MONGODB_SERVICE}?action=${actionName}",
                     jsonParams,
                     {
@@ -67,6 +67,7 @@ class HttpRequestUtil {
             }
 
         }
+
 
         inline fun uploadImage(context: Context, imageName: String, imageData: ByteArray, crossinline completion: (JSONObject) -> Unit ) {
             val queue = Volley.newRequestQueue(context)
