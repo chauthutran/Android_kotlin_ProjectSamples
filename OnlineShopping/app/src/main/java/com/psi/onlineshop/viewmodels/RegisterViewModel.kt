@@ -57,23 +57,6 @@ class RegisterViewModel(
                         }
                     }
                 }
-
-//                val request = HttpRequest(
-//                    method = Method.POST,
-//                    parameters = mapOf("action" to HttpRequestConfig.REQUEST_ACTION_ADD_ONE),
-//                    postedData = payload.toString()
-//                )
-//                request.json<User>{ result, response ->
-//                    if( response.error != null )
-//                    {
-//                        val message = response.error?.getString("message") ?: ""
-//                        viewModelScope.launch { _register.emit(Resource.Error(message)) }
-//                    }
-//                    else if(result != null && result is List<*>)
-//                    {
-//                        viewModelScope.launch { _register.emit(Resource.Success(result.get(0) as User)) }
-//                    }
-//                }
             }
 
         }

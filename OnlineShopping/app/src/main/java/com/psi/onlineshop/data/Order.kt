@@ -2,10 +2,11 @@ package com.psi.onlineshop.data
 
 import com.psi.onlineshop.utils.getCurrentDateStr
 import kotlinx.serialization.Serializable
+import java.util.UUID
 
 @Serializable
 data class Order (
-    val _id: String? = null,
+    val id: String = UUID.randomUUID().toString(),
     val userId: String = "",
     var status: String = "",
     val paymentMethod: String = "",

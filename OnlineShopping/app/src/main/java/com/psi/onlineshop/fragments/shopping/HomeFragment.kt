@@ -29,7 +29,6 @@ class HomeFragment : Fragment() {
     private val todayProposalsAdapter: ProductListAdapter by lazy { ProductListAdapter() }
 
     private val viewModel by viewModels<HomeViewModel>()
-    private lateinit var sliderView: SliderView
 
 
     override fun onCreateView(
