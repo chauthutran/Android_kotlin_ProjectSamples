@@ -30,15 +30,21 @@ class MainActivity : ComponentActivity() {
         setContent {
             LearningTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    GreetingText(
-                        getString(R.string.happy_birthday_same),
-                        getString(R.string.signature_text)
-                    )
-                }
+//                Surface(
+//                    modifier = Modifier.fillMaxSize(),
+//                    color = MaterialTheme.colorScheme.background
+//                ) {
+//                    GreetingText(
+//                        getString(R.string.happy_birthday_same),
+//                        getString(R.string.signature_text)
+//                    )
+//                }
+
+                GreetingImage(
+                    stringResource(R.string.happy_birthday_same),
+                    stringResource(R.string.signature_text),
+                    modifier = Modifier.padding(8.dp)
+                )
             }
         }
     }
@@ -66,7 +72,6 @@ fun GreetingImage(message: String, from: String, modifier: Modifier = Modifier) 
 
 @Composable
 fun GreetingText(message: String, from: String, modifier: Modifier = Modifier) {
-
 
     Column(
         verticalArrangement = Arrangement.Center,
