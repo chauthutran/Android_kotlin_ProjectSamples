@@ -1,6 +1,5 @@
 package com.psi.learning
 
-import com.psi.learning.stateincompose.caculateTip
 import org.junit.Test
 
 import org.junit.Assert.*

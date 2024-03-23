@@ -13,13 +13,13 @@
         android:theme="@style/Theme.Learning"
         tools:targetApi="31">
         <activity
-            android:name=".stateincompose.StateComposeActivity"
+            android:name=".StateComposeActivity"
             android:exported="false" />
         <activity
-            android:name=".diceroller.LemonadeActivity"
+            android:name=".LemonadeActivity"
             android:exported="false" />
         <activity
-            android:name=".diceroller.DiceRollerActivity"
+            android:name=".DiceRollerActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
