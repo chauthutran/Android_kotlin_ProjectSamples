@@ -13,6 +13,9 @@
         android:theme="@style/Theme.Learning"
         tools:targetApi="31">
         <activity
+            android:name=".stateincompose.StateComposeActivity"
+            android:exported="false" />
+        <activity
             android:name=".diceroller.LemonadeActivity"
             android:exported="false" />
         <activity
@@ -34,7 +37,7 @@
             android:name=".ComposeArticleActivity"
             android:exported="false" />
         <activity
-            android:name=".stateincompose.StateComposeActivity"
+            android:name=".ArtSpaceActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/AppTheme">

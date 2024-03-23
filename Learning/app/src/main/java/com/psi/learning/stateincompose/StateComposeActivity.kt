@@ -71,22 +71,6 @@ class StateComposeActivity : AppCompatActivity() {
 
 
 @Composable
-fun TiptimeLayout2(modifier : Modifier) {
-//    var switch1Checked: Boolean by remember { mutableStateOf(false) }
-//    var switch2Checked: Boolean by remember { mutableStateOf(false) }
-
-    Row {
-        Switch(
-            checked = false,
-            onCheckedChange = {}
-        )
-        Switch(
-            checked = true,
-            onCheckedChange = { }
-        )
-    }
-}
-@Composable
 fun TiptimeLayout() {
     var amount: String by remember { mutableStateOf("") }
     var tipPercent: String by remember { mutableStateOf("") }
