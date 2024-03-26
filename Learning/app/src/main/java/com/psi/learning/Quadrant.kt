@@ -20,14 +20,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.psi.learning.ui.theme.LearningTheme
+import com.psi.learning.ui.theme.WoofTheme
 
 class Quadrant : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            LearningTheme {
+            WoofTheme {
                 Quadrant(
                     title1 = "Text composable", msg1 = "Displays text and follows the recommended Material Design guidelines.",
                     title2 = "Image composable", msg2 = "Creates a composable that lays out and draws a given Painter class object.",
@@ -109,7 +109,7 @@ fun QuadrantColumn(title: String, description: String, backgroundColor: Color,mo
 @Preview(showBackground = true, name="Quadrant Review")
 @Composable
 fun QuadrantPreview() {
-    LearningTheme {
+    WoofTheme {
         Quadrant(
             title1 = "Text composable", msg1 = "Displays text and follows the recommended Material Design guidelines.",
             title2 = "Image composable", msg2 = "Creates a composable that lays out and draws a given Painter class object.",

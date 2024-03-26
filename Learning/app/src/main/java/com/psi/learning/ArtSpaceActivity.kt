@@ -25,17 +25,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.psi.learning.ui.theme.LearningTheme
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.font.FontWeight
+import com.psi.learning.ui.theme.WoofTheme
+
 
 class ArtSpaceActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +43,9 @@ class ArtSpaceActivity : AppCompatActivity() {
 
         setContent {
             Surface(
-                modifier = Modifier.fillMaxSize().padding(20.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp),
                 color = MaterialTheme.colorScheme.background
             ) {
                 ArtSpaceLayout(
@@ -181,7 +182,7 @@ fun ArtSpaceButtons(idx: Int, modifier : Modifier, onUpdateCount: (Int) -> Unit)
 @Preview(showBackground = true, name = "BusinessCardActivity")
 @Composable
 fun ArtSpacePreview() {
-    LearningTheme {
+    WoofTheme {
         ArtSpaceLayout(
             modifier = Modifier.width(300.dp)
         )

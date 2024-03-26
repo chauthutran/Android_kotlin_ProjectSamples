@@ -15,17 +15,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.psi.learning.ui.theme.LearningTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.psi.learning.ui.theme.WoofTheme
 
 class ComposeArticleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            LearningTheme {
+            WoofTheme {
                 Article(
                     title = "Jetpack Compose tutorial",
                     content1 = "Jetpack Compose is model toolkit for building native Android UI. Compose simplifies and accelerates UI development on Android with less code, powerful tool, and intuitive Kotlin APIs.",
@@ -78,7 +78,7 @@ fun ArticleImage(modifier: Modifier) {
 @Preview(showBackground = true, name="Actical Preview")
 @Composable
 fun ArticlePreview() {
-    LearningTheme {
+    WoofTheme {
         Article(
             title = "Jetpack Compose tutorial",
             content1 = "Jetpack Compose is model toolkit for building native Android UI. Compose simplifies and accelerates UI development on Android with less code, powerful tool, and intuitive Kotlin APIs.",

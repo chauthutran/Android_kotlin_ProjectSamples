@@ -19,14 +19,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.psi.learning.ui.theme.LearningTheme
+import com.psi.learning.ui.theme.WoofTheme
 
 class TaskManager : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            LearningTheme {
+            WoofTheme {
                 TaskManagerComppose(
                     message1 = "All tasks completed",
                     message2 = "Nice work!",
@@ -82,7 +82,7 @@ fun TaskManagerImage() {
 @Preview(showBackground = true, name="TaskManager Review")
 @Composable
 fun TaskManagerPreview() {
-    LearningTheme {
+    WoofTheme {
         TaskManagerComppose(
             message1 = "All tasks completed",
             message2 = "Nice work!",

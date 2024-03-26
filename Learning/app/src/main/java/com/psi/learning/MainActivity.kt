@@ -22,13 +22,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.psi.learning.ui.theme.LearningTheme
+import com.psi.learning.ui.theme.WoofTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            LearningTheme {
+            WoofTheme {
                 // A surface container using the 'background' color from the theme
 //                Surface(
 //                    modifier = Modifier.fillMaxSize(),
@@ -97,7 +97,7 @@ fun GreetingText(message: String, from: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true, name="My Preview")
 @Composable
 fun BirthdayCardPreview() {
-    LearningTheme {
+    WoofTheme {
         GreetingImage(
             stringResource(R.string.happy_birthday_same),
             stringResource(R.string.signature_text),

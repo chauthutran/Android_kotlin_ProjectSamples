@@ -27,7 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.psi.learning.ui.theme.LearningTheme
+import com.psi.learning.ui.theme.WoofTheme
 
 class BusinessCardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -138,7 +138,7 @@ fun CardDetailsItem(iconId: Int, text: String, modifier: Modifier) {
 @Preview(showBackground = true, name = "BusinessCardActivity")
 @Composable
 fun BusinessCardPreview() {
-    LearningTheme {
+    WoofTheme {
         BusinessCard(
 //            message1 = "All tasks completed",
 //            message2 = "Nice work!",
