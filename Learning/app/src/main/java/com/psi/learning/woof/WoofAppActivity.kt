@@ -1,5 +1,16 @@
 package com.psi.learning.woof
 
+/**
+ * To run this Activity, please un-comment
+ * //    MaterialTheme(
+ * //        colorScheme = colorScheme,
+ * //        shapes = Shapes,
+ * //        typography = Typography,
+ * //        content = content
+ * //    )
+ *
+ * in package ui.theme
+ */
 
 import android.net.Uri
 import android.os.Bundle
