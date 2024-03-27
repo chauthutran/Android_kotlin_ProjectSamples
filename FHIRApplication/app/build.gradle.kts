@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.psi.fhir"
-    compileSdkVersion(rootProject.extra["compileSdkVersion"] as Int)
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.psi.fhir"
