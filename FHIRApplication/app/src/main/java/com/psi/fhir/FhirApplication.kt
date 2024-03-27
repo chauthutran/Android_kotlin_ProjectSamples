@@ -7,7 +7,7 @@ import com.google.android.fhir.DatabaseErrorStrategy
 import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.FhirEngineConfiguration
 import com.google.android.fhir.FhirEngineProvider
-import com.google.android.fhir.datacapture.BuildConfig
+//import com.google.android.fhir.datacapture.BuildConfig
 import com.google.android.fhir.NetworkConfiguration
 import com.google.android.fhir.ServerConfiguration
 import com.google.android.fhir.datacapture.DataCaptureConfig
@@ -16,7 +16,9 @@ import com.google.android.fhir.search.search
 import com.google.android.fhir.sync.remote.HttpLogger
 import com.psi.fhir.sync.ReferenceUrlResolver
 
-class FhirApplication :  Application(), DataCaptureConfig.Provider  {
+//class FhirApplication :  Application(), DataCaptureConfig.Provider  {
+
+class FhirApplication : Application(), DataCaptureConfig.Provider  {
     /**
      * This instantiate of FHIR Engine ensures the FhirEngine instance is only created
      * when it's accessed for the first time, not immediately when the app starts.
@@ -27,7 +29,7 @@ class FhirApplication :  Application(), DataCaptureConfig.Provider  {
 
     override fun onCreate() {
         super.onCreate()
-
+println("------------ FhirApplication - onCreate: FhirEngineProvider.init")
         // Init FHIR engine
         FhirEngineProvider.init(
             FhirEngineConfiguration(
@@ -41,6 +43,7 @@ class FhirApplication :  Application(), DataCaptureConfig.Provider  {
                     httpLogger =
                     HttpLogger(
                         HttpLogger.Configuration(
+//                            HttpLogger.Level.BODY
                             if (BuildConfig.DEBUG) HttpLogger.Level.BODY else HttpLogger.Level.BASIC,
                         ),
                     ) {
@@ -52,6 +55,7 @@ class FhirApplication :  Application(), DataCaptureConfig.Provider  {
             ),
         )
 
+        println("------------ FhirApplication - onCreate: 2")
         dataCaptureConfig =
             DataCaptureConfig().apply {
                 urlResolver = ReferenceUrlResolver(this@FhirApplication as Context)
@@ -67,9 +71,9 @@ class FhirApplication :  Application(), DataCaptureConfig.Provider  {
     }
 
 
-    // Easier access throughout your application
     companion object {
-        fun fhirEngine(context: Context) =
-            (context.applicationContext as FhirApplication).fhirEngine
+        fun fhirEngine(context: Context): FhirEngine {
+           return (context.applicationContext as FhirApplication).fhirEngine
+        }
     }
 }

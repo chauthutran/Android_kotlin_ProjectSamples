@@ -1,4 +1,4 @@
-package com.psi.fhir.ui
+package com.psi.fhir.ui.composes
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
