@@ -7,4 +7,6 @@
     <dimen name="image_size">64dp</dimen>
 
     <dimen name="desert_image_size">150dp</dimen>
+
+    <dimen name="thickness_divider">1dp</dimen>
 </resources>

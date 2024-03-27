@@ -2,7 +2,7 @@ package com.psi.fhir.data
 
 import java.time.LocalDate
 
-data class PatientData(
+data class PatientUiState(
     val id: String,
     val resourceId: String,
     val name: String,
