@@ -2,4 +2,9 @@
 <resources>
 
     <style name="Theme.FHIRApplication" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Other theme attributes -->
+    </style>
+
 </resources>

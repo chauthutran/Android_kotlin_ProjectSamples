@@ -70,12 +70,9 @@ fun FhirAppBar (
 @Composable
 fun FhirApp(
     application: Application,
-    fhirEngine: FhirEngine,
     navController: NavHostController = rememberNavController(),
 ) {
-    // Initialize the ViewModel using the viewModel function
-//    val viewModel: PatientListViewModel = PatientListViewModel(application)
-    val viewModel: PatientListViewModel = PatientListViewModel( application, fhirEngine )
+    val viewModel: PatientListViewModel = viewModel()
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Convert the current screen's title to a value of CupcakeScreen
@@ -83,20 +80,8 @@ fun FhirApp(
         backStackEntry?.destination?.route ?: FhirScreen.PatientList.name
     )
 
-    // Collect the flow and represent its values as state
-    viewModel.performOneTimeSync()
-
-//    // Call the suspend function when the composable is launched
-//    LaunchedEffect(Unit) {
-//        try {
-//            val result = viewModel.performOneTimeSync()
-//            viewModel.uiState.value = result
-//        } catch (e: Exception) {
-//            // Handle any errors
-//            // You can display an error message or perform other actions as needed
-//            syncResultState.value = "Error: ${e.message}"
-//        }
-//    }
+//    viewModel.performOneTimeSync()
+    viewModel.searchPatients()
 
 
     Scaffold(
