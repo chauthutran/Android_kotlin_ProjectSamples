@@ -15,9 +15,12 @@ import com.google.android.fhir.datacapture.XFhirQueryResolver
 import com.google.android.fhir.search.search
 import com.google.android.fhir.sync.Sync
 import com.google.android.fhir.sync.remote.HttpLogger
+import com.psi.fhir.helper.AppConfiguration
+import com.psi.fhir.helper.AssetsFileHelper
 import com.psi.fhir.sync.PatientPeriodicSyncWorker
 import com.psi.fhir.sync.ReferenceUrlResolver
 import kotlinx.coroutines.runBlocking
+import org.json.JSONObject
 import java.net.Authenticator
 
 //class FhirApplication :  Application(), DataCaptureConfig.Provider  {
@@ -33,6 +36,7 @@ class FhirApplication : Application(), DataCaptureConfig.Provider  {
     private val fhirEngine: FhirEngine by lazy { constructFhirEngine() }
 
     private var dataCaptureConfig: DataCaptureConfig? = null
+
 
     override fun onCreate() {
         super.onCreate()
@@ -67,6 +71,9 @@ class FhirApplication : Application(), DataCaptureConfig.Provider  {
         )
 
         Sync.oneTimeSync<PatientPeriodicSyncWorker>(this)
+
+        // Read and load the config-file,we will use to draw the UI later
+        AppConfiguration.readConfiguration(this)
         
         dataCaptureConfig =
             DataCaptureConfig().apply {
@@ -87,5 +94,6 @@ class FhirApplication : Application(), DataCaptureConfig.Provider  {
         fun fhirEngine(context: Context): FhirEngine {
            return (context.applicationContext as FhirApplication).fhirEngine
         }
+
     }
 }

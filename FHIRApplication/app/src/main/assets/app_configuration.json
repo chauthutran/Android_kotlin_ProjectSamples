@@ -1,0 +1,21 @@
+{
+  "listItem": {
+    "icon": {
+      "id": "if(item.gender=='female') patient_female else patient_male"
+    },
+    "data": [
+      {
+        "value": "item.name",
+        "style": "MaterialTheme.typography.displaySmall"
+      },
+      {
+        "value": "item.id",
+        "style": "MaterialTheme.typography.displaySmall"
+      },
+      {
+        "value": "item.city + ',' + item.country",
+        "style": "MaterialTheme.typography.displaySmall"
+      }
+    ]
+  }
+}

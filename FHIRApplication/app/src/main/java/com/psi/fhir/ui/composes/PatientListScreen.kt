@@ -19,12 +19,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.psi.fhir.FhirApplication
 import com.psi.fhir.R
 import com.psi.fhir.data.PatientUiState
+import com.psi.fhir.helper.AppConfiguration
 import com.psi.fhir.ui.theme.FHIRApplicationTheme
 import java.time.LocalDate
 
@@ -51,6 +54,7 @@ fun PatientItemCard (
     patient: PatientUiState,
     modifier: Modifier
 ) {
+
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = modifier
@@ -60,6 +64,9 @@ fun PatientItemCard (
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.padding_small))
         ){
+            val iconId = AppConfiguration.getListItemConfig_Icon()?.getString("id")
+
+
             if(patient.gender == "female") {
                 Image(
                     painter = painterResource(id = R.drawable.patient_female),
