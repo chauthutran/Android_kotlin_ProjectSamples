@@ -20,7 +20,8 @@ import java.util.LinkedList
 class DownloadPatientWorkManagerImpl() : DownloadWorkManager {
 
     private val resourceTypeList = ResourceType.values().map { it.name }
-    private val urls = LinkedList(listOf("Patient?address-city=NAIROBI&_sort=_lastUpdated"))
+//    private val urls = LinkedList(listOf("Patient?address-city=NAIROBI&_sort=_lastUpdated"))
+    private val urls = LinkedList(listOf("Patient?_sort=_lastUpdated"))
 
     override suspend fun processResponse(response: Resource): Collection<Resource> {
         // As per FHIR documentation :

@@ -60,7 +60,7 @@ fun PatientItemCard (
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.padding_small))
         ){
-            if(patient.gender == "F") {
+            if(patient.gender == "female") {
                 Image(
                     painter = painterResource(id = R.drawable.patient_female),
                     contentDescription = null,

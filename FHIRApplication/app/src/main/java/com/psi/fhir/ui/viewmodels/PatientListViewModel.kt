@@ -38,99 +38,29 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class PatientListViewModel( val application: Application, val fhirEngine: FhirEngine ): ViewModel() {
-
-//    private var fhirEngine: FhirEngine = FhirApplication.fhirEngine(application.applicationContext)
-
-//    private val _pollState = MutableSharedFlow<SyncJobStatus>()
-//    val pollState: Flow<SyncJobStatus> = _pollState.asSharedFlow()
-
-//    private val _pollState = MutableSharedFlow<CurrentSyncJobStatus>()
-//    val pollState: Flow<CurrentSyncJobStatus> = _pollState.asSharedFlow()
+class PatientListViewModel( private val application: Application ): AndroidViewModel(application) {
 
     private val _pollState = MutableSharedFlow<SyncJobStatus>()
 
     private val _uiState = MutableStateFlow<List<PatientUiState>>(mutableListOf())
     val uiState: StateFlow<List<PatientUiState>> = _uiState.asStateFlow()
 
-    init {
 
+    var fhirEngine: FhirEngine = FhirApplication.fhirEngine(application.applicationContext)
 
-        println(" ------ fhirEngine1 : INIT")
-//        var fhirEngine: FhirEngine = FhirApplication.fhirEngine(application.applicationContext)
-        println(" ------ fhirEngine2 : ${fhirEngine}")
-//        searchPatients()
-
-//        // oneTimeSync
-//        viewModelScope.launch {
-////        searchPatients()
-//
-//            Sync.periodicSync<PatientPeriodicSyncWorker>(
-//                application.applicationContext,
-//                periodicSyncConfiguration =
-//                PeriodicSyncConfiguration(
-//                    syncConstraints = Constraints.Builder().build(),
-//                    repeat = RepeatInterval(interval = 15, timeUnit = TimeUnit.MINUTES),
-//                ),
-//            )
-//                .shareIn(this, SharingStarted.Eagerly, 10)
-////                .collect { _pollState.emit(it) }
-//        }
-    }
-
-//     suspend fun syncList() {
     fun performOneTimeSync() {
-    viewModelScope.launch {
-//        searchPatients()
-        Sync.oneTimeSync<PatientPeriodicSyncWorker>(application)
-//            .shareIn(this, SharingStarted.Eagerly, 10)
-            .shareIn(this, SharingStarted.Eagerly, 10)
+        viewModelScope.launch {
+            Sync.oneTimeSync<PatientPeriodicSyncWorker>(application)
+                .shareIn(this, SharingStarted.Eagerly, 10)
                 .collect {
-//                    _pollState.emit(it)
-                    searchPatients()
+                        searchPatients()
                 }
+        }
+
     }
 
 
-
-//        return suspendCoroutine { continuation ->
-//            fhirEngine.syncDownload(
-//                conflictResolver = null,
-//                download: suspend () -> Flow<List<Patient>>
-//            )
-
-//            // Emit loading state
-//            emit(CurrentSyncJobStatus.Enqueued)
-
-//        viewModelScope.launch {
-//
-//        }
-//
-//            viewModelScope.launch {
-////                try {
-//                    // Perform the background task using Sync.oneTimeSync
-////                    val result =
-//                        Sync.oneTimeSync<PatientPeriodicSyncWorker>(getApplication())
-//                        .shareIn(this, SharingStarted.Eagerly, 10)
-//                        .collect { _pollState.emit(it) }
-//                    // Return the result to the caller
-////                    continuation.resume(result)
-////                    emit(CurrentSyncJobStatus.Succeeded(data = )
-////                } catch (e: Exception) {
-////                    // Handle any errors and return an error message
-////                    emit(CurrentSyncJobStatus.Error(message = "Error occurred: ${e.message}"))
-////                }
-////
-////                Sync.oneTimeSync<PatientPeriodicSyncWorker>(getApplication())
-//////                .shareIn(this, SharingStarted.Eagerly, 10)
-////                    // Emits a value to this shared flow, suspending/stopping on buffer overflow.
-////                    .collect { _pollState.emit(it) }
-////            }
-//        }
-    }
-
-
-fun searchPatients(nameQuery: String = "") {
+    fun searchPatients(nameQuery: String = "") {
         updatePatientList({ searchPatientsByName(nameQuery) })
     }
 
