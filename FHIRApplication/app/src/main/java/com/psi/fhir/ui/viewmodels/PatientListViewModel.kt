@@ -41,6 +41,7 @@ import kotlin.coroutines.suspendCoroutine
 class PatientListViewModel( private val application: Application ): AndroidViewModel(application) {
 
     private val _pollState = MutableSharedFlow<SyncJobStatus>()
+    val pollState = _pollState.asSharedFlow()
 
     private val _uiState = MutableStateFlow<List<PatientUiState>>(mutableListOf())
     val uiState: StateFlow<List<PatientUiState>> = _uiState.asStateFlow()
@@ -53,7 +54,8 @@ class PatientListViewModel( private val application: Application ): AndroidViewM
             Sync.oneTimeSync<PatientPeriodicSyncWorker>(application)
                 .shareIn(this, SharingStarted.Eagerly, 10)
                 .collect {
-                        searchPatients()
+                    _pollState.emit(it)
+                    searchPatients()
                 }
         }
 
