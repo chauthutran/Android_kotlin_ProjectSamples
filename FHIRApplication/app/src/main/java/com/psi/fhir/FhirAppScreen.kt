@@ -1,10 +1,13 @@
 package com.psi.fhir
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -30,6 +34,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.android.fhir.sync.SyncJobStatus
+import com.psi.fhir.ui.composes.EditNumberField
 import com.psi.fhir.ui.composes.LoadingProgressBar
 //import com.google.android.fhir.sync.CurrentSyncJobStatus
 import com.psi.fhir.ui.composes.PatientListScreen
@@ -71,6 +76,7 @@ fun FhirApp(
         }
     ) { innerPadding ->
 
+        var searchKeyword: String by remember { mutableStateOf("") }
         val pollState by viewModel.pollState.collectAsState()
         val uiState by viewModel.uiState.collectAsState()
 
@@ -83,12 +89,27 @@ fun FhirApp(
 
                 LoadingProgressBar(isLoading = (pollState == SyncDataStatus.LOADING))
 
-                PatientListScreen(
-                    patients = uiState,
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
-                
+                Column {
+
+                    EditNumberField(
+                        value = searchKeyword,
+                        icon = Icons.Default.Search,
+                        hint = stringResource(R.string.search_by_name),
+                        modifier = Modifier
+                            .padding(bottom = 32.dp)
+                            .fillMaxWidth()
+                    ) {
+                        searchKeyword = it
+                        viewModel.searchPatients(searchKeyword)
+                    }
+
+                    PatientListScreen(
+                        patients = uiState,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
+                }
+
             }
 
         }

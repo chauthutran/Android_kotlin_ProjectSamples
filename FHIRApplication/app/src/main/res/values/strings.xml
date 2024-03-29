@@ -6,4 +6,5 @@
     <string name="add_patient">Add Patient</string>
     <string name="edit_patient">Edit Patient</string>
     <string name="back_button">Back</string>
+    <string name="search_by_name">Search by name</string>
 </resources>

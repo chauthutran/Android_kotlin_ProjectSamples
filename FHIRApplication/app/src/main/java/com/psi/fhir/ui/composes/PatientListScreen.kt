@@ -13,23 +13,33 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.psi.fhir.R
 import com.psi.fhir.data.PatientUiState
 import com.psi.fhir.helper.AppConfigurationHelper
 import com.psi.fhir.ui.theme.FHIRApplicationTheme
+import com.psi.fhir.ui.viewmodels.PatientListViewModel
 
 @Composable
 fun PatientListScreen(
@@ -65,7 +75,7 @@ fun PatientItemCard (
                 .padding(dimensionResource(R.dimen.padding_small))
         ){
             val iconName = AppConfigurationHelper.getListItemIcon(patientUiState)
-            LoadDrawable(
+            PatientIcon(
                 context = LocalContext.current,
                 drawableName = iconName!!,
                 modifier = Modifier
@@ -74,7 +84,7 @@ fun PatientItemCard (
                     .aspectRatio(1f)
             )
 
-            ItemInfo(
+            PatientColumn(
                 patientUiState = patientUiState,
                 modifier = Modifier
                     .padding(top = 5.dp, start = 5.dp)
@@ -107,7 +117,7 @@ fun PatientListScreenPreview() {
 }
 
 @Composable
-fun LoadDrawable(
+fun PatientIcon(
     context: Context,
     drawableName: String,
     modifier: Modifier = Modifier
@@ -128,7 +138,7 @@ fun LoadDrawable(
 
 
 @Composable
-fun ItemInfo(
+fun PatientColumn(
     patientUiState: PatientUiState,
     modifier: Modifier = Modifier
 ) {
