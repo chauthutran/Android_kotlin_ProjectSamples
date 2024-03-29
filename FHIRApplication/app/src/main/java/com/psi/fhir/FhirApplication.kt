@@ -8,20 +8,15 @@ import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.FhirEngineConfiguration
 import com.google.android.fhir.FhirEngineProvider
 //import com.google.android.fhir.datacapture.BuildConfig
-import com.google.android.fhir.NetworkConfiguration
 import com.google.android.fhir.ServerConfiguration
 import com.google.android.fhir.datacapture.DataCaptureConfig
 import com.google.android.fhir.datacapture.XFhirQueryResolver
 import com.google.android.fhir.search.search
 import com.google.android.fhir.sync.Sync
 import com.google.android.fhir.sync.remote.HttpLogger
-import com.psi.fhir.helper.AppConfiguration
-import com.psi.fhir.helper.AssetsFileHelper
+import com.psi.fhir.helper.AppConfigurationHelper
 import com.psi.fhir.sync.PatientPeriodicSyncWorker
 import com.psi.fhir.sync.ReferenceUrlResolver
-import kotlinx.coroutines.runBlocking
-import org.json.JSONObject
-import java.net.Authenticator
 
 //class FhirApplication :  Application(), DataCaptureConfig.Provider  {
 
@@ -73,7 +68,7 @@ class FhirApplication : Application(), DataCaptureConfig.Provider  {
         Sync.oneTimeSync<PatientPeriodicSyncWorker>(this)
 
         // Read and load the config-file,we will use to draw the UI later
-        AppConfiguration.readConfiguration(this)
+        AppConfigurationHelper.readConfiguration(this)
         
         dataCaptureConfig =
             DataCaptureConfig().apply {

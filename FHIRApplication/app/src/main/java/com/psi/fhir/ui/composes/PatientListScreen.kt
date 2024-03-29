@@ -23,14 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.psi.fhir.FhirApplication
 import com.psi.fhir.R
 import com.psi.fhir.data.PatientUiState
-import com.psi.fhir.helper.AppConfiguration
+import com.psi.fhir.helper.AppConfigurationHelper
 import com.psi.fhir.ui.theme.FHIRApplicationTheme
-import java.time.LocalDate
 
 @Composable
 fun PatientListScreen(
@@ -41,7 +40,7 @@ fun PatientListScreen(
     LazyColumn(contentPadding = contentPadding) {
         itemsIndexed(patients) {index, patient ->
             PatientItemCard(
-                patient = patient,
+                patientUiState = patient,
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             )
@@ -52,7 +51,7 @@ fun PatientListScreen(
 
 @Composable
 fun PatientItemCard (
-    patient: PatientUiState,
+    patientUiState: PatientUiState,
     modifier: Modifier
 ) {
 
@@ -65,67 +64,41 @@ fun PatientItemCard (
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.padding_small))
         ){
-            val iconName = AppConfiguration.getListItemConfig_Icon(patient)
-
-//            Image(
-//                    painter = painterResource(id = getDrawableResourceId( LocalContext.current, iconId!!)),
-//                    contentDescription = null,
-//                    modifier = Modifier
-//                        .width(68.dp)
-//                        .height(68.dp)
-//                        .aspectRatio(1f)
-//                )
-
+            val iconName = AppConfigurationHelper.getListItemIcon(patientUiState)
             LoadDrawable(
                 context = LocalContext.current,
                 drawableName = iconName!!,
-                modifier =  Modifier
-                        .width(68.dp)
-                        .height(68.dp)
-                        .aspectRatio(1f)
+                modifier = Modifier
+                    .width(68.dp)
+                    .height(68.dp)
+                    .aspectRatio(1f)
             )
 
-
-//            if(patient.gender == "female") {
-//                Image(
-//                    painter = painterResource(id = R.drawable.patient_female),
-//                    contentDescription = null,
-//                    modifier = Modifier
-//                        .width(68.dp)
-//                        .height(68.dp)
-//                        .aspectRatio(1f)
-//                )
-//            }
-//            else {
-//                Image(
-//                    painter = painterResource(id = R.drawable.patient_male),
-//                    contentDescription = null,
-//                    modifier = Modifier
-//                        .width(68.dp)
-//                        .height(68.dp)
-//                        .aspectRatio(1f)
-//                )
-//            }
-
-            Column (
+            ItemInfo(
+                patientUiState = patientUiState,
                 modifier = Modifier
                     .padding(top = 5.dp, start = 5.dp)
-            ){
-                Text(
-                    text = patient.name,
-                    style = MaterialTheme.typography.displaySmall
-                )
+            )
 
-                Text(
-                    text = patient.id,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-                Text(
-                    text = "${patient.city}, ${patient.country}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+//            Column (
+//                modifier = Modifier
+//                    .padding(top = 5.dp, start = 5.dp)
+//            ){
+//                Text(
+//                    text = patient.name,
+//                    style = MaterialTheme.typography.displaySmall
+//                )
+//
+//                Text(
+//                    text = patient.id,
+//                    style = MaterialTheme.typography.bodyMedium
+//                )
+//
+//                Text(
+//                    text = "${patient.city}, ${patient.country}",
+//                    style = MaterialTheme.typography.bodyMedium
+//                )
+//            }
         }
     }
 }
@@ -163,12 +136,6 @@ fun LoadDrawable(
     modifier: Modifier = Modifier
 ) {
     val resourceId = getDrawableResourceId(context, drawableName)
-
-    println("============================ Resource Id: ")
-    println("========= drawableName: ${drawableName}" )
-    println("========= resourceId: ${resourceId}" )
-
-
     val painter = if (resourceId != 0) {
         painterResource(resourceId)
     } else {
@@ -180,4 +147,36 @@ fun LoadDrawable(
         contentDescription = null, // Provide content description if needed
         modifier = modifier
     )
+}
+
+@Composable
+fun getTypographyByName(name: String): TextStyle {
+    return when (name) {
+        "bodyLarge" -> MaterialTheme.typography.bodyLarge
+        "displayMedium" -> MaterialTheme.typography.displayMedium
+        "displayLarge" -> MaterialTheme.typography.displayLarge
+
+
+        else -> MaterialTheme.typography.displaySmall
+    }
+}
+
+@Composable
+fun ItemInfo(
+    patientUiState: PatientUiState,
+    modifier: Modifier = Modifier
+) {
+    Column (
+        modifier = Modifier
+            .padding(top = 5.dp, start = 5.dp)
+    ){
+        val dataConfigList = AppConfigurationHelper.getListItemConfig_Data(patientUiState)
+        for (i in 0 until dataConfigList!!.length()) {
+            val jsonObject = dataConfigList.getJSONObject(i)
+            Text(
+                text = jsonObject.getString("value"),
+                style = getTypographyByName(jsonObject.getString("style"))
+            )
+        }
+    }
 }

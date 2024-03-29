@@ -4,15 +4,15 @@
     "data": [
       {
         "value": "item.name",
-        "style": "MaterialTheme.typography.displaySmall"
+        "style": "displaySmall"
       },
       {
         "value": "item.id",
-        "style": "MaterialTheme.typography.displaySmall"
+        "style": "displaySmall"
       },
       {
         "value": "item.city + ',' + item.country",
-        "style": "MaterialTheme.typography.displaySmall"
+        "style": "displaySmall"
       }
     ]
   }

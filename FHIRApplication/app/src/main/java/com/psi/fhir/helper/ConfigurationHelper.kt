@@ -1,24 +1,24 @@
 package com.psi.fhir.helper
 
 import android.app.Application
-import com.google.gson.Gson
 import com.psi.fhir.data.PatientUiState
+import com.psi.fhir.utils.AssestsFile
+import com.psi.fhir.utils.JSONUtils
+import com.psi.fhir.utils.evaluateJavaScript
 import org.json.JSONArray
 import org.json.JSONObject
-import org.mozilla.javascript.Context
-import org.mozilla.javascript.NativeJSON
-import org.mozilla.javascript.Scriptable
-import org.mozilla.javascript.ScriptableObject
 
-object AppConfiguration {
+object AppConfigurationHelper {
 
     private var appConfigData : JSONObject? = null
-    fun readConfiguration( application: Application ): JSONObject? {
 
-        appConfigData = AssetsFileHelper.readAndConvertFileContentToJson(application, "app_configuration.json")
-
-        return appConfigData
+    fun readConfiguration( application: Application ) {
+        appConfigData = AssestsFile.readAndConvertFileContentToJson(application, "app_configuration.json")
     }
+
+
+    // ---------------------------------------------------------------------------------------------
+    // For ListItem configuration
 
     fun getListItemConfig(): JSONObject? {
         if( appConfigData == null ) {
@@ -28,62 +28,29 @@ object AppConfiguration {
         return appConfigData!!.getJSONObject("listItem")
     }
 
-    fun getListItemConfig_Icon(patientUiState: PatientUiState): String? {
+    fun getListItemIcon(patientUiState: PatientUiState): String? {
         val listItemConfig = getListItemConfig() ?: return null
-        var expression = "var item = ${convertObjToJson(patientUiState)}; ${listItemConfig!!.getString("icon")};"
+        var expression = "var item = ${JSONUtils.convertObjToJson(patientUiState)}; ${listItemConfig!!.getString("icon")};"
         return evaluateJavaScript(expression) as String
     }
 
-    fun getListItemConfig_Data(): JSONArray? {
+    fun getListItemConfig_Data( patientUiState: PatientUiState ): JSONArray? {
         val listItemConfig = getListItemConfig() ?: return null
 
-        return (listItemConfig!!.getJSONArray("data")
-    }
-}
+        var dataConfigList = JSONUtils.cloneJsonArray(listItemConfig!!.getJSONArray("data"))
+        println("**************** dataConfigList: ${dataConfigList }")
+        for (i in 0 until dataConfigList!!.length()) {
+            var jsonObject = dataConfigList.getJSONObject(i)
+            val value = jsonObject.getString("value")
+            var expression = "var item = ${JSONUtils.convertObjToJson(patientUiState)}; ${value};"
+            println(" =============== i : ${i}")
+            println(" ---- value : ${value}")
+            println(" ---- jsonObject : ${dataConfigList}")
+            jsonObject.put("value", evaluateJavaScript(expression) as String )
+        }
 
-object AssetsFileHelper {
-    fun readFileFromAssets(application: Application, filename: String): String {
-        return application.assets.open(filename).bufferedReader().use {
-            it.readText()
-        }.trimIndent()
-    }
-
-    fun readAndConvertFileContentToJson( application: Application, filename: String ): JSONObject? {
-        val jsonString = readFileFromAssets(application, filename)
-        return jsonString.toJSONObject()
-    }
-}
-
-
-
-fun String.toJSONObject(): JSONObject? {
-    if( this.isNullOrEmpty() ) {
-        return null
+        return dataConfigList;
     }
 
-    return JSONObject(this)
 }
 
-
-fun evaluateJavaScript(jsCode: String): Any? {
-    val context = Context.enter()
-    return try {
-        // Android doesn't run JVM bytecode byt Dalvik bytecode --> SO we have to disable optimization
-        context.optimizationLevel  = -1
-        val scope: Scriptable = context.initStandardObjects()
-        context.evaluateString(scope, jsCode, "JavaScript", 1, null)
-    } finally {
-        Context.exit()
-    }
-}
-
-fun convertObjToJson(obj: Any): JSONObject {
-    var gson = Gson()
-    var jsonString = gson.toJson(obj)
-    return JSONObject(jsonString)
-}
-
-fun main() {
-    val result = evaluateJavaScript("1 + 1")
-    println("Result: $result") // Output: Result: 2
-}
