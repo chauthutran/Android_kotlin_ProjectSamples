@@ -3,45 +3,36 @@ package com.psi.fhir.ui.viewmodels
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.Constraints
 import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.search.Order
 import com.google.android.fhir.search.StringFilterModifier
 import com.google.android.fhir.search.search
-//import com.google.android.fhir.sync.CurrentSyncJobStatus
-import com.google.android.fhir.sync.FhirSyncWorker
-import com.google.android.fhir.sync.PeriodicSyncConfiguration
-import com.google.android.fhir.sync.RepeatInterval
 import com.google.android.fhir.sync.Sync
-import com.google.android.fhir.sync.SyncJobStatus
 import com.psi.fhir.FhirApplication
 import com.psi.fhir.data.PatientUiState
 import com.psi.fhir.sync.PatientPeriodicSyncWorker
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.hl7.fhir.r4.model.Patient
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.concurrent.TimeUnit
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
+
+enum class SyncDataStatus {
+    UNDEFINED,
+    LOADING,
+    SUCCESS,
+    ERROR
+}
 
 class PatientListViewModel( private val application: Application ): AndroidViewModel(application) {
 
-    private val _pollState = MutableSharedFlow<SyncJobStatus>()
-    val pollState = _pollState.asSharedFlow()
+    private val _pollState = MutableStateFlow<SyncDataStatus>(SyncDataStatus.UNDEFINED)
+    val pollState = _pollState.asStateFlow()
 
     private val _uiState = MutableStateFlow<List<PatientUiState>>(mutableListOf())
     val uiState: StateFlow<List<PatientUiState>> = _uiState.asStateFlow()
@@ -49,14 +40,22 @@ class PatientListViewModel( private val application: Application ): AndroidViewM
 
     var fhirEngine: FhirEngine = FhirApplication.fhirEngine(application.applicationContext)
 
-    fun performOneTimeSync() {
+    fun performSyncData() {
         viewModelScope.launch {
-            Sync.oneTimeSync<PatientPeriodicSyncWorker>(application)
-                .shareIn(this, SharingStarted.Eagerly, 10)
-                .collect {
-                    _pollState.emit(it)
-                    searchPatients()
-                }
+            _pollState.emit(SyncDataStatus.LOADING)
+
+            try {
+                Sync.oneTimeSync<PatientPeriodicSyncWorker>(application)
+                    .shareIn(this, SharingStarted.Eagerly, 10)
+                    .collect {
+                        _pollState.emit(SyncDataStatus.SUCCESS)
+                        searchPatients()
+                    }
+            }
+            catch(e: Exception) {
+                _pollState.emit(SyncDataStatus.ERROR)
+            }
+
         }
 
     }

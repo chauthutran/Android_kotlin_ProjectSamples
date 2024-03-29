@@ -65,7 +65,7 @@ class FhirApplication : Application(), DataCaptureConfig.Provider  {
             ),
         )
 
-        Sync.oneTimeSync<PatientPeriodicSyncWorker>(this)
+//        Sync.oneTimeSync<PatientPeriodicSyncWorker>(this)
 
         // Read and load the config-file,we will use to draw the UI later
         AppConfigurationHelper.readConfiguration(this)

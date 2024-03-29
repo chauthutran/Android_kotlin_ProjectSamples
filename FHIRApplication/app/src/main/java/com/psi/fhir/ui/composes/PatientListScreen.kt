@@ -41,8 +41,7 @@ fun PatientListScreen(
         itemsIndexed(patients) {index, patient ->
             PatientItemCard(
                 patientUiState = patient,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                modifier = modifier
             )
         }
     }
@@ -52,12 +51,13 @@ fun PatientListScreen(
 @Composable
 fun PatientItemCard (
     patientUiState: PatientUiState,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
 
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Row (
             modifier = Modifier
@@ -80,25 +80,6 @@ fun PatientItemCard (
                     .padding(top = 5.dp, start = 5.dp)
             )
 
-//            Column (
-//                modifier = Modifier
-//                    .padding(top = 5.dp, start = 5.dp)
-//            ){
-//                Text(
-//                    text = patient.name,
-//                    style = MaterialTheme.typography.displaySmall
-//                )
-//
-//                Text(
-//                    text = patient.id,
-//                    style = MaterialTheme.typography.bodyMedium
-//                )
-//
-//                Text(
-//                    text = "${patient.city}, ${patient.country}",
-//                    style = MaterialTheme.typography.bodyMedium
-//                )
-//            }
         }
     }
 }
@@ -155,7 +136,6 @@ fun getTypographyByName(name: String): TextStyle {
         "bodyLarge" -> MaterialTheme.typography.bodyLarge
         "displayMedium" -> MaterialTheme.typography.displayMedium
         "displayLarge" -> MaterialTheme.typography.displayLarge
-
 
         else -> MaterialTheme.typography.displaySmall
     }

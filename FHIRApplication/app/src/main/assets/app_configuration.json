@@ -11,7 +11,7 @@
         "style": "displaySmall"
       },
       {
-        "value": "item.city + ',' + item.country",
+        "value": "item.city + ', ' + item.country",
         "style": "displaySmall"
       }
     ]
