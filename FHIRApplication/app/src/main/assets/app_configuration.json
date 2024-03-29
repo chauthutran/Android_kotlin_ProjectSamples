@@ -1,8 +1,6 @@
 {
   "listItem": {
-    "icon": {
-      "id": "if(item.gender=='female') patient_female else patient_male"
-    },
+    "icon": "(item.gender=='female') ? 'patient_female' : 'patient_male';",
     "data": [
       {
         "value": "item.name",

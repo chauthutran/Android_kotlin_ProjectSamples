@@ -7,7 +7,7 @@ data class PatientUiState(
     val resourceId: String,
     val name: String,
     val gender: String,
-    val dob: LocalDate?,
+    val dob: String,
     val phone: String,
     val city: String,
     val country: String,

@@ -1,10 +1,14 @@
 package com.psi.fhir.helper
 
 import android.app.Application
+import com.google.gson.Gson
+import com.psi.fhir.data.PatientUiState
 import org.json.JSONArray
 import org.json.JSONObject
 import org.mozilla.javascript.Context
+import org.mozilla.javascript.NativeJSON
 import org.mozilla.javascript.Scriptable
+import org.mozilla.javascript.ScriptableObject
 
 object AppConfiguration {
 
@@ -24,16 +28,16 @@ object AppConfiguration {
         return appConfigData!!.getJSONObject("listItem")
     }
 
-    fun getListItemConfig_Icon(): JSONObject? {
+    fun getListItemConfig_Icon(patientUiState: PatientUiState): String? {
         val listItemConfig = getListItemConfig() ?: return null
-
-        return listItemConfig!!.getJSONObject("icon")
+        var expression = "var item = ${convertObjToJson(patientUiState)}; ${listItemConfig!!.getString("icon")};"
+        return evaluateJavaScript(expression) as String
     }
 
     fun getListItemConfig_Data(): JSONArray? {
         val listItemConfig = getListItemConfig() ?: return null
 
-        return listItemConfig!!.getJSONArray("data")
+        return (listItemConfig!!.getJSONArray("data")
     }
 }
 
@@ -60,22 +64,26 @@ fun String.toJSONObject(): JSONObject? {
     return JSONObject(this)
 }
 
-fun String.evaluateExpression(): Any? {
 
-    // Create a Rhino context
-    val rhinoContext = Context.enter()
-
-    try {
-        // Initialize the scope
-        val scope: Scriptable = rhinoContext.initStandardObjects()
-
-        // JavaScript expression to evaluate
-        val expression = "if ( true ) \"patient_female\"; else \"patient_male\";"
-
-        // Evaluate the expression
-        return rhinoContext.evaluateString(scope, expression, "<cmd>", 1, null)
+fun evaluateJavaScript(jsCode: String): Any? {
+    val context = Context.enter()
+    return try {
+        // Android doesn't run JVM bytecode byt Dalvik bytecode --> SO we have to disable optimization
+        context.optimizationLevel  = -1
+        val scope: Scriptable = context.initStandardObjects()
+        context.evaluateString(scope, jsCode, "JavaScript", 1, null)
     } finally {
-        // Exit the Rhino context
         Context.exit()
     }
+}
+
+fun convertObjToJson(obj: Any): JSONObject {
+    var gson = Gson()
+    var jsonString = gson.toJson(obj)
+    return JSONObject(jsonString)
+}
+
+fun main() {
+    val result = evaluateJavaScript("1 + 1")
+    println("Result: $result") // Output: Result: 2
 }

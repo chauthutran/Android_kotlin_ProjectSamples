@@ -108,18 +108,19 @@ internal fun Patient.toPatientItem(position: Int): PatientUiState {
     val patientId = if (hasIdElement()) idElement.idPart else ""
     val name = if (hasName()) name[0].nameAsSingleString else ""
     val gender = if (hasGenderElement()) genderElement.valueAsString else ""
-    val dob =
-        if (hasBirthDateElement()) {
-//            LocalDate.parse(birthDateElement.valueAsString, DateTimeFormatter.ISO_DATE)
-//            OffsetDateTime.parse(
-//                birthDateElement.valueAsString,
-//                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSX")
-//            )
-            LocalDate.parse(birthDateElement.valueAsString.substring(0,10), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-
-        } else {
-            null
-        }
+//    val dob =
+//        if (hasBirthDateElement()) {
+////            LocalDate.parse(birthDateElement.valueAsString, DateTimeFormatter.ISO_DATE)
+////            OffsetDateTime.parse(
+////                birthDateElement.valueAsString,
+////                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSX")
+////            )
+//            LocalDate.parse(birthDateElement.valueAsString.substring(0,10), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+//
+//        } else {
+//            null
+//        }
+    val dob = birthDateElement.valueAsString.substring(0,10)
     val phone = if (hasTelecom()) telecom[0].value else ""
     val city = if (hasAddress()) address[0].city else ""
     val country = if (hasAddress()) address[0].country else ""

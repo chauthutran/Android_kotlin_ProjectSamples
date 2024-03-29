@@ -89,4 +89,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.4")
 
     implementation ("io.apisense:rhino-android:1.0")
+
+    // To convert data class object to json
+    implementation("com.google.code.gson:gson:2.8.5")
 }

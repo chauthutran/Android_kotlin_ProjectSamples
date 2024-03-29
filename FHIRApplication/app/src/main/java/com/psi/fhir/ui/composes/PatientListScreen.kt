@@ -1,5 +1,6 @@
 package com.psi.fhir.ui.composes
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -64,29 +65,47 @@ fun PatientItemCard (
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.padding_small))
         ){
-            val iconId = AppConfiguration.getListItemConfig_Icon()?.getString("id")
+            val iconName = AppConfiguration.getListItemConfig_Icon(patient)
 
+//            Image(
+//                    painter = painterResource(id = getDrawableResourceId( LocalContext.current, iconId!!)),
+//                    contentDescription = null,
+//                    modifier = Modifier
+//                        .width(68.dp)
+//                        .height(68.dp)
+//                        .aspectRatio(1f)
+//                )
 
-            if(patient.gender == "female") {
-                Image(
-                    painter = painterResource(id = R.drawable.patient_female),
-                    contentDescription = null,
-                    modifier = Modifier
+            LoadDrawable(
+                context = LocalContext.current,
+                drawableName = iconName!!,
+                modifier =  Modifier
                         .width(68.dp)
                         .height(68.dp)
                         .aspectRatio(1f)
-                )
-            }
-            else {
-                Image(
-                    painter = painterResource(id = R.drawable.patient_male),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(68.dp)
-                        .height(68.dp)
-                        .aspectRatio(1f)
-                )
-            }
+            )
+
+
+//            if(patient.gender == "female") {
+//                Image(
+//                    painter = painterResource(id = R.drawable.patient_female),
+//                    contentDescription = null,
+//                    modifier = Modifier
+//                        .width(68.dp)
+//                        .height(68.dp)
+//                        .aspectRatio(1f)
+//                )
+//            }
+//            else {
+//                Image(
+//                    painter = painterResource(id = R.drawable.patient_male),
+//                    contentDescription = null,
+//                    modifier = Modifier
+//                        .width(68.dp)
+//                        .height(68.dp)
+//                        .aspectRatio(1f)
+//                )
+//            }
 
             Column (
                 modifier = Modifier
@@ -116,8 +135,8 @@ fun PatientItemCard (
 @Composable
 fun PatientListScreenPreview() {
     val patients = listOf<PatientUiState>(
-        PatientUiState( "1", "xxx-xxx-xxx-xxx" , "Test 1", "F", LocalDate.now(), "0123456789", "City 1", "Country 1", true ),
-        PatientUiState( "1", "xxx-xxx-xxx-xxx" , "Test 1", "M", LocalDate.now(), "0123456789", "City 1", "Country 1", true )
+        PatientUiState( "1", "xxx-xxx-xxx-xxx" , "Test 1", "F", "2001-02-09", "0123456789", "City 1", "Country 1", true ),
+        PatientUiState( "2", "xxx-xxx-xxx-xxx" , "Test 1", "M", "2001-02-03", "0123456789", "City 1", "Country 1", true )
     )
     FHIRApplicationTheme(darkTheme = false) {
         Surface(
@@ -131,4 +150,34 @@ fun PatientListScreenPreview() {
             )
         }
     }
+}
+
+fun getDrawableResourceId(context: Context, drawableName: String): Int {
+    return context.resources.getIdentifier(drawableName, "drawable", context.packageName)
+}
+
+@Composable
+fun LoadDrawable(
+    context: Context,
+    drawableName: String,
+    modifier: Modifier = Modifier
+) {
+    val resourceId = getDrawableResourceId(context, drawableName)
+
+    println("============================ Resource Id: ")
+    println("========= drawableName: ${drawableName}" )
+    println("========= resourceId: ${resourceId}" )
+
+
+    val painter = if (resourceId != 0) {
+        painterResource(resourceId)
+    } else {
+        painterResource(R.drawable.patient_unknown)
+    }
+
+    Image(
+        painter = painter,
+        contentDescription = null, // Provide content description if needed
+        modifier = modifier
+    )
 }
