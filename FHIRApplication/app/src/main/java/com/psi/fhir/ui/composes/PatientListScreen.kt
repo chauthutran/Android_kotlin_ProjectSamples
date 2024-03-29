@@ -106,10 +106,6 @@ fun PatientListScreenPreview() {
     }
 }
 
-fun getDrawableResourceId(context: Context, drawableName: String): Int {
-    return context.resources.getIdentifier(drawableName, "drawable", context.packageName)
-}
-
 @Composable
 fun LoadDrawable(
     context: Context,
@@ -130,16 +126,6 @@ fun LoadDrawable(
     )
 }
 
-@Composable
-fun getTypographyByName(name: String): TextStyle {
-    return when (name) {
-        "bodyLarge" -> MaterialTheme.typography.bodyLarge
-        "displayMedium" -> MaterialTheme.typography.displayMedium
-        "displayLarge" -> MaterialTheme.typography.displayLarge
-
-        else -> MaterialTheme.typography.displaySmall
-    }
-}
 
 @Composable
 fun ItemInfo(
