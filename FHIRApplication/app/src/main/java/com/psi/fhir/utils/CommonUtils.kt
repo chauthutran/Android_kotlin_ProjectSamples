@@ -68,7 +68,6 @@ object AssestsFile {
 
     fun readAndConvertFileContentToJson(application: Application, filename: String ): JSONObject? {
         val jsonString = readFileFromAssets(application, filename)
-        println(" === readAndConvertFileContentToJson : ${jsonString}")
         return JSONUtils.toJSONObject(jsonString)
     }
 }
