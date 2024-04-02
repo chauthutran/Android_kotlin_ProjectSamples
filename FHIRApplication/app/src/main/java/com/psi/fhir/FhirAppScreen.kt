@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -16,14 +18,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -33,14 +34,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.google.android.fhir.sync.SyncJobStatus
-import com.psi.fhir.ui.composes.EditNumberField
+import com.psi.fhir.helper.AppConfigurationHelper
+import com.psi.fhir.ui.composes.EditTextField
+import com.psi.fhir.ui.composes.FormScreen
 import com.psi.fhir.ui.composes.LoadingProgressBar
-//import com.google.android.fhir.sync.CurrentSyncJobStatus
 import com.psi.fhir.ui.composes.PatientListScreen
 import com.psi.fhir.ui.viewmodels.PatientListViewModel
 import com.psi.fhir.ui.viewmodels.SyncDataStatus
-import kotlinx.coroutines.flow.collectLatest
 
 
 enum class FhirScreen(@StringRes val title: Int) {
@@ -73,7 +73,30 @@ fun FhirApp(
                 navigateUp = { navController.navigateUp() },
                 viewModel = viewModel
             )
-        }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    navController.navigate(FhirScreen.AddPatient.name)
+                }
+            ) {
+                // You can customize the appearance of the FAB here
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add"
+                )
+            }
+        },
+//        content = {
+//            // Your content goes here
+//            Column(
+//                modifier = Modifier.fillMaxSize(),
+//                verticalArrangement = Arrangement.Center,
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ) {
+//                Text("Hello, Jetpack Compose!")
+//            }
+//        }
     ) { innerPadding ->
 
         var searchKeyword: String by remember { mutableStateOf("") }
@@ -88,15 +111,13 @@ fun FhirApp(
             composable(route = FhirScreen.PatientList.name) {
 
                 LoadingProgressBar(isLoading = (pollState == SyncDataStatus.LOADING))
-
                 Column {
-
-                    EditNumberField(
+                    EditTextField(
                         value = searchKeyword,
                         icon = Icons.Default.Search,
-                        hint = stringResource(R.string.search_by_name),
+                        label = stringResource(R.string.search_by_name),
                         modifier = Modifier
-                            .padding(bottom = 32.dp)
+                            .padding(bottom = 8.dp, top = 4.dp)
                             .fillMaxWidth()
                     ) {
                         searchKeyword = it
@@ -112,6 +133,13 @@ fun FhirApp(
 
             }
 
+            composable(route = FhirScreen.AddPatient.name) {
+                val context = LocalContext.current
+                FormScreen(
+                    formConfig = AppConfigurationHelper.getRegistrationForm()!!,
+                    fhirEngine = FhirApplication.fhirEngine(context)
+                )
+            }
         }
     }
 

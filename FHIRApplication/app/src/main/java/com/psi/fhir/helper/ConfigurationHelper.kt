@@ -38,18 +38,26 @@ object AppConfigurationHelper {
         val listItemConfig = getListItemConfig() ?: return null
 
         var dataConfigList = JSONUtils.cloneJsonArray(listItemConfig!!.getJSONArray("data"))
-        println("**************** dataConfigList: ${dataConfigList }")
         for (i in 0 until dataConfigList!!.length()) {
             var jsonObject = dataConfigList.getJSONObject(i)
             val value = jsonObject.getString("value")
             var expression = "var item = ${JSONUtils.convertObjToJson(patientUiState)}; ${value};"
-            println(" =============== i : ${i}")
-            println(" ---- value : ${value}")
-            println(" ---- jsonObject : ${dataConfigList}")
             jsonObject.put("value", evaluateJavaScript(expression) as String )
         }
 
         return dataConfigList;
+    }
+
+
+    // ---------------------------------------------------------------------------------------------
+    // For Add/Update form
+
+    fun getRegistrationForm(): JSONObject? {
+        if( appConfigData == null ) {
+            return null
+        }
+
+        return appConfigData!!.getJSONObject("registrationForm")
     }
 
 }

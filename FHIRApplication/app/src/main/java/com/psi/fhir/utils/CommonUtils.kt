@@ -9,38 +9,6 @@ import org.mozilla.javascript.Context
 import org.mozilla.javascript.Scriptable
 
 
-object JSONUtils {
-    fun toJSONObject(jsonString: String): JSONObject? {
-        if( jsonString.isNullOrEmpty() ) {
-            return null
-        }
-
-        return JSONObject(jsonString)
-    }
-
-
-    // Convert a data object to JSONObject
-    fun convertObjToJson(obj: Any): JSONObject {
-        var gson = Gson()
-        var jsonString = gson.toJson(obj)
-        return JSONObject(jsonString)
-    }
-
-    fun cloneJsonArray(originalJsonArray: JSONArray): JSONArray {
-        val clonedJsonArray = JSONArray(originalJsonArray.toString())
-        println("%%%%%%%%%%%%%%%%%%%%%%% clonedJsonArray : ${clonedJsonArray}")
-//        try {
-//            for (i in 0 until originalJsonArray.length()) {
-//                clonedJsonArray.put(originalJsonArray[i])
-//            }
-//        } catch (e: JSONException) {
-//            e.printStackTrace()
-//        }
-        return clonedJsonArray
-    }
-
-}
-
 
 /** We shouldn't use
  *      fun String.evaluateJavaScript(): Any

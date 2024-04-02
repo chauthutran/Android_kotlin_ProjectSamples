@@ -49,30 +49,6 @@ fun getTypographyByName(name: String): TextStyle {
     }
 }
 
-@Composable
-fun EditNumberField(
-    value: String,
-    icon: ImageVector,
-    hint: String, modifier: Modifier = Modifier,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    onValueChange: (String) -> Unit) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = modifier,
-        placeholder = { Text(text = hint) },
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = keyboardType,
-            imeAction = ImeAction.Next
-        ),
-        leadingIcon = {
-            IconButton(onClick = { /* Handle icon click if needed */ }) {
-                Icon(imageVector = icon, contentDescription = null)
-            }
-        },
-    )
-}
-
 fun getDrawableResourceId(context: Context, drawableName: String): Int {
     return context.resources.getIdentifier(drawableName, "drawable", context.packageName)
 }

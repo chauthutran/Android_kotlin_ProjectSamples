@@ -92,4 +92,10 @@ dependencies {
 
     // To convert data class object to json
     implementation("com.google.code.gson:gson:2.8.5")
+
+    // kotlinx-coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+
+    // Snackbar
+    implementation("androidx.compose.material:material:1.0.5")
 }
