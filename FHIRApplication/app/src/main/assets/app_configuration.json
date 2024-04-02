@@ -95,7 +95,7 @@
         "defaultValue": "data.dob",
         "term": "reg_form_patient_dob",
         "controlType": "DATE",
-        "formatDate": "YYYY-MM-DD",
+        "formatDate": "yyyy-MM-dd",
         "rule": [
           {
             "name": "mandatory",
@@ -177,12 +177,13 @@
             "actionType": "queueActivity",
             "previewPrompt": "true",
             "resource": "Patient",
+
             "payload": {
               "resourceType": "'Patient'",
               "id_BACKUP": "'e77bde85-a5e6-4e2a-bf2b-c5a72dd348a2'",
               "meta": {
                 "versionId": "'1'",
-                "lastUpdated": "DateUtils.getCurrentDate()",
+                "lastUpdated": "(new Date()).toISOString()",
                 "source": "'#oJDFxq0DYNZdKZCQ'"
               },
               "active": "data.isActive",

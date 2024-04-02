@@ -6,13 +6,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
+import ca.uhn.fhir.context.FhirContext
+import ca.uhn.fhir.parser.IParser
 import com.google.android.fhir.FhirEngine
 import com.psi.fhir.utils.JSONUtils
-import com.psi.fhir.utils.evaluateJavaScript
 import kotlinx.coroutines.launch
 import org.hl7.fhir.r4.model.Patient
 import org.json.JSONObject
 import java.util.UUID
+
 
 @Composable
 fun FormButton (
@@ -45,36 +47,45 @@ fun FormButton (
 suspend fun runAction(config: JSONObject, data: JSONObject?, fhirEngine: FhirEngine? ) {
     var onClickConfig = config.getJSONArray("onClick")
 
-    onClickConfig?.let {
 
-        for( i in 0 until it.length() ) {
-            var buttonConfig = it.getJSONObject(i)
+        onClickConfig?.let {
 
-            when( buttonConfig.getString("actionType")) {
-                "queueActivity" -> {
-                    val resource = buttonConfig.getString("resource")
-                    if( resource == "Patient" && data != null ) {
-                        val patient: Patient = generatePayload(buttonConfig, data) as Patient
-                        patient.id = UUID.randomUUID().toString()
+            for (i in 0 until it.length()) {
+                var buttonConfig = it.getJSONObject(i)
 
-                        println(" ============== Payload: ${generatePayload(buttonConfig, data)}")
-                        println(" ----------- patient: ${patient}")
-                        fhirEngine?.apply {  create(patient) }
+                when (buttonConfig.getString("actionType")) {
+                    "queueActivity" -> {
+                        val resource = buttonConfig.getString("resource")
+                        if(  data != null ) {
+                            val payload = generatePayload(buttonConfig, data)
+
+                            if (resource.equals("Patient")) {
+
+                                // Create a new FhirContext
+                                val fhirContext = FhirContext.forR4()
+
+                                // Create a new JSON parser
+                                val jsonParser: IParser = fhirContext.newJsonParser()
+
+                                val patient = jsonParser.parseResource(payload.toString()) as Patient
+                                patient.id = UUID.randomUUID().toString()
+
+                                fhirEngine?.apply { create(patient) }
+
+                            }
+                        }
                     }
 
+                    "closeForm" -> {
+
+                    }
+
+                    else -> Unit
                 }
-
-                "closeForm" -> {
-
-                }
-
-                else -> Unit
             }
         }
-    }
 }
 fun generatePayload( buttonConfig: JSONObject, data: JSONObject ): Any? {
     var configPayload = buttonConfig.getJSONObject("payload")
-    println("---------- payload: ${configPayload}")
-    return JSONUtils.parseJSONValue(data, configPayload)
+    return JSONUtils.parseJSONValue(data, configPayload, JSONObject())
 }

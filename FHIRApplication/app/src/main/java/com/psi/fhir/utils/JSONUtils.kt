@@ -36,35 +36,52 @@ object JSONUtils {
         return clonedJson
     }
 
-   fun parseJSONValue(data: JSONObject, sourceJson: JSONObject): JSONObject {
+   fun parseJSONValue(data: JSONObject, sourceJson: JSONObject, resultJSON: JSONObject): JSONObject {
 
-       val precessingJson = JSONUtils.cloneJsonObject(sourceJson);
-       val resultJSON = JSONObject()
+       val precessingJson = cloneJsonObject(sourceJson);
        val keys = precessingJson.keys()
+       try {
 
-       // Iterate through your keys
-
-       // Iterate through your keys
-       while (keys.hasNext()) {
-           val key = keys.next()
-           var value = precessingJson[key]
-           if (value is Int) {
-                //
-           } else if (value is String) {
-               val expression = "var data = ${data}; ${value};"
-               println("======== parseJSONValue: ${expression}")
-               precessingJson.put(key, evaluateJavaScript(expression))
-           } else if (value is JSONObject) {
-                   // Your nested JSONObjects
+           // Iterate through your keys
+           while (keys.hasNext()) {
+               val key = keys.next()
+               var value = precessingJson[key]
+               if (value is Int) {
+                   //
+               } else if (value is String) {
+                   val expression = "var data = ${data}; ${value};"
+                   value = evaluateJavaScript(expression)
+               } else if (value is JSONObject) {
                    // Recursively call this method
-                   value = JSONUtils.parseJSONValue(value, JSONObject())
+                   value = parseJSONValue(data, value, JSONObject())
+               }
+               else if (value is JSONArray) {
+                   // Recursively call this method
+                   var list = value as JSONArray
+                   for (i in 0 until list.length()) {
+                       value = list.get(i)
+                       if (value is String) {
+                           val expression = "var data = ${data}; ${value};"
+                           value = evaluateJavaScript(expression)
+                       }
+                       else
+                       {
+                           value = parseJSONValue(data, list.get(i) as JSONObject , JSONObject())
+                       }
+                   }
+               }
+
+               // Add to your new JSON Object
+               resultJSON.put(key, value)
            }
 
-           // Add to your new JSON Object
-           resultJSON.put(key, value)
+       }
+       catch( ex: Exception )
+       {
+           println(" ============= ex: ${ex.message}")
        }
 
-        return resultJSON
+       return resultJSON
 
     }
 }

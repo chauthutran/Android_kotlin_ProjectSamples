@@ -20,21 +20,24 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.psi.fhir.data.SelectOptionUi
 import com.psi.fhir.utils.DateUtils
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 @Composable
@@ -168,6 +171,9 @@ fun DateField(
 ) {
     var date: String by remember { mutableStateOf(value) }
 
+    var selectedDate by remember { mutableStateOf<Date?>(null) }
+    val context = LocalContext.current as FragmentActivity
+
     var showDatePicker by remember { mutableStateOf(false) }
 
     OutlinedTextField(
@@ -182,6 +188,22 @@ fun DateField(
         trailingIcon = {
             IconButton(onClick = {
                 showDatePicker = true
+//                val datePicker = MaterialDatePicker.Builder.datePicker()
+//                    .setTitleText("Select Date")
+//                    .setSelection(selectedDate?.time ?: MaterialDatePicker.todayInUtcMilliseconds())
+//                    .build()
+//
+//                datePicker.addOnPositiveButtonClickListener { date ->
+//                    println("======================= date: ${date}")
+//                    selectedDate = Date(date)
+//                    println("======================= selectedDate: ${selectedDate}")
+//                    val formattedDate = SimpleDateFormat(formatPattern, Locale.getDefault()).format(selectedDate!!) // "yyyy-MM-dd"
+//println("--------- formattedDate: ${formattedDate}")
+//                    onDateSelected(formattedDate)
+//                }
+
+//                datePicker.show(context.supportFragmentManager, null)
+
             }) {
                 Icon(imageVector = Icons.Default.DateRange, contentDescription = null)
             }
