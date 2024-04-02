@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             FHIRApplicationTheme {
-               FhirApp()
+               FhirApp(fragmentManager = this@MainActivity.supportFragmentManager)
             }
         }
     }

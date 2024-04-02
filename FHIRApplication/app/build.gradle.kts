@@ -100,6 +100,10 @@ dependencies {
     // Snackbar
     implementation("androidx.compose.material:material:1.0.5")
 
-    implementation ("ca.uhn.hapi.fhir:hapi-fhir-base:5.6.2")
+//    // To convert json object to FHIR Resource object
+//    implementation ("ca.uhn.hapi.fhir:hapi-fhir-base:5.6.2")
 
+    // Fragment
+
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
 }

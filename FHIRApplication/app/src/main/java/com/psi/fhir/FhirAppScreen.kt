@@ -1,5 +1,6 @@
 package com.psi.fhir
 
+import androidx.activity.ComponentActivity
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -39,6 +41,7 @@ import com.psi.fhir.ui.composes.EditTextField
 import com.psi.fhir.ui.composes.FormScreen
 import com.psi.fhir.ui.composes.LoadingProgressBar
 import com.psi.fhir.ui.composes.PatientListScreen
+import com.psi.fhir.ui.composes.QuestionnaireScreen
 import com.psi.fhir.ui.viewmodels.PatientListViewModel
 import com.psi.fhir.ui.viewmodels.SyncDataStatus
 
@@ -53,6 +56,7 @@ enum class FhirScreen(@StringRes val title: Int) {
 @Composable
 fun FhirApp(
     navController: NavHostController = rememberNavController(),
+    fragmentManager: FragmentManager,
 ) {
     val viewModel: PatientListViewModel = viewModel()
 
@@ -135,10 +139,12 @@ fun FhirApp(
 
             composable(route = FhirScreen.AddPatient.name) {
                 val context = LocalContext.current
-                FormScreen(
-                    formConfig = AppConfigurationHelper.getRegistrationForm()!!,
-                    fhirEngine = FhirApplication.fhirEngine(context)
-                )
+//                FormScreen(
+//                    formConfig = AppConfigurationHelper.getRegistrationForm()!!,
+//                    fhirEngine = FhirApplication.fhirEngine(context)
+//                )
+//                getSupportFragmentManager
+                QuestionnaireScreen( fragmentManager = fragmentManager )
             }
         }
     }
