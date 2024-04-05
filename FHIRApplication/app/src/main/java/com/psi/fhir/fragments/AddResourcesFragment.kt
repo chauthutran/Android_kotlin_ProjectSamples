@@ -8,8 +8,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import com.google.android.fhir.datacapture.QuestionnaireFragment
+import com.google.gson.Gson
 import com.psi.fhir.R
 import com.psi.fhir.ui.viewmodels.QuestionnaireViewModel
+import kotlinx.coroutines.runBlocking
+import org.hl7.fhir.r4.model.QuestionnaireResponse
 
 class AddResourcesFragment : Fragment() {
 
@@ -34,9 +37,30 @@ class AddResourcesFragment : Fragment() {
         if (savedInstanceState == null) {
             addQuestionnaireFragment()
         }
+
+        /** Use the provided Submit button from the Structured Data Capture Library  */
+        childFragmentManager.setFragmentResultListener(
+            QuestionnaireFragment.SUBMIT_REQUEST_KEY,
+            viewLifecycleOwner,
+        ) { _, _ ->
+//            var questResponse = genrerateQuestionnaireResponse()
+//            val gson = Gson()
+//
+//            println(gson.toJson(questResponse))
+
+            runBlocking {
+                viewModel.saveResources( genrerateQuestionnaireResponse() )
+            }
+
+        }
     }
+
     private fun addQuestionnaireFragment()
     {
+        runBlocking {
+
+        }
+
         childFragmentManager.commit {
             add(
                 R.id.add_patient_container,
@@ -47,6 +71,12 @@ class AddResourcesFragment : Fragment() {
                 QUESTIONNAIRE_FRAGMENT_TAG,
             )
         }
+    }
+
+    private fun genrerateQuestionnaireResponse(): QuestionnaireResponse {
+        // Get a questionnaire response
+        val questionnaireFragment = childFragmentManager.findFragmentByTag(QUESTIONNAIRE_FRAGMENT_TAG) as QuestionnaireFragment
+        return questionnaireFragment.getQuestionnaireResponse()
     }
 
     companion object {

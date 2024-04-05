@@ -65,6 +65,7 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
+    implementation("androidx.test:core-ktx:1.5.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -101,9 +102,20 @@ dependencies {
     implementation("androidx.compose.material:material:1.0.5")
 
 //    // To convert json object to FHIR Resource object
-//    implementation ("ca.uhn.hapi.fhir:hapi-fhir-base:5.6.2")
+    implementation ("ca.uhn.hapi.fhir:hapi-fhir-base:5.6.2")
+
+    // Generate StructureMap in unit test
+    // https://mvnrepository.com/artifact/ca.uhn.hapi.fhir/hapi-fhir-structures-r4
+    implementation("ca.uhn.hapi.fhir:hapi-fhir-structures-r4:7.0.2")
+    implementation("javax.inject:javax.inject:1")
+
+    implementation("com.jakewharton.timber:timber:5.0.1")
+
+
+
+    androidTestImplementation("androidx.test:runner:1.4.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.3")
 
     // Fragment
-
     implementation("androidx.fragment:fragment-ktx:1.6.2")
 }

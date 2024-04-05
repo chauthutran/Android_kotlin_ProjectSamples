@@ -2,12 +2,11 @@ package com.psi.fhir.sync
 
 
 import android.content.Context
-import androidx.compose.ui.text.style.LineBreak
 import androidx.work.WorkerParameters
 import com.google.android.fhir.sync.AcceptLocalConflictResolver
 import com.google.android.fhir.sync.FhirSyncWorker
 //import com.google.android.fhir.sync.Strategy
-import com.psi.fhir.FhirApplication
+import com.psi.fhir.di.FhirApplication
 
 /**
  * defines how the app will sync with the remote FHIR server using a background worker.
