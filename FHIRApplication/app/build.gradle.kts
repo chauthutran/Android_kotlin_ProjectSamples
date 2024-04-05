@@ -74,10 +74,10 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
-//    implementation("com.google.android.fhir:engine:1.0.0")
-//    implementation("com.google.android.fhir:data-capture:1.1.0")
-    implementation("com.google.android.fhir:engine:0.1.0-beta05")
-    implementation("com.google.android.fhir:data-capture:1.0.0")
+    implementation("com.google.android.fhir:engine:1.0.0")
+    implementation("com.google.android.fhir:data-capture:1.1.0")
+//    implementation("com.google.android.fhir:engine:0.1.0-beta05")
+//    implementation("com.google.android.fhir:data-capture:1.0.0")
 
 
 //    implementation("androidx.fragment:fragment-ktx:1.6.2")
@@ -101,12 +101,12 @@ dependencies {
     // Snackbar
     implementation("androidx.compose.material:material:1.0.5")
 
-//    // To convert json object to FHIR Resource object
-    implementation ("ca.uhn.hapi.fhir:hapi-fhir-base:5.6.2")
+////    // To convert json object to FHIR Resource object
+//    implementation ("ca.uhn.hapi.fhir:hapi-fhir-base:5.6.2")
 
     // Generate StructureMap in unit test
     // https://mvnrepository.com/artifact/ca.uhn.hapi.fhir/hapi-fhir-structures-r4
-    implementation("ca.uhn.hapi.fhir:hapi-fhir-structures-r4:7.0.2")
+//    implementation("ca.uhn.hapi.fhir:hapi-fhir-structures-r4:7.0.2")
     implementation("javax.inject:javax.inject:1")
 
     implementation("com.jakewharton.timber:timber:5.0.1")

@@ -2,10 +2,13 @@ package com.psi.fhir.sync
 
 
 import android.content.Context
+import androidx.compose.ui.text.style.LineBreak
 import androidx.work.WorkerParameters
 import com.google.android.fhir.sync.AcceptLocalConflictResolver
 import com.google.android.fhir.sync.DownloadWorkManager
 import com.google.android.fhir.sync.FhirSyncWorker
+import com.google.android.fhir.sync.upload.LocalChangesFetchMode
+import com.google.android.fhir.sync.upload.UploadStrategy
 //import com.google.android.fhir.sync.Strategy
 import com.psi.fhir.FhirApplication
 
@@ -21,19 +24,22 @@ class FhirPeriodicSyncWorker(appContext: Context, workerParams: WorkerParameters
         )
     }
 
-//    override fun getUploadStrategy(): Strategy {
+    override fun getUploadStrategy(): UploadStrategy {
+        return UploadStrategy.AllChangesSquashedBundlePut
+//        LocalChangesFetchMode.AllChanges
 //        return if (isUploadEnabled()) {
+//            LineBreak.Strategy.
 //            LineBreak.Strategy.FORCE_UPLOAD
 //        } else {
 //            LineBreak.Strategy.SKIP
 //        }
-//    }
-//
-//    private fun isUploadEnabled(): Boolean {
-//        // Your logic to determine if upload is enabled goes here
-//        // For example, you can check a user preference or some application setting
-//        return true
-//    }
+    }
+
+    private fun isUploadEnabled(): Boolean {
+        // Your logic to determine if upload is enabled goes here
+        // For example, you can check a user preference or some application setting
+        return true
+    }
 
     override fun getConflictResolver() = AcceptLocalConflictResolver
 
