@@ -1,0 +1,52 @@
+map "https://fhir.labs.smartregister.org/fhir/StructureMap/098dfbcd-8b7f-43ec-ab77-99d0138b42bf" = 'psi reg'
+
+uses "http://hl7.org/fhir/StructureDefinition/QuestionnaireReponse" as source
+uses "http://hl7.org/fhir/StructureDefinition/Bundle" as target
+uses "http://hl7.org/fhir/StructureDefinition/Patient" as target
+uses "http://hl7.org/fhir/StructureDefinition/ServiceRequest" as target
+uses "http://hl7.org/fhir/StructureDefinition/CommunicationRequest" as target
+uses "http://hl7.org/fhir/StructureDefinition/Encounter" as target
+
+group psiReg(source src : QuestionnaireResponse, target bundle: Bundle) {
+    src -> bundle.id = uuid() "rule_bundle_id";
+    src -> bundle.type = 'collection' "rule_bundle_type";
+    src -> bundle.entry as entry, entry.resource = create('Patient') as patient then
+        ExtractPatient(src, patient), ExtractSrvReq(src, patient, bundle), ExtractCommReq(src, patient, bundle), ExtractEncounter(src, patient, bundle) "rule_bundle_entries";
+}
+
+group ExtractPatient(source src : QuestionnaireResponse, target patient : Patient) {
+       src -> patient.id = uuid() "r_pat_id_generation";
+       src -> patient.active = true "r_pat_active";
+       src -> patient.gender = evaluate( src, $this.item.where( linkId = '245d6a3f-4d8d-462a-8ced-0ceaf179130a').answer.value.code) "r_pat_gender";
+       src -> patient.birthDate = evaluate( src, $this.item.where( linkId = '8c9cd2c7-3de4-4428-92c8-076dfd5f1098').answer.value) "r_pat_birthDate";
+
+       src -> patient.name = create('HumanName') as p_name then {
+            src -> p_name.use = 'official' "r_p_name_use";
+            src -> p_name.family = evaluate(src, $this.item.where(linkId = '64712707-d6eb-4166-8d6e-06fa2b9fcf3e').answer.value) "r_p_name_family";
+            src -> p_name.given = evaluate(src, $this.item.where(linkId = 'e3ff3d0b-f951-42e2-9614-3a5e305f1970').answer.value) "r_p_name_given";
+       } "r_p_name_create";
+}
+
+group ExtractEncounter(source src : QuestionnaireResponse, source patient : Patient, target bundle : Bundle) {
+    src -> bundle.entry as entry, entry.resource = create('Encounter') as encounter then {
+       src -> encounter.id = uuid() "r_enc_id";
+       src -> encounter.status = 'planned' "r_enc_status";
+       src -> encounter.subject = reference(patient) "r_en_sub";
+    } "r_encounter_create";
+}
+
+group ExtractSrvReq(source src : QuestionnaireResponse, source patient : Patient, target bundle : Bundle) {
+    src -> bundle.entry as entry, entry.resource = create('ServiceRequest') as srvReq then {
+       src -> srvReq.id = uuid() "r_sr_id";
+       src -> srvReq.status = 'active' "r_sr_status";
+       src -> srvReq.subject = reference(patient) "r_sr_sub";
+    } "r_srvReq_create";
+}
+
+group ExtractCommReq(source src : QuestionnaireResponse, source patient : Patient, target bundle : Bundle) {
+    src -> bundle.entry as entry, entry.resource = create('CommunicationRequest') as commReq then {
+       src -> commReq.id = uuid() "r_cmr_id";
+       src -> commReq.status = 'active' "r_cmr_status";
+       src -> commReq.subject = reference(patient) "r_cmr_sub";
+    } "r_commReq_create";
+}

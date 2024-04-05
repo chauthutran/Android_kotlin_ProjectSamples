@@ -1,0 +1,17 @@
+map "https://fhir.labs.smartregister.org/fhir/StructureMap/098dfbcd-8b7f-43ec-ab77-99d0138b42bf" = 'psi reg'
+
+uses "http://hl7.org/fhir/StructureDefinition/QuestionnaireReponse" as source
+uses "http://hl7.org/fhir/StructureDefinition/Bundle" as target
+uses "http://hl7.org/fhir/StructureDefinition/Patient" as target
+
+group psiReg(source src : QuestionnaireResponse, target bundle: Bundle) {
+    src -> bundle.id = uuid() "rule_bundle_id";
+    src -> bundle.type = 'collection' "rule_bundle_type";
+    src -> bundle.entry as entry, entry.resource = create('Patient') as patient then
+        ExtractPatient(src, patient) "rule_bundle_entries";
+}
+
+group ExtractPatient(source src : QuestionnaireResponse, target patient : Patient) {
+       src -> patient.id = uuid() "r_pat_id_generation";
+       src -> patient.active = true "r_pat_active";
+}

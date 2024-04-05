@@ -9,9 +9,9 @@ import com.google.android.fhir.search.Order
 import com.google.android.fhir.search.StringFilterModifier
 import com.google.android.fhir.search.search
 import com.google.android.fhir.sync.Sync
-import com.psi.fhir.di.FhirApplication
+import com.psi.fhir.FhirApplication
 import com.psi.fhir.data.PatientUiState
-import com.psi.fhir.sync.PatientPeriodicSyncWorker
+import com.psi.fhir.sync.FhirPeriodicSyncWorker
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -43,7 +43,7 @@ class PatientListViewModel( private val application: Application ): AndroidViewM
             _pollState.emit(SyncDataStatus.LOADING)
 
             try {
-                Sync.oneTimeSync<PatientPeriodicSyncWorker>(application)
+                Sync.oneTimeSync<FhirPeriodicSyncWorker>(application)
                     .shareIn(this, SharingStarted.Eagerly, 10)
                     .collect {
                         _pollState.emit(SyncDataStatus.SUCCESS)

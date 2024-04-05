@@ -21,6 +21,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.google.android.fhir.datacapture.UrlResolver
 import com.google.android.fhir.get
+import com.psi.fhir.FhirApplication
 import org.hl7.fhir.r4.model.Binary
 import org.hl7.fhir.r4.model.ResourceType
 

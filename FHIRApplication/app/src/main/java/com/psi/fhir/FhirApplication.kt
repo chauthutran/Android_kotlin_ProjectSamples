@@ -1,4 +1,4 @@
-package com.psi.fhir.di
+package com.psi.fhir
 
 import android.app.Application
 import android.content.Context
@@ -11,8 +11,11 @@ import com.google.android.fhir.datacapture.DataCaptureConfig
 import com.google.android.fhir.datacapture.XFhirQueryResolver
 import com.google.android.fhir.search.search
 import com.google.android.fhir.sync.remote.HttpLogger
-import com.psi.fhir.BuildConfig
+import com.psi.fhir.di.ComplexWorkerContext
+import com.psi.fhir.di.ReferenceUrlResolver
+import com.psi.fhir.di.ValueSetResolver
 import com.psi.fhir.helper.AppConfigurationHelper
+import com.psi.fhir.sync.DemoDataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -20,7 +23,6 @@ import kotlinx.coroutines.launch
 import org.hl7.fhir.r4.model.Parameters
 import org.hl7.fhir.utilities.npm.NpmPackage
 import timber.log.Timber
-import java.io.File
 
 
 //class FhirApplication :  Application(), DataCaptureConfig.Provider  {
@@ -35,9 +37,8 @@ class FhirApplication : Application(), DataCaptureConfig.Provider  {
      **/
     private val fhirEngine: FhirEngine by lazy { constructFhirEngine() }
     private var dataCaptureConfig: DataCaptureConfig? = null
-//    private lateinit var contextR4: ComplexWorkerContext
     private lateinit var contextR4: ComplexWorkerContext
-
+    private val dataStore by lazy { DemoDataStore(this) }
 
     override fun onCreate() {
         super.onCreate()
@@ -86,23 +87,14 @@ class FhirApplication : Application(), DataCaptureConfig.Provider  {
             }
     }
 
-//    private fun constructR4Context() {
     private fun constructR4Context() =
         CoroutineScope(Dispatchers.IO).launch {
             println("**** creating contextR4")
 
-
-
-
             val measlesIg = async {
                 NpmPackage.fromPackage(assets.open("packages.fhir.org-hl7.fhir.dk.core-1.1.0.tgz"))
             }
-
-
             val baseIg = async { NpmPackage.fromPackage(assets.open("packages.tgz")) }
-//            val baseIg = async { NpmPackage.fromFolder("contextR4/") }
-
-//            val packages = arrayListOf<NpmPackage>(measlesIg.await())
             val packages = arrayListOf<NpmPackage>(measlesIg.await(), baseIg.await())
 
             println("**** read assets contextR4")
@@ -117,30 +109,8 @@ class FhirApplication : Application(), DataCaptureConfig.Provider  {
                 ValueSetResolver.init(this@FhirApplication, this)
             }
 
-//         val packageCacheManager = FilesystemPackageCacheManager(true)
-//         contextR4 = SimpleWorkerContext.fromPackage(packageCacheManager.loadPackage("hl7.fhir.r4.core", "4.0.1"))
-//                .apply {
-//                    setExpansionProfile(Parameters())
-//                    isCanRunWithoutTerminology = true
-////                    ValueSetResolver.init(this@FhirApplication, this)
-//                }
         }
 
-
-//    private fun constructR4Context () {
-//        val packageCacheManager = FilesystemPackageCacheManager(false)
-//
-//        contextR4 = SimpleWorkerContext.fromPackage(
-//            packageCacheManager.loadPackage(
-//                "hl7.fhir.r4.core",
-//                "4.0.1"
-//            )
-//        ).apply {
-//            setExpansionProfile(Parameters())
-//            isCanRunWithoutTerminology = true
-////            ValueSetResolver.init(this@FhirApplication, this)
-//        }
-//    }
 
     override fun getDataCaptureConfig(): DataCaptureConfig = dataCaptureConfig ?: DataCaptureConfig()
 
@@ -150,9 +120,9 @@ class FhirApplication : Application(), DataCaptureConfig.Provider  {
 
 
     companion object {
-        fun fhirEngine(context: Context): FhirEngine {
-           return (context.applicationContext as FhirApplication).fhirEngine
-        }
+        fun fhirEngine(context: Context): FhirEngine = (context.applicationContext as FhirApplication).fhirEngine
+
+        fun dataStore(context: Context) = (context.applicationContext as FhirApplication).dataStore
 
         fun contextR4(context: Context) = (context.applicationContext as FhirApplication).contextR4
 

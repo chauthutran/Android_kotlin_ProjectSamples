@@ -10,26 +10,20 @@ import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.context.FhirVersionEnum
 import ca.uhn.fhir.parser.IParser
 import com.google.gson.Gson
-import com.psi.fhir.utils.TransformSupportServices
+import com.psi.fhir.di.TransformSupportServices
 import org.hl7.fhir.r4.context.SimpleWorkerContext
-import org.hl7.fhir.r4.elementmodel.Element
 import org.hl7.fhir.r4.model.Bundle
 import org.hl7.fhir.r4.model.Parameters
 import org.hl7.fhir.r4.model.QuestionnaireResponse
-import org.hl7.fhir.r4.model.Resource
-import org.hl7.fhir.r4.model.ResourceFactory
 import org.hl7.fhir.r4.utils.StructureMapUtilities
 import org.hl7.fhir.utilities.npm.FilesystemPackageCacheManager
-import org.hl7.fhir.utilities.npm.ToolsVersion
 import org.junit.Assert.*
 import org.junit.Test
 import java.io.BufferedReader
-import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
 import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
 
 
 //import org.hl7.fhir.r4.utils.StructureMapUtilities
@@ -88,8 +82,8 @@ class ExampleUnitTest {
 
     @Test
     fun generateStructureMap() {
-        val registrationQuestionnaireResponseString =  getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/Questionnaire_Response.json")
-        val immunizationStructureMap = getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/StructureMap_Generate.map")
+        val registrationQuestionnaireResponseString =  getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/psi-reg/qr1.json")
+        val immunizationStructureMap = getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/psi-reg/structureMap1.map")
         val packageCacheManager = FilesystemPackageCacheManager(true)
 
         val contextR4 =
@@ -106,6 +100,7 @@ class ExampleUnitTest {
 
         val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
 
+        // Convert *.map file to json
         val mapString = iParser.encodeResourceToString(structureMap)
 
         println("===== structureMap: ${mapString}")
@@ -119,7 +114,7 @@ class ExampleUnitTest {
         structureMapUtilities.transform(contextR4, baseElement, structureMap, targetResource)
 
         var gson = Gson()
-        var jsonString = gson.toJson(targetResource.entry[0].resource)
+        var jsonString = gson.toJson(targetResource)
         println("===== Result: ${jsonString}")
 //        println("===== Result: ${targetResource}")
 

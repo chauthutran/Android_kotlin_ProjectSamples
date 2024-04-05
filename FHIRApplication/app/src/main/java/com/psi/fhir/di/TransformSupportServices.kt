@@ -1,4 +1,4 @@
-package com.psi.fhir.utils
+package com.psi.fhir.di
 
 
 import javax.inject.Inject
