@@ -59,6 +59,7 @@ fun FhirApp(
     fragmentManager: FragmentManager,
 ) {
     val viewModel: PatientListViewModel = viewModel()
+    var showActions by remember { mutableStateOf(true) }
 
     // Convert the current screen's title to a value of Fhir App Screen
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -75,20 +76,23 @@ fun FhirApp(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() },
+                showActions = showActions,
                 viewModel = viewModel
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    navController.navigate(FhirScreen.AddPatient.name)
+            if(showActions ) {
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate(FhirScreen.AddPatient.name)
+                    }
+                ) {
+                    // You can customize the appearance of the FAB here
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add"
+                    )
                 }
-            ) {
-                // You can customize the appearance of the FAB here
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add"
-                )
             }
         },
 //        content = {
@@ -114,6 +118,7 @@ fun FhirApp(
         ) {
             composable(route = FhirScreen.PatientList.name) {
 
+                showActions = true
                 LoadingProgressBar(isLoading = (pollState == SyncDataStatus.LOADING))
                 Column {
                     EditTextField(
@@ -138,7 +143,8 @@ fun FhirApp(
             }
 
             composable(route = FhirScreen.AddPatient.name) {
-                val context = LocalContext.current
+                showActions = false
+//                val context = LocalContext.current
 //                FormScreen(
 //                    formConfig = AppConfigurationHelper.getRegistrationForm()!!,
 //                    fhirEngine = FhirApplication.fhirEngine(context)
@@ -158,6 +164,7 @@ fun FhirAppBar (
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
     viewModel: PatientListViewModel,
+    showActions: Boolean,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -177,13 +184,15 @@ fun FhirAppBar (
             }
         },
         actions = {
-            IconButton(onClick = {
-                viewModel.performSyncData()
-            }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_sync_30),
-                    contentDescription = "Sync"
-                )
+            if (showActions ) {
+                IconButton(onClick = {
+                    viewModel.performSyncData()
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_sync_30),
+                        contentDescription = "Sync"
+                    )
+                }
             }
         }
     )
