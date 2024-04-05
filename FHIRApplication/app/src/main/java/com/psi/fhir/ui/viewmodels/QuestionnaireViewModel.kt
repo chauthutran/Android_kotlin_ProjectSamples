@@ -6,17 +6,24 @@ import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.context.FhirVersionEnum
 import ca.uhn.fhir.parser.IParser
 import com.google.android.fhir.FhirEngine
+import com.google.android.fhir.get
 import com.google.android.fhir.testing.jsonParser
 import com.google.gson.Gson
 import com.psi.fhir.di.FhirApplication
 import com.psi.fhir.utils.AssestsFile
+import com.psi.fhir.utils.JSONUtils
 import com.psi.fhir.utils.TransformSupportServices
+import org.hl7.fhir.r4.context.SimpleWorkerContext
 import org.hl7.fhir.r4.model.Base
 import org.hl7.fhir.r4.model.Bundle
 import org.hl7.fhir.r4.model.IdType
+import org.hl7.fhir.r4.model.Parameters
+import org.hl7.fhir.r4.model.Patient
 import org.hl7.fhir.r4.model.Questionnaire
 import org.hl7.fhir.r4.model.QuestionnaireResponse
 import org.hl7.fhir.r4.model.StructureMap
+import org.hl7.fhir.r4.utils.StructureMapUtilities
+import org.hl7.fhir.utilities.npm.FilesystemPackageCacheManager
 import org.json.JSONObject
 import timber.log.Timber
 import java.io.File
@@ -59,10 +66,7 @@ class QuestionnaireViewModel ( application: Application) : AndroidViewModel(appl
 
         val structureMap = fhirEngine.get<StructureMap>(IdType("PatientRegistration").idPart)
 
-        // Now you can access the StructureMaps from the FHIR context
-        // For example, you can retrieve a StructureMap by name like this:
-        // Now you can access the StructureMaps from the FHIR context
-        // For example, you can retrieve a StructureMap by name like this:
+
 //        val myStructureMap: StructureMap = contextR4.getStructure("MyStructureMap")
 
 //        val structureMapStr = AssestsFile.readFileFromAssets(getApplication<Application>(), "StructureMap.json")
