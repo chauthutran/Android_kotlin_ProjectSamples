@@ -15,11 +15,11 @@ fun QuestionnaireScreen(
     fragmentManager: FragmentManager,
     modifier: Modifier = Modifier
 ) {
+
     // Use AndroidView to embed a Fragment in Jetpack Compose
     AndroidView(
         factory = { context ->
             // Create the Fragment instance
-//            AddResourcesFragment().requireView()
 
             val containerId = R.id.add_patient_container // some unique id
             val fragmentContainerView = FragmentContainerView(context).apply {

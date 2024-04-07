@@ -40,6 +40,8 @@ import com.psi.fhir.helper.AppConfigurationHelper
 import com.psi.fhir.ui.composes.EditTextField
 import com.psi.fhir.ui.composes.FormScreen
 import com.psi.fhir.ui.composes.LoadingProgressBar
+import com.psi.fhir.ui.composes.LoginScreen
+import com.psi.fhir.ui.composes.PatientDetailsScreen
 import com.psi.fhir.ui.composes.PatientListScreen
 import com.psi.fhir.ui.composes.QuestionnaireScreen
 import com.psi.fhir.ui.viewmodels.PatientListViewModel
@@ -47,10 +49,11 @@ import com.psi.fhir.ui.viewmodels.SyncDataStatus
 
 
 enum class FhirScreen(@StringRes val title: Int) {
-    PatientList(title = R.string.app_name),
-    PatientDetails(title = R.string.patient_details),
-    AddPatient(title = R.string.add_patient),
-    EditPatient(title = R.string.edit_patient)
+    LOGIN(title = R.string.login),
+    PATIENT_LIST(title = R.string.app_name),
+    PATIENT_DETAILS(title = R.string.patient_details),
+    ADD_PATIENT(title = R.string.add_patient),
+    EDIT_PATIENT(title = R.string.edit_patient)
 }
 
 @Composable
@@ -64,7 +67,7 @@ fun FhirApp(
     // Convert the current screen's title to a value of Fhir App Screen
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = FhirScreen.valueOf(
-        backStackEntry?.destination?.route ?: FhirScreen.PatientList.name
+        backStackEntry?.destination?.route ?: FhirScreen.LOGIN.name
     )
 
     // Sync data
@@ -76,7 +79,6 @@ fun FhirApp(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() },
-                showActions = showActions,
                 viewModel = viewModel
             )
         },
@@ -84,7 +86,7 @@ fun FhirApp(
             if(showActions ) {
                 FloatingActionButton(
                     onClick = {
-                        navController.navigate(FhirScreen.AddPatient.name)
+                        navController.navigate(FhirScreen.ADD_PATIENT.name)
                     }
                 ) {
                     // You can customize the appearance of the FAB here
@@ -110,14 +112,22 @@ fun FhirApp(
         var searchKeyword: String by remember { mutableStateOf("") }
         val pollState by viewModel.pollState.collectAsState()
         val uiState by viewModel.uiState.collectAsState()
+        var selectedPatientId by remember { mutableStateOf("") }
+
 
         NavHost(
             navController = navController,
-            startDestination = FhirScreen.PatientList.name,
+            startDestination = FhirScreen.LOGIN.name,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(route = FhirScreen.PatientList.name) {
+            composable(route = FhirScreen.LOGIN.name) {
+                showActions = false
+                LoginScreen(onClick = {
+                    navController.navigate(FhirScreen.PATIENT_LIST.name)
+                })
+            }
 
+            composable(route = FhirScreen.PATIENT_LIST.name) {
                 showActions = true
                 LoadingProgressBar(isLoading = (pollState == SyncDataStatus.LOADING))
                 Column {
@@ -126,7 +136,7 @@ fun FhirApp(
                         icon = Icons.Default.Search,
                         label = stringResource(R.string.search_by_name),
                         modifier = Modifier
-                            .padding(bottom = 8.dp, top = 4.dp)
+                            .padding(bottom = 8.dp, top = 4.dp, start = 4.dp, end = 4.dp)
                             .fillMaxWidth()
                     ) {
                         searchKeyword = it
@@ -135,6 +145,10 @@ fun FhirApp(
 
                     PatientListScreen(
                         patients = uiState,
+                        onItemClick = { selectedItem ->
+                            selectedPatientId = selectedItem.id
+                            navController.navigate(FhirScreen.PATIENT_DETAILS.name)
+                        },
                         modifier = Modifier
                             .fillMaxSize()
                     )
@@ -142,7 +156,13 @@ fun FhirApp(
 
             }
 
-            composable(route = FhirScreen.AddPatient.name) {
+
+            composable(route = FhirScreen.PATIENT_DETAILS.name) {
+                showActions = false
+                PatientDetailsScreen(patientId = selectedPatientId)
+            }
+
+            composable(route = FhirScreen.ADD_PATIENT.name) {
                 showActions = false
 //                val context = LocalContext.current
 //                FormScreen(
@@ -164,7 +184,38 @@ fun FhirAppBar (
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
     viewModel: PatientListViewModel,
-    showActions: Boolean,
+    modifier: Modifier = Modifier
+) {
+   when( currentScreen ) {
+       FhirScreen.PATIENT_LIST ->
+           PatientListToolBar(
+               currentScreen = currentScreen,
+               viewModel = viewModel,
+               modifier = modifier
+           )
+       FhirScreen.ADD_PATIENT ->
+           AddPatientToolBar(
+               currentScreen = currentScreen,
+               navigateUp = navigateUp,
+               modifier = modifier
+           )
+
+       FhirScreen.PATIENT_DETAILS ->
+           PatientDetailsToolBar(
+               currentScreen = currentScreen,
+               navigateUp = navigateUp,
+               modifier = modifier
+           )
+
+       else -> Unit
+   }
+
+}
+
+@Composable
+fun PatientListToolBar (
+    currentScreen: FhirScreen,
+    viewModel: PatientListViewModel,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -174,27 +225,80 @@ fun FhirAppBar (
         ),
         modifier = modifier,
         navigationIcon = {
-            if (canNavigateBack) {
-                IconButton(onClick = navigateUp) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.back_button)
-                    )
-                }
-            }
+//                IconButton(onClick = navigateUp) {
+//                    Icon(
+//                        imageVector = Icons.Filled.ArrowBack,
+//                        contentDescription = stringResource(R.string.back_button)
+//                    )
+//                }
+
         },
         actions = {
-            if (showActions ) {
-                IconButton(onClick = {
-                    viewModel.performSyncData()
-                }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_sync_30),
-                        contentDescription = "Sync"
-                    )
-                }
+            IconButton(onClick = {
+                viewModel.performSyncData()
+            }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_sync_30),
+                    contentDescription = "Sync"
+                )
             }
         }
     )
 }
 
+@Composable
+fun AddPatientToolBar (
+    currentScreen: FhirScreen,
+    navigateUp: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TopAppBar(
+        title = { Text(stringResource(currentScreen.title)) },
+        colors = TopAppBarDefaults.mediumTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        modifier = modifier,
+        navigationIcon = {
+            IconButton(onClick = navigateUp) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.back_button)
+                )
+            }
+        }
+    )
+}
+
+
+@Composable
+fun PatientDetailsToolBar (
+    currentScreen: FhirScreen,
+    navigateUp: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TopAppBar(
+        title = { Text(stringResource(currentScreen.title)) },
+        colors = TopAppBarDefaults.mediumTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        modifier = modifier,
+        navigationIcon = {
+            IconButton(onClick = navigateUp) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.back_button)
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = {
+                // Show edit form here
+            }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_edit_30),
+                    contentDescription = "Sync"
+                )
+            }
+        }
+    )
+}

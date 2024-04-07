@@ -7,4 +7,11 @@
     <string name="edit_patient">Edit Patient</string>
     <string name="back_button">Back</string>
     <string name="search_by_name">Search by name</string>
+    <string name="login">Login</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="dob">DoB</string>
+    <string name="gender">Gender</string>
+    <string name="age">Age(s)</string>
+    <string name="years">year(s)</string>
 </resources>

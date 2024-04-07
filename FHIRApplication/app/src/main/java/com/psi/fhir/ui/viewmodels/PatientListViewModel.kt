@@ -5,12 +5,15 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.fhir.FhirEngine
+import com.google.android.fhir.get
 import com.google.android.fhir.search.Order
 import com.google.android.fhir.search.StringFilterModifier
 import com.google.android.fhir.search.search
 import com.google.android.fhir.sync.Sync
 import com.psi.fhir.FhirApplication
-import com.psi.fhir.data.PatientUiState
+import com.psi.fhir.data.PatientDetailsUiState
+import com.psi.fhir.data.PatientListItemUiState
+import com.psi.fhir.helper.AppConfigurationHelper
 import com.psi.fhir.sync.FhirPeriodicSyncWorker
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,6 +22,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.hl7.fhir.r4.model.Patient
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 enum class SyncDataStatus {
     UNDEFINED,
@@ -32,8 +37,8 @@ class PatientListViewModel( private val application: Application ): AndroidViewM
     private val _pollState = MutableStateFlow<SyncDataStatus>(SyncDataStatus.UNDEFINED)
     val pollState = _pollState.asStateFlow()
 
-    private val _uiState = MutableStateFlow<List<PatientUiState>>(mutableListOf())
-    val uiState: StateFlow<List<PatientUiState>> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<List<PatientListItemUiState>>(mutableListOf())
+    val uiState: StateFlow<List<PatientListItemUiState>> = _uiState.asStateFlow()
 
 
     var fhirEngine: FhirEngine = FhirApplication.fhirEngine(application.applicationContext)
@@ -64,7 +69,7 @@ class PatientListViewModel( private val application: Application ): AndroidViewM
     }
 
     private fun updatePatientList (
-        getList: suspend () -> List<PatientUiState>,
+        getList: suspend () -> List<PatientListItemUiState>,
 //        getCount: suspend() -> Long
     ) {
         viewModelScope.launch {
@@ -73,8 +78,8 @@ class PatientListViewModel( private val application: Application ): AndroidViewM
         }
     }
 
-    private suspend fun searchPatientsByName(nameQuery: String = ""): List<PatientUiState> {
-        val patients: MutableList<PatientUiState> = mutableListOf()
+    private suspend fun searchPatientsByName(nameQuery: String = ""): List<PatientListItemUiState> {
+        val patients: MutableList<PatientListItemUiState> = mutableListOf()
 
         var searchResult = fhirEngine.search<Patient> {
             if (nameQuery.isNotEmpty()) {
@@ -98,7 +103,7 @@ class PatientListViewModel( private val application: Application ): AndroidViewM
 
 }
 
-internal fun Patient.toPatientItem(position: Int): PatientUiState {
+internal fun Patient.toPatientItem(position: Int): PatientListItemUiState {
     Log.d("Patient.toPatientItem", "$idElement" )
 
     // Show nothing if no values available for gender and date of birth.
@@ -124,9 +129,8 @@ internal fun Patient.toPatientItem(position: Int): PatientUiState {
     val isActive = active
     val html: String = if (hasText()) text.div.valueAsString else ""
 
-    return PatientUiState(
-        id = position.toString(),
-        resourceId = patientId,
+    return PatientListItemUiState(
+        id = patientId,
         name = name,
         gender = gender ?: "",
         dob = dob,
@@ -136,3 +140,4 @@ internal fun Patient.toPatientItem(position: Int): PatientUiState {
         isActive = isActive
     )
 }
+

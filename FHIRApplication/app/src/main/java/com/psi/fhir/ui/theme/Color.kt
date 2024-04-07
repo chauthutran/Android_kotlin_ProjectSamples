@@ -2,7 +2,6 @@ package com.psi.fhir.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-
 val md_theme_light_primary = Color(0xFF984061)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)
 val md_theme_light_primaryContainer = Color(0xFFFFD9E2)

@@ -27,7 +27,6 @@ fun evaluateJavaScript(jsCode: String): Any? {
 }
 
 object AssestsFile {
-
     fun readFileFromAssets(application: Application, filename: String): String {
         return application.assets.open(filename).bufferedReader().use {
             it.readText()
