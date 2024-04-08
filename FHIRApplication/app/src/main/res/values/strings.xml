@@ -14,4 +14,6 @@
     <string name="gender">Gender</string>
     <string name="age">Age(s)</string>
     <string name="years">year(s)</string>
+    <string name="message_no_datetime">No effect data time</string>
+    <string name="observations">Observations</string>
 </resources>

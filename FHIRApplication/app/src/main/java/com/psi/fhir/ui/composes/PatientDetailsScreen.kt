@@ -1,16 +1,22 @@
 package com.psi.fhir.ui.composes
 
+import android.graphics.Color
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -34,6 +40,8 @@ import com.psi.fhir.ui.viewmodels.PatientDetailsViewModel
 import com.psi.fhir.utils.DateUtils
 import java.time.LocalDate
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.psi.fhir.ui.viewmodels.ObservationListItem
+import com.psi.fhir.ui.viewmodels.PatientDetailData
 
 @Composable
 fun PatientDetailsScreen(
@@ -41,60 +49,135 @@ fun PatientDetailsScreen(
     viewModel: PatientDetailsViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
-    var uiState by remember { mutableStateOf<PatientDetailsUiState?>(null) }
+    var uiState by remember { mutableStateOf<PatientDetailData?>(null) }
     LaunchedEffect(Unit) {
         // Call the suspend function from the ViewModel within a coroutine
-        uiState = viewModel.findPatientById(patientId)
+        uiState = viewModel.getPatientDetails(patientId)
     }
 
-    var formatDatePattern = AppConfigurationHelper.getFormatDatePattern()
-
-    var data by remember { mutableStateOf("") }
-
     Column (
-        modifier = modifier.padding(10.dp)
+        modifier = modifier
     ) {
 
         if( uiState == null ) {
            LoadingProgressBar(isLoading = true)
         }
         else {
-               val ages = "${DateUtils.getAge(uiState!!.dob)} (${stringResource(R.string.years)})"
-
-               Text(
-                   text = uiState!!.name,
-                   style = MaterialTheme.typography.displayLarge
-               )
-
-               Card {
-                   LazyVerticalGrid(
-                       modifier = Modifier.padding(10.dp),
-                       columns = GridCells.Fixed(3),
-                       verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
-                       horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
-                   ) {
-                       val dataItemList = listOf<GridItem>(
-                           GridItem(title = R.string.gender, value = uiState!!.name),
-                           GridItem(title = R.string.age, value = ages),
-                           GridItem(
-                               title = R.string.dob,
-                               value = DateUtils.formatDate(uiState!!.dob, formatDatePattern)
-                           ),
-                       )
-                       items(dataItemList) { gridItem ->
-                           GridItemLayout(
-                               item = gridItem
-                           )
-                       }
-                   }
-               }
+            PatientCard(uiState!!, modifier)
         }
     }
 
 }
 
 @Composable
-private fun GridItemLayout(item: GridItem) {
+private fun PatientCard(
+    uiState: PatientDetailData,
+    modifier: Modifier = Modifier
+) {
+    Column (
+        modifier = modifier
+            .fillMaxWidth()
+            .background( MaterialTheme.colorScheme.inversePrimary, shape = RoundedCornerShape(4.dp) )
+    ) {
+        // Patient Details
+        PersonalCard(uiState!!.patient)
+        ObservationListCard(uiState!!.observations)
+    }
+}
+
+
+@Composable
+private fun ObservationListCard(
+    observations: List<ObservationListItem>,
+    modifier: Modifier = Modifier
+) {
+    Column (
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = stringResource(R.string.observations),
+            style = MaterialTheme.typography.displayMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = modifier.padding(top = 10.dp, start = 10.dp)
+        )
+
+        Card (
+            modifier = modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = 300.dp)
+                .padding(10.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.inverseOnSurface,
+            )
+        ){
+            LazyVerticalGrid(
+                modifier = modifier.padding(10.dp),
+                columns = GridCells.Fixed(1),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
+            ) {
+                items(observations) { gridItem ->
+                    Column {
+                        Text(text = gridItem.code)
+                        Text(text = gridItem.effective)
+                        Text(text = gridItem.value)
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+@Composable
+private fun PersonalCard(
+    patientUiState: PatientDetailsUiState,
+    modifier: Modifier = Modifier
+) {
+
+    var formatDatePattern = AppConfigurationHelper.getFormatDatePattern()
+    val ages = "${DateUtils.getAge(patientUiState.dob)} (${stringResource(R.string.years)})"
+    Column (
+        modifier = modifier
+            .fillMaxWidth()
+            .background( MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(1.dp) )
+    ) {
+        Text(
+            text = patientUiState.name,
+            style = MaterialTheme.typography.displayLarge,
+            modifier = modifier.padding(10.dp)
+        )
+
+        Card(
+            modifier = modifier.padding(start = 10.dp, bottom = 20.dp, end = 10.dp)
+        ) {
+            LazyVerticalGrid(
+                modifier = modifier.padding(10.dp),
+                columns = GridCells.Fixed(3),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
+            ) {
+                val dataItemList = listOf<GridItem>(
+                    GridItem(title = R.string.gender, value = patientUiState.name),
+                    GridItem(title = R.string.age, value = ages),
+                    GridItem(
+                        title = R.string.dob,
+                        value = DateUtils.formatDate(patientUiState.dob, formatDatePattern)
+                    ),
+                )
+                items(dataItemList) { gridItem ->
+                    PersonalItem(
+                        item = gridItem
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PersonalItem(item: GridItem) {
     Row(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -134,16 +217,19 @@ data class GridItem(
 fun PreviewPatientDetails() {
 
     val  patientUiState1 =   PatientDetailsUiState( "1","Test 1", "F", LocalDate.now(), "0123456789", "City 1", "Country 1" )
+    val obs = listOf<ObservationListItem>(
+//       ObservationListItem ( id = "1", code = "code1", effective = "2012-01-01", value = "Fever" ),
+//       ObservationListItem ( id = "2", code = "code2", effective = "2012-02-02", value = "Fever 2" )
+    )
 
+    val patientDetails = PatientDetailData( patientUiState1, obs )
     FHIRApplicationTheme(darkTheme = false) {
         Surface(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp),
+                .fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-//            PatientDetailsScreen(patientUiState1)
-
+            PatientCard(patientDetails)
         }
     }
 

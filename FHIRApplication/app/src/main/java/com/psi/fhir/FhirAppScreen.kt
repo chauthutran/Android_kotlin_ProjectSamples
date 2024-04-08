@@ -1,6 +1,5 @@
 package com.psi.fhir
 
-import androidx.activity.ComponentActivity
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,7 +24,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -36,9 +34,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.psi.fhir.helper.AppConfigurationHelper
 import com.psi.fhir.ui.composes.EditTextField
-import com.psi.fhir.ui.composes.FormScreen
 import com.psi.fhir.ui.composes.LoadingProgressBar
 import com.psi.fhir.ui.composes.LoginScreen
 import com.psi.fhir.ui.composes.PatientDetailsScreen
@@ -295,7 +291,7 @@ fun PatientDetailsToolBar (
                 // Show edit form here
             }) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_edit_30),
+                    painter = painterResource(id = R.drawable.ic_edit_24),
                     contentDescription = "Sync"
                 )
             }
