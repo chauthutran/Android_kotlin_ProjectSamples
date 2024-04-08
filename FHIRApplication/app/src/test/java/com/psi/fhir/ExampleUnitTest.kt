@@ -24,6 +24,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.util.Timer
 
 
 //import org.hl7.fhir.r4.utils.StructureMapUtilities
@@ -66,18 +67,24 @@ class ExampleUnitTest {
             structureMapUtilities.parse(immunizationStructureMap, "psi reg")
         val mapString = iParser.encodeResourceToString(structureMap)
 
-        println("===== structureMap: ${mapString}")
+println("===== structureMap: ${mapString}")
 
-//        // Generate empty target resource object
-//        val targetResource: Resource =
-//            ResourceFactory.createResource(scu.getTargetType(map).getName())
-//
-//        // Deserialize source JSON
-//        val baseElement: Element = JsonParser(contextR4)
-//            .parse(ByteArrayInputStream("{your-source-resource-json}".toByteArray(StandardCharsets.UTF_8)))
-//
-////        // Perform extraction to targetResource
-//        structureMapUtilities.transform(contextR4, baseElement, map, targetResource)
+        // Generate empty target resource object
+        val registrationQuestionnaireResponseString =  getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/Questionnaire_Response.json")
+
+        val targetResource = Bundle()
+        val baseElement =
+            iParser.parseResource(
+                QuestionnaireResponse::class.java,
+                registrationQuestionnaireResponseString,
+            )
+
+        structureMapUtilities.transform(contextR4, baseElement, structureMap, targetResource)
+
+
+       println("========== targetResource.entry.size : ${targetResource.entry.size}")
+        assertEquals(true, true)
+
     }
 
     @Test

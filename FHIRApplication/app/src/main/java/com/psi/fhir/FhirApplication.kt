@@ -97,6 +97,9 @@ class FhirApplication : Application(), DataCaptureConfig.Provider  {
             val baseIg = async { NpmPackage.fromPackage(assets.open("packages.tgz")) }
             val packages = arrayListOf<NpmPackage>(measlesIg.await(), baseIg.await())
 
+//            val baseIg = async { NpmPackage.fromPackage(assets.open("packages.tgz")) }
+//            val packages = arrayListOf<NpmPackage>(baseIg.await())
+
             println("**** read assets contextR4")
             contextR4 = ComplexWorkerContext()
             contextR4?.apply {

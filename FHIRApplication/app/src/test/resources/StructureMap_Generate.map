@@ -1,16 +1,24 @@
 map "https://com.psi.fhir/fhir/StructureMap/PatientRegistration" = 'Patient Registration'
 
 uses "http://hl7.org/fhir/StructureDefinition/QuestionnaireReponse" as source
+uses "http://hl7.org/fhir/StructureDefinition/Bundle" as target
 uses "http://hl7.org/fhir/StructureDefinition/Patient" as target
+uses "http://hl7.org/fhir/StructureDefinition/Encounter" as target
+uses "http://hl7.org/fhir/StructureDefinition/Observation" as target
 
 group QuestionnaireResponseToPatientMapping(source src : QuestionnaireResponse, target bundle: Bundle) {
     src -> bundle.id = uuid() "r_b_id";
     src -> bundle.type = 'collection' "r_bun_type";
-    src -> bundle.entry as entry, entry.resource = create('Patient') as patient then
-        TransformPatient(src, patient) "r_bun_entries";
+
+    src -> bundle.entry as entry, entry.resource = create('Patient') as patient then {
+     src -> bundle.entry as entry, entry.resource = create('Encounter') as encounter then
+          ExtractPatient(src, patient), ExtractEncounter(src, patient, bundle, encounter) , ExtractObservation_1_1_0(src, bundle, encounter) "r_bun_entries";
+    } "r_bun_created";
+
 }
 
-group TransformPatient(source src : QuestionnaireResponse, target patient: Patient) {
+
+group ExtractPatient(source src : QuestionnaireResponse, target patient: Patient  ) {
     src -> patient.id = uuid() "r_p_id_1";
     src.item as item_bio where(linkId = 'PR') then { // Patient Info
           item_bio.item as item_name where(linkId = 'PR-name') -> patient.name = create('HumanName') as patientName then {
@@ -64,5 +72,39 @@ group TransformPatient(source src : QuestionnaireResponse, target patient: Patie
 
        };
 
+}
+
+group ExtractEncounter(source src : QuestionnaireResponse, source patient : Patient, target bundle: Bundle, target encounter: Encounter ) {
+   src -> encounter.id = uuid() "r_enc_id";
+   src -> encounter.status = 'finished' "r_enc_status";
+   src -> encounter.subject = reference(patient) "r_en_sub";
+
+   src -> encounter.class = c("http://terminology.hl7.org/CodeSystem/v3-ActCode", "HH", "home health") "r_en_cls";
+   src -> encounter.period = create('Period') as enPeriod then {
+       src -> enPeriod.start = evaluate(src, now()) "r_en_per_start";
+       src -> enPeriod.end = evaluate(src, now()) "r_en_per_end";
+   } "r_en_per";
+
+}
+
+
+group ExtractObservation_1_1_0(source src : QuestionnaireResponse, target bundle : Bundle, target encounter : Encounter ) {
+    src.item as item_bio where(linkId = '1.0.0' ) then {
+      src -> bundle.entry as entry, entry.resource = create('Observation') as obs then {
+         src -> obs.id = uuid() "r_ob_id";
+         src -> obs.status = "final" "r_ob_st";
+         src -> obs.encounter = reference(encounter) "r_ob_en";
+         src -> obs.effective = evaluate(src, now()) "r_ob_eff";
+
+        item_bio.item as item_data where (linkId = '1.1.0' and answer.count() > 0) then {
+            item_data.answer as valueanswer -> obs.value = create('CodeableConcept') as codeableConcept then {
+              valueanswer -> codeableConcept.coding = evaluate(item_data, valueanswer.value.code) "r_ob_cc_cod";
+              valueanswer -> codeableConcept.text = evaluate(item_data, valueanswer.value.display) "r_ob_cc_cod_disp";
+           } "r_ob_val";
+        } "r_ob_vals";
+
+     } "r_ob_og6";
+
+    } "r_ob_list";
 }
 

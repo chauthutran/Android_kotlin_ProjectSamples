@@ -11,6 +11,7 @@ import com.google.android.fhir.datacapture.extensions.targetStructureMap
 import com.psi.fhir.FhirApplication
 import com.psi.fhir.di.TransformSupportServices
 import com.psi.fhir.helper.AppConfigurationHelper
+import com.psi.fhir.utils.ProcessStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -19,6 +20,7 @@ import org.hl7.fhir.r4.model.Questionnaire
 import org.hl7.fhir.r4.model.QuestionnaireResponse
 import org.hl7.fhir.r4.utils.StructureMapUtilities
 import timber.log.Timber
+import java.util.Timer
 
 
 class QuestionnaireViewModel ( application: Application) : AndroidViewModel(application){
@@ -39,12 +41,17 @@ class QuestionnaireViewModel ( application: Application) : AndroidViewModel(appl
         questionnaire = contextR4.searchResourceById(questionnaireId!!)
 
         val jsonParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
+        println(jsonParser.encodeResourceToString(questionnaire))
         return jsonParser.encodeResourceToString(questionnaire)
     }
 
     fun saveResources(questionnaireResponse: QuestionnaireResponse) {
-        viewModelScope.launch{ _resourceSaved.emit(ProcessStatus.Loading()) }
 
+        val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
+        val questionnaireResponseStr = iParser.encodeResourceToString(questionnaireResponse)
+
+
+        viewModelScope.launch{ _resourceSaved.emit(ProcessStatus.Loading()) }
         viewModelScope.launch {
             val contextR4 =
                 FhirApplication.contextR4(getApplication<FhirApplication>().applicationContext)
