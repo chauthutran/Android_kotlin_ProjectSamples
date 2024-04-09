@@ -47,6 +47,7 @@ fun EditTextField(
     label: String,
     modifier: Modifier = Modifier,
     keyboardType: KeyboardType = KeyboardType.Text,
+    enabled: Boolean = true,
     onValueChange: (String) -> Unit
 ) {
 
@@ -61,6 +62,7 @@ fun EditTextField(
             },
             modifier = modifier,
             label = { Text(text = label) },
+            enabled = enabled,
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = keyboardType,
                 imeAction = ImeAction.Next
@@ -70,9 +72,13 @@ fun EditTextField(
     else {
         OutlinedTextField(
             value = value,
-            onValueChange = onValueChange,
+            onValueChange = {
+                value = it
+                onValueChange(it)
+            },
             modifier = modifier,
             label = { Text(text = label) },
+            enabled = enabled,
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = keyboardType,
                 imeAction = ImeAction.Next

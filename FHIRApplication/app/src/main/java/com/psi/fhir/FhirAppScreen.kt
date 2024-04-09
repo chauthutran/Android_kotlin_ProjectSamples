@@ -1,5 +1,7 @@
 package com.psi.fhir
 
+import android.app.AlertDialog
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,8 +24,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -34,14 +38,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.psi.fhir.data.RequestResult
 import com.psi.fhir.ui.composes.EditTextField
 import com.psi.fhir.ui.composes.LoadingProgressBar
 import com.psi.fhir.ui.composes.LoginScreen
 import com.psi.fhir.ui.composes.PatientDetailsScreen
 import com.psi.fhir.ui.composes.PatientListScreen
 import com.psi.fhir.ui.composes.QuestionnaireScreen
+import com.psi.fhir.ui.viewmodels.PatientDetailsViewModel
 import com.psi.fhir.ui.viewmodels.PatientListViewModel
 import com.psi.fhir.ui.viewmodels.SyncDataStatus
+import kotlinx.coroutines.launch
 
 
 enum class FhirScreen(@StringRes val title: Int) {
@@ -57,7 +64,9 @@ fun FhirApp(
     navController: NavHostController = rememberNavController(),
     fragmentManager: FragmentManager,
 ) {
-    val viewModel: PatientListViewModel = viewModel()
+    val patientListViewModel: PatientListViewModel = viewModel()
+    val patientDetailsViewModel: PatientDetailsViewModel = viewModel()
+
     var showActions by remember { mutableStateOf(true) }
 
     // Convert the current screen's title to a value of Fhir App Screen
@@ -66,16 +75,14 @@ fun FhirApp(
         backStackEntry?.destination?.route ?: FhirScreen.LOGIN.name
     )
 
-    // Sync data
-    viewModel.performSyncData()
-
     Scaffold(
         topBar = {
             FhirAppBar(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() },
-                viewModel = viewModel
+                patientListViewModel = patientListViewModel,
+                patientDetailsViewModel = patientDetailsViewModel
             )
         },
         floatingActionButton = {
@@ -105,9 +112,6 @@ fun FhirApp(
 //        }
     ) { innerPadding ->
 
-        var searchKeyword: String by remember { mutableStateOf("") }
-        val pollState by viewModel.pollState.collectAsState()
-        val uiState by viewModel.uiState.collectAsState()
         var selectedPatientId by remember { mutableStateOf("") }
 
 
@@ -125,37 +129,23 @@ fun FhirApp(
 
             composable(route = FhirScreen.PATIENT_LIST.name) {
                 showActions = true
-                LoadingProgressBar(isLoading = (pollState == SyncDataStatus.LOADING))
-                Column {
-                    EditTextField(
-                        value = searchKeyword,
-                        icon = Icons.Default.Search,
-                        label = stringResource(R.string.search_by_name),
-                        modifier = Modifier
-                            .padding(bottom = 8.dp, top = 4.dp, start = 4.dp, end = 4.dp)
-                            .fillMaxWidth()
-                    ) {
-                        searchKeyword = it
-                        viewModel.searchPatients(searchKeyword)
-                    }
-
-                    PatientListScreen(
-                        patients = uiState,
-                        onItemClick = { selectedItem ->
-                            selectedPatientId = selectedItem.id
-                            navController.navigate(FhirScreen.PATIENT_DETAILS.name)
-                        },
-                        modifier = Modifier
-                            .fillMaxSize()
-                    )
-                }
+                PatientListScreen(
+                    onItemClick = { selectedItem ->
+                        selectedPatientId = selectedItem.id
+                        navController.navigate(FhirScreen.PATIENT_DETAILS.name)
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
 
             }
 
 
             composable(route = FhirScreen.PATIENT_DETAILS.name) {
                 showActions = false
-                PatientDetailsScreen(patientId = selectedPatientId)
+                PatientDetailsScreen(
+                    patientId = selectedPatientId,
+                    viewModel = patientDetailsViewModel
+                )
             }
 
             composable(route = FhirScreen.ADD_PATIENT.name) {
@@ -179,14 +169,15 @@ fun FhirAppBar (
     currentScreen: FhirScreen,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
-    viewModel: PatientListViewModel,
+    patientListViewModel: PatientListViewModel,
+    patientDetailsViewModel: PatientDetailsViewModel,
     modifier: Modifier = Modifier
 ) {
    when( currentScreen ) {
        FhirScreen.PATIENT_LIST ->
            PatientListToolBar(
                currentScreen = currentScreen,
-               viewModel = viewModel,
+               viewModel = patientListViewModel,
                modifier = modifier
            )
        FhirScreen.ADD_PATIENT ->
@@ -200,6 +191,7 @@ fun FhirAppBar (
            PatientDetailsToolBar(
                currentScreen = currentScreen,
                navigateUp = navigateUp,
+               viewModel = patientDetailsViewModel,
                modifier = modifier
            )
 
@@ -269,9 +261,16 @@ fun AddPatientToolBar (
 @Composable
 fun PatientDetailsToolBar (
     currentScreen: FhirScreen,
+    viewModel: PatientDetailsViewModel,
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    var patientDeleted by remember {  mutableStateOf<RequestResult?>(null)  }
+    var showLoading by remember {  mutableStateOf<Boolean>(false)  }
+
     TopAppBar(
         title = { Text(stringResource(currentScreen.title)) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -288,13 +287,45 @@ fun PatientDetailsToolBar (
         },
         actions = {
             IconButton(onClick = {
-                // Show edit form here
+                val alertDialog = AlertDialog.Builder( context ).apply {
+                    setTitle("Order items")
+                    setMessage("Do you want to order the product cart items ?")
+                    setNegativeButton("Cancel") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    setPositiveButton( "Yes" ) { dialog,_ ->
+                        showLoading = true
+                        coroutineScope.launch {
+                            patientDeleted = viewModel.deletePatientDetails()
+                        }
+                        dialog.dismiss()
+                    }
+                }
+
+                alertDialog.create()
+                alertDialog.show()
             }) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_edit_24),
+                    painter = painterResource(id = com.google.android.fhir.datacapture.R.drawable.ic_delete),
                     contentDescription = "Sync"
                 )
             }
         }
     )
+
+    if( showLoading ) {
+        LoadingProgressBar(isLoading = true)
+    }
+
+    patientDeleted?.let {
+        showLoading = true
+        if( it.success) {
+            Toast.makeText(context, "The patient is deleted successfully.", Toast.LENGTH_SHORT).show()
+            navigateUp()
+        }
+        else {
+            Toast.makeText(context, it.errMsg, Toast.LENGTH_SHORT).show()
+        }
+    }
+
 }

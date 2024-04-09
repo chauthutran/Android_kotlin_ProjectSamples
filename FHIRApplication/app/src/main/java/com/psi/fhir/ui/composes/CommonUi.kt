@@ -31,6 +31,8 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
 
 @Composable
@@ -58,11 +60,4 @@ fun getTypographyByName(name: String): TextStyle {
 
 fun getDrawableResourceId(context: Context, drawableName: String): Int {
     return context.resources.getIdentifier(drawableName, "drawable", context.packageName)
-}
-
-
-@Preview
-@Composable
-fun PreviewLoadingProgressBar() {
-    LoadingProgressBar(isLoading = false)
 }

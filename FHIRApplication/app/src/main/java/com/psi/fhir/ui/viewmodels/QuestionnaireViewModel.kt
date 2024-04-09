@@ -49,7 +49,6 @@ class QuestionnaireViewModel ( application: Application) : AndroidViewModel(appl
         questionnaire = contextR4.searchResourceById(questionnaireId!!)
 
         val jsonParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
-        println(jsonParser.encodeResourceToString(questionnaire))
         return jsonParser.encodeResourceToString(questionnaire)
     }
 

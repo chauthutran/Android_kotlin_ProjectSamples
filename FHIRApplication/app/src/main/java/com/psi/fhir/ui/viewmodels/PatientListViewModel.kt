@@ -52,7 +52,7 @@ class PatientListViewModel( private val application: Application ): AndroidViewM
                     .shareIn(this, SharingStarted.Eagerly, 10)
                     .collect {
                         _pollState.emit(SyncDataStatus.SUCCESS)
-                        searchPatients()
+                        searchPatientsByName("")
                     }
             }
             catch(e: Exception) {
@@ -64,24 +64,23 @@ class PatientListViewModel( private val application: Application ): AndroidViewM
     }
 
 
-    fun searchPatients(nameQuery: String = "") {
-        updatePatientList({ searchPatientsByName(nameQuery) })
-    }
+//    fun searchPatients(nameQuery: String = "") {
+//        updatePatientList({ searchPatientsByName(nameQuery) })
+//    }
+//
+//    private fun updatePatientList (
+//        getList: suspend () -> List<PatientListItemUiState>,
+////        getCount: suspend() -> Long
+//    ) {
+//        viewModelScope.launch {
+//            _uiState.value = getList()
+////            livePatientCount.value = getCount()
+//        }
+//    }
 
-    private fun updatePatientList (
-        getList: suspend () -> List<PatientListItemUiState>,
-//        getCount: suspend() -> Long
-    ) {
-        viewModelScope.launch {
-            _uiState.value = getList()
-//            livePatientCount.value = getCount()
-        }
-    }
-
-    private suspend fun searchPatientsByName(nameQuery: String = ""): List<PatientListItemUiState> {
+    suspend fun searchPatientsByName(nameQuery: String = ""): List<PatientListItemUiState> {
         val patients: MutableList<PatientListItemUiState> = mutableListOf()
-
-        var searchResult = fhirEngine.search<Patient> {
+        fhirEngine.search<Patient> {
             if (nameQuery.isNotEmpty()) {
                 filter(
                     Patient.NAME,
@@ -92,10 +91,10 @@ class PatientListViewModel( private val application: Application ): AndroidViewM
                 )
             }
             sort(Patient.GIVEN, Order.ASCENDING)
-            count = 20
+            count = 100
             from = 0
         }
-            .mapIndexed { index, fhirPatient -> fhirPatient.resource.toPatientItem(index + 1) }
+            .mapIndexed { index, fhirPatient -> fhirPatient.resource.toPatientItem() }
             .let { patients.addAll(it) }
 
         return patients
@@ -103,7 +102,7 @@ class PatientListViewModel( private val application: Application ): AndroidViewM
 
 }
 
-internal fun Patient.toPatientItem(position: Int): PatientListItemUiState {
+internal fun Patient.toPatientItem(): PatientListItemUiState {
     Log.d("Patient.toPatientItem", "$idElement" )
 
     // Show nothing if no values available for gender and date of birth.
@@ -127,7 +126,6 @@ internal fun Patient.toPatientItem(position: Int): PatientListItemUiState {
     val city = if (hasAddress()) address[0].city else ""
     val country = if (hasAddress()) address[0].country else ""
     val isActive = active
-    val html: String = if (hasText()) text.div.valueAsString else ""
 
     return PatientListItemUiState(
         id = patientId,

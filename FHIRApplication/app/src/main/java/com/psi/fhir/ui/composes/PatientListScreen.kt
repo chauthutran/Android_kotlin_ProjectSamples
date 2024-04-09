@@ -14,40 +14,81 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.psi.fhir.FhirScreen
 import com.psi.fhir.R
 import com.psi.fhir.data.PatientListItemUiState
 import com.psi.fhir.helper.AppConfigurationHelper
 import com.psi.fhir.ui.theme.FHIRApplicationTheme
+import com.psi.fhir.ui.viewmodels.PatientListViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun PatientListScreen(
-    patients: List<PatientListItemUiState>,
+    viewModel: PatientListViewModel = viewModel(),
     modifier: Modifier = Modifier,
     onItemClick: (PatientListItemUiState) -> Unit = {},
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    LazyColumn(contentPadding = contentPadding) {
-        itemsIndexed(patients) {index, patient ->
-            PatientItemCard(
-                patientUiState = patient,
-                onItemClick = onItemClick,
-                modifier = modifier
-            )
+    var uiState by remember { mutableStateOf<List<PatientListItemUiState>?>(null) }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        uiState = viewModel.searchPatientsByName("")
+    }
+
+    LoadingProgressBar(isLoading = (uiState == null))
+    Column {
+        EditTextField(
+            value = "",
+            icon = Icons.Default.Search,
+            label = stringResource(R.string.search_by_name),
+            modifier = Modifier
+                .padding(bottom = 8.dp, top = 4.dp, start = 4.dp, end = 4.dp)
+                .fillMaxWidth(),
+            onValueChange = { newValue ->
+                coroutineScope.launch {
+                    uiState = viewModel.searchPatientsByName(newValue)
+                }
+            }
+        )
+        uiState?.let {
+            LazyColumn(contentPadding = contentPadding) {
+                itemsIndexed(uiState!!) { index, patient ->
+                    PatientItemCard(
+                        patientUiState = patient,
+                        onItemClick = onItemClick,
+                        modifier = modifier
+                    )
+                }
+            }
+
         }
     }
+
 }
+
 
 
 @Composable
@@ -60,10 +101,10 @@ fun PatientItemCard (
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = modifier
-                .padding(horizontal = 8.dp, vertical = 4.dp)
-                .clickable(
-                    onClick = { onItemClick(patientUiState)}
-                )
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .clickable(
+                onClick = { onItemClick(patientUiState) }
+            )
 //        colors = CardColors(
 //            containerColor = Color.White,
 //            contentColor = Color.White,
@@ -157,7 +198,9 @@ fun PatientListScreenPreview() {
                 .padding(20.dp),
             color = MaterialTheme.colorScheme.background
         ) {
-            PatientListScreen(patients)
+//            PatientListScreen(patients)
+            PatientItemCard(patientUiState = patientUiState1, onItemClick = {})
+
 //            Row (
 //                modifier = Modifier
 //                    .fillMaxWidth()

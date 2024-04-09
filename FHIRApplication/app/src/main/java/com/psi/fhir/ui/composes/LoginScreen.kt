@@ -12,14 +12,17 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.psi.fhir.R
 import com.psi.fhir.ui.theme.FHIRApplicationTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -45,6 +49,7 @@ fun LoginScreen(
 ) {
 
     var loginData: HashMap<String, String> by remember { mutableStateOf(HashMap()) }
+    var isLoading by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -83,6 +88,7 @@ fun LoginScreen(
                 value = loginData["username"] ?: "",
                 keyboardType = KeyboardType.Text,
                 label = stringResource(id = R.string.username),
+                enabled = !isLoading,
                 modifier = Modifier
                     .fillMaxWidth(),
                 onValueChange = { value ->
@@ -94,6 +100,7 @@ fun LoginScreen(
                 value = loginData["password"] ?: "",
                 keyboardType = KeyboardType.Password,
                 label = stringResource(id = R.string.password),
+                enabled = !isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp, top = 4.dp),
@@ -102,13 +109,27 @@ fun LoginScreen(
                 }
             )
 
-            Button(
-                modifier = Modifier.fillMaxWidth()
-                        .padding(top = 10.dp),
-                onClick = { onClick(loginData) }
+            LoadingProgressBar( isLoading = isLoading )
+
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Login", fontSize = 24.sp)
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp),
+                    onClick = {
+                        isLoading = true
+                        onClick(loginData)
+                    }
+                ) {
+                    Text(text = "Login", fontSize = 24.sp)
+//                    AutoAnimateVectorIcon(id = R.drawable.ic_loading_30)
+                }
             }
+
         }
     }
 }

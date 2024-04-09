@@ -16,4 +16,5 @@
     <string name="years">year(s)</string>
     <string name="message_no_datetime">No effect data time</string>
     <string name="observations">Observations</string>
+    <string name="no_data_to_delete">No data to delete</string>
 </resources>

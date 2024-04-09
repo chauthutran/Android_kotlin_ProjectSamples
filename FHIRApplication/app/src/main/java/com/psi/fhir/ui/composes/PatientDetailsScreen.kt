@@ -57,6 +57,8 @@ fun PatientDetailsScreen(
 
     Column (
         modifier = modifier
+            .fillMaxWidth()
+//            .background( MaterialTheme.colorScheme.inversePrimary, shape = RoundedCornerShape(4.dp) )
     ) {
 
         if( uiState == null ) {
@@ -77,7 +79,7 @@ private fun PatientCard(
     Column (
         modifier = modifier
             .fillMaxWidth()
-            .background( MaterialTheme.colorScheme.inversePrimary, shape = RoundedCornerShape(4.dp) )
+//            .background( MaterialTheme.colorScheme.inversePrimary, shape = RoundedCornerShape(4.dp) )
     ) {
         // Patient Details
         PersonalCard(uiState!!.patient)
@@ -94,6 +96,7 @@ private fun ObservationListCard(
     Column (
         modifier = modifier
             .fillMaxWidth()
+            .background( MaterialTheme.colorScheme.inversePrimary, shape = RoundedCornerShape(4.dp) )
     ) {
         Text(
             text = stringResource(R.string.observations),
@@ -118,10 +121,15 @@ private fun ObservationListCard(
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
             ) {
                 items(observations) { gridItem ->
-                    Column {
-                        Text(text = gridItem.code)
-                        Text(text = gridItem.effective)
-                        Text(text = gridItem.value)
+                    Row {
+                        Text(
+                            text = gridItem.effective,
+                            modifier = Modifier.padding(end = 10.dp)
+                        )
+                        Text(
+                            text = gridItem.value,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             }
@@ -218,11 +226,11 @@ fun PreviewPatientDetails() {
 
     val  patientUiState1 =   PatientDetailsUiState( "1","Test 1", "F", LocalDate.now(), "0123456789", "City 1", "Country 1" )
     val obs = listOf<ObservationListItem>(
-//       ObservationListItem ( id = "1", code = "code1", effective = "2012-01-01", value = "Fever" ),
-//       ObservationListItem ( id = "2", code = "code2", effective = "2012-02-02", value = "Fever 2" )
+       ObservationListItem ( id = "1", effective = "2012-01-01", value = "Fever" ),
+       ObservationListItem ( id = "2", effective = "2012-02-02", value = "Fever 2" )
     )
 
-    val patientDetails = PatientDetailData( patientUiState1, obs )
+    val patientDetails = PatientDetailData( patientUiState1, emptyList(),  obs )
     FHIRApplicationTheme(darkTheme = false) {
         Surface(
             modifier = Modifier
