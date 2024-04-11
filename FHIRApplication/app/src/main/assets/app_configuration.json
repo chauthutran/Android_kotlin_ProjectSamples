@@ -1,7 +1,7 @@
 {
-
-  "patientRegistrationQuestionnaire": "client-registration-sample",
   "endPoint": "Patient with Medical Care",
+
+  "patientRegistrationQuestionnaire": "Questionnaire_PatientRegistration",
 
   "formatDatePattern": "yyyy-MM-dd",
   "listItem": {

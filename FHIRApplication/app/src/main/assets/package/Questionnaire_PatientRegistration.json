@@ -1,12 +1,12 @@
 {
   "resourceType": "Questionnaire",
-  "id": "client-registration-sample",
+  "id": "Questionnaire_PatientRegistration",
   "language": "en",
   "status": "active",
   "date": "2020-11-18T07:24:47.111Z",
   "extension" : [{
     "url" : "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-targetStructureMap",
-    "valueCanonical" : "https://com.psi.fhir/fhir/StructureMap/PatientRegistration"
+    "valueCanonical" : "https://com.psi.fhir/fhir/StructureMap/StructureMap_PatientRegistration"
   }],
   "item": [
 

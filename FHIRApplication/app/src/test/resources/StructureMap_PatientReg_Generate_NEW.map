@@ -1,0 +1,82 @@
+map "https://com.psi.fhir/fhir/StructureMap/PatientRegistration" = 'Patient Registration'
+
+uses "http://hl7.org/fhir/StructureDefinition/QuestionnaireReponse" as source
+uses "http://hl7.org/fhir/StructureDefinition/Bundle" as target
+uses "http://hl7.org/fhir/StructureDefinition/Patient" as target
+uses "http://hl7.org/fhir/StructureDefinition/Encounter" as target
+uses "http://hl7.org/fhir/StructureDefinition/Observation" as target
+
+group QuestionnaireResponseToPatientMapping(source src : QuestionnaireResponse, target bundle: Bundle) {
+    src -> bundle.id = uuid() "r_b_id";
+    src -> bundle.type = 'collection' "r_bun_type";
+
+    src -> bundle.entry as entry, entry.resource = create('Patient') as patient then
+          ExtractPatient(src, patient), ExtractEncounter(src, bundle) , ExtractObservation_1_1_0(src, bundle) "r_bun_entries";
+
+
+}
+
+
+group ExtractPatient(source src : QuestionnaireResponse, target patient: Patient  ) {
+    src -> patient.id = uuid() "r_p_id_1";
+    src.item as item_bio where(linkId = 'PR') then { // Patient Info
+          item_bio.item as item_name where(linkId = 'PR-name') -> patient.name = create('HumanName') as patientName then {
+             src -> patientName.family = evaluate(item_name, $this.item.where(linkId = 'PR-name-family').answer.value) "r_p_fname";
+             src -> patientName.given = evaluate(item_name, $this.item.where(linkId = 'PR-name-given').answer.value) "r_p_gname";
+          } "r_p_name";
+
+          item_bio.item as item_dob where(linkId = 'PR-birth-date' and answer.count() > 0) -> patient.birthDate = evaluate(item_dob, $this.answer.value) "r_p_dob";
+
+          src -> patient.gender = evaluate(item_bio, $this.item.where(linkId = 'PR-gender').answer.value.code) "r_p_gender";
+
+          item_bio.item as item_tele where (linkId = 'PR-telecom') -> patient.telecom = create('ContactPoint') as patientContact then {
+             src -> patientContact.value = evaluate(item_tele, $this.item.where(linkId = 'PR-telecom-value').answer.value) "r_p_tel_num";
+             src -> patientContact.system = "phone" "r_p_tel_sys";
+          } "r_p_tel";
+
+          item_bio.item as item_addr where (linkId = 'PR-address') -> patient.address = create('Address') as patientAddress then {
+             src -> patientAddress.city = evaluate(item_addr, $this.item.where(linkId = 'PR-address-city').answer.value) "r_p_add_cty";
+             src -> patientAddress.country = evaluate(item_addr, $this.item.where(linkId = 'PR-address-country').answer.value) "r_p_add_cntry";
+             src -> patientAddress.use = "home" "r_p_add_use";
+             src -> patientAddress.type = "physical" "r_p_add_typ";
+          } "r_p_addr";
+
+
+          src -> patient.active = evaluate(item_bio, $this.item.where(linkId = 'PR-active').answer.value) "r_p_act";
+
+       };
+
+}
+
+group ExtractEncounter(source src : QuestionnaireResponse, target bundle: Bundle ) {
+    src -> bundle.entry as entry, entry.resource = create('Encounter') as encounter then {
+       src -> encounter.status = 'finished' "r_enc_status";
+
+       src -> encounter.class = c("http://terminology.hl7.org/CodeSystem/v3-ActCode", "HH", "home health") "r_en_cls";
+       src -> encounter.period = create('Period') as enPeriod then {
+           src -> enPeriod.start = evaluate(src, now()) "r_en_per_start";
+           src -> enPeriod.end = evaluate(src, now()) "r_en_per_end";
+       } "r_en_per";
+    } "e_en_created";
+
+}
+
+
+group ExtractObservation_1_1_0(source src : QuestionnaireResponse, target bundle : Bundle ) {
+    src.item as item_bio where(linkId = '1.0.0' ) then {
+      src -> bundle.entry as entry, entry.resource = create('Observation') as obs then {
+         src -> obs.status = "final" "r_ob_st";
+         src -> obs.effective = evaluate(src, now()) "r_ob_eff";
+
+        item_bio.item as item_data where (linkId = '1.1.0' and answer.count() > 0) then {
+            item_data.answer as valueanswer -> obs.value = create('CodeableConcept') as codeableConcept then {
+              valueanswer -> codeableConcept.coding = evaluate(item_data, valueanswer.value.code) "r_ob_cc_cod";
+              valueanswer -> codeableConcept.text = evaluate(item_data, valueanswer.value.display) "r_ob_cc_cod_disp";
+           } "r_ob_val";
+        } "r_ob_vals";
+
+     } "r_ob_og6";
+
+    } "r_ob_list";
+}
+

@@ -1,6 +1,5 @@
 package com.psi.fhir.ui.composes
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -8,7 +7,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
 import com.psi.fhir.R
-import com.psi.fhir.fragments.AddResourcesFragment
+import com.psi.fhir.fragments.AddPatientRegistrationFragment
 
 @Composable
 fun QuestionnaireScreen(
@@ -26,7 +25,7 @@ fun QuestionnaireScreen(
                 id = containerId
             }
 
-            val fragment = AddResourcesFragment()
+            val fragment = AddPatientRegistrationFragment()
             fragmentManager.beginTransaction()
                 .replace(containerId, fragment, fragment.javaClass.simpleName)
                 .commitAllowingStateLoss()

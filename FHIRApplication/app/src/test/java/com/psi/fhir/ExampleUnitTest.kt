@@ -58,10 +58,10 @@ class ExampleUnitTest {
         val structureMapUtilities = StructureMapUtilities(contextR4)
 
 //        // Deserialize structuremap string
-//        val map = structureMapUtilities.parse("StructureMap_Generate.map", "FHIRMapperTutorial")
+//        val map = structureMapUtilities.parse("StructureMap_PatientReg_Generate.map", "FHIRMapperTutorial")
 
         val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
-        val immunizationStructureMap = getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/StructureMap_Generate.map")
+        val immunizationStructureMap = getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/StructureMap_PatientReg_Generate.map")
 
         val structureMap =
             structureMapUtilities.parse(immunizationStructureMap, "psi reg")
@@ -70,7 +70,7 @@ class ExampleUnitTest {
 println("===== structureMap: ${mapString}")
 
         // Generate empty target resource object
-        val registrationQuestionnaireResponseString =  getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/Questionnaire_Response.json")
+        val registrationQuestionnaireResponseString =  getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/QuestionnaireResponse_PatientReg.json")
 
         val targetResource = Bundle()
         val baseElement =

@@ -62,7 +62,7 @@ fun AutoAnimateVectorIcon(@DrawableRes id: Int) {
                 delayMillis = 0,
                 easing =  LinearEasing
             )
-        )
+        ), label = ""
     )
     Icon(
         painterResource(id = id),

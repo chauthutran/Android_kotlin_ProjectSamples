@@ -12,21 +12,21 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.fhir.datacapture.QuestionnaireFragment
 import com.psi.fhir.R
-import com.psi.fhir.ui.viewmodels.QuestionnaireViewModel
+import com.psi.fhir.ui.viewmodels.PatientRegistrationViewModel
 import com.psi.fhir.utils.ProcessStatus
 import kotlinx.coroutines.runBlocking
 import org.hl7.fhir.r4.model.QuestionnaireResponse
 
-class AddResourcesFragment : Fragment() {
+class AddPatientRegistrationFragment : Fragment() {
 
-    private val viewModel: QuestionnaireViewModel by viewModels()
+    private val viewModel: PatientRegistrationViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_resources, container, false)
+        return inflater.inflate(R.layout.fragment_add_patient_registration, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,7 +66,7 @@ class AddResourcesFragment : Fragment() {
             viewLifecycleOwner,
         ) { _, _ ->
             runBlocking {
-                viewModel.saveResources( genrerateQuestionnaireResponse() )
+                viewModel.addResources( genrerateQuestionnaireResponse() )
             }
 
         }

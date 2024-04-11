@@ -91,5 +91,13 @@ object AppConfigurationHelper {
         return appConfigData!!.getString("patientRegistrationQuestionnaire")
     }
 
+    fun getPatientPersonalDataQuestionnaire(): String? {
+        if( appConfigData == null ) {
+            return null
+        }
+
+        return appConfigData!!.getString("patientPersonalDataEditQuestionnaire")
+    }
+
 }
 
