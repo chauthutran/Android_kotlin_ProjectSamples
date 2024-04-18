@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.fhir.datacapture.QuestionnaireFragment
 import com.psi.fhir.R
 import com.psi.fhir.ui.viewmodels.QuestionnaireViewModel
-import com.psi.fhir.utils.ProcessStatus
+import com.psi.fhir.utils.DispatcherStatus
 import kotlinx.coroutines.runBlocking
 import org.hl7.fhir.r4.model.QuestionnaireResponse
 
@@ -41,16 +41,16 @@ class AddPatientRegistrationFragment : Fragment() {
         lifecycleScope.launchWhenStarted {
             viewModel.resourceSaved.collect { it ->
                 when (it) {
-                    is ProcessStatus.Loading -> {
+                    is DispatcherStatus.Loading -> {
                         progressBar.visibility = View.VISIBLE
                     }
 
-                    is ProcessStatus.Success -> {
+                    is DispatcherStatus.Success -> {
                         progressBar.visibility = View.GONE
                         Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
                     }
 
-                    is ProcessStatus.Error -> {
+                    is DispatcherStatus.Error -> {
                         progressBar.visibility = View.GONE
 //                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
                     }

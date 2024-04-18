@@ -8,21 +8,15 @@ import ca.uhn.fhir.context.FhirVersionEnum
 import ca.uhn.fhir.parser.IParser
 import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.datacapture.extensions.targetStructureMap
-import com.google.android.fhir.datacapture.mapping.ResourceMapper
-import com.google.android.fhir.datacapture.mapping.StructureMapExtractionContext
 import com.google.android.fhir.search.search
 import com.psi.fhir.FhirApplication
 import com.psi.fhir.data.RequestResult
 import com.psi.fhir.di.TransformSupportServices
 import com.psi.fhir.helper.app.AppConfigurationHelper
-import com.psi.fhir.utils.DateUtils
-import com.psi.fhir.utils.ProcessStatus
+import com.psi.fhir.utils.DispatcherStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import org.hl7.fhir.r4.context.IWorkerContext
 import org.hl7.fhir.r4.model.Bundle
 import org.hl7.fhir.r4.model.DateType
 import org.hl7.fhir.r4.model.Meta
@@ -33,7 +27,6 @@ import org.hl7.fhir.r4.model.QuestionnaireResponse
 import org.hl7.fhir.r4.model.Reference
 import org.hl7.fhir.r4.model.Resource
 import org.hl7.fhir.r4.model.ResourceType
-import org.hl7.fhir.r4.model.StructureMap
 import org.hl7.fhir.r4.utils.StructureMapUtilities
 import timber.log.Timber
 import java.util.Date
@@ -50,7 +43,7 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
     private var questionnaire: Questionnaire? = null
 
     private var _resourceSaved =
-        MutableStateFlow<ProcessStatus<Boolean>>(ProcessStatus.UnSpecified())
+        MutableStateFlow<DispatcherStatus<Boolean>>(DispatcherStatus.UnSpecified())
     val resourceSaved = _resourceSaved.asStateFlow()
 
     init {
@@ -129,7 +122,7 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
 //                fhirEngine.create(questionnaireResponse)
 //            }
 
-            viewModelScope.launch { _resourceSaved.emit(ProcessStatus.Success(true)) }
+            viewModelScope.launch { _resourceSaved.emit(DispatcherStatus.Success(true)) }
 //        }
     }
 
@@ -137,7 +130,6 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
     // For Update resources
 
     suspend fun updateResources( questionnaireResponse: QuestionnaireResponse, patientDetailData: PatientDetailData): RequestResult {
-
         val targetResource = transformResource (questionnaireResponse)
 
         var updatedList: MutableMap<String, ArrayList<Resource>> = mutableMapOf()
@@ -153,47 +145,47 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
                 } else {
                     updatedList[resourceType]!!.add(resource)
                 }
+            }
+            // Put IDs for resources
+            for (resourceType in updatedList.keys) {
+                println("========== resourceType: ${resourceType}")
+                var list = updatedList[resourceType]!!
+                when (resourceType) {
+                    ResourceType.Patient.toString() -> {
+                        val resource = list[0]
+                        println("====== resourceId: ${resource}")
+                        setLastUpdate( resource )
+                        resource.id = patientDetailData.patient.id
+                        fhirEngine.update(resource)
+                    }
 
-                // Put IDs for resources
-                for (resourceType in updatedList.keys) {
-                    println("========== resourceType: ${resourceType}")
-                    var list = updatedList[resourceType]!!
-                    when (resourceType) {
-                        ResourceType.Patient.toString() -> {
-                            val resource = list[0]
-                            println("====== resourceId: ${resource}")
-                            setLastUpdate( resource )
-                            resource.id = patientDetailData.patient.id
+                    ResourceType.Encounter.toString() -> {
+                        (0..<list.size).forEach {
+                            val resource = list[it]
+                    setLastUpdate( resource )
+                            resource.id = patientDetailData.encounters[it].id
                             fhirEngine.update(resource)
                         }
+                    }
 
-//                        ResourceType.Encounter.toString() -> {
-//                            (0..<list.size).forEach {
-//                                val resource = list[it]
-//                        setLastUpdate( resource )
-//                                resource.id = patientDetailData.encounters[it].id
-//                                fhirEngine.update(resource)
-//                            }
-//                        }
-//
-//                        ResourceType.Observation.toString() -> {
-//                            (0..<list.size).forEach {
-//                                val resource = list[it]
-//                                setLastUpdate( resource )
-//                                resource.id = patientDetailData.observations[it].id
-//                                fhirEngine.update(resource)
-//                            }
-//                        }
-
-                        else -> {
-                            Unit
+                    ResourceType.Observation.toString() -> {
+                        (0..<list.size).forEach {
+                            val resource = list[it]
+                            setLastUpdate( resource )
+                            resource.id = patientDetailData.observations[it].id
+                            fhirEngine.update(resource)
                         }
                     }
-                }
 
+                    else -> {
+                        Unit
+                    }
+                }
             }
 
         }
+
+        fhirEngine.update(questionnaireResponse)
 
         return RequestResult(true)
     }
@@ -226,8 +218,7 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
             .search<QuestionnaireResponse> {
                 filter(QuestionnaireResponse.SUBJECT, { value = "Patient/$patientId" })
             }
-println("=============")
-        println(patientId)
+
         if(foundQR.isNotEmpty()) {
             return questionnaireStr to iParser.encodeResourceToString(foundQR[0].resource)
         }
