@@ -1,7 +1,5 @@
 package com.psi.fhir.ui.composes
 
-import android.app.AlertDialog
-import android.graphics.Color
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,11 +16,9 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,29 +27,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.psi.fhir.R
 import com.psi.fhir.data.PatientDetailsUiState
-import com.psi.fhir.helper.AppConfigurationHelper
-import com.psi.fhir.ui.theme.FHIRApplicationTheme
+import com.psi.fhir.helper.app.AppConfigurationHelper
 import com.psi.fhir.ui.viewmodels.PatientDetailsViewModel
 import com.psi.fhir.utils.DateUtils
-import java.time.LocalDate
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.psi.fhir.ui.viewmodels.ObservationListItem
 import com.psi.fhir.ui.viewmodels.PatientDetailData
-import kotlinx.coroutines.launch
 
 @Composable
 fun PatientDetailsScreen(
     patientId: String,
     viewModel: PatientDetailsViewModel = viewModel(),
+    editButtonClick: (PatientDetailData) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var uiState by remember { mutableStateOf<PatientDetailData?>(null) }
@@ -70,10 +61,15 @@ fun PatientDetailsScreen(
     ) {
 
         if( uiState == null ) {
-           LoadingProgressBar(isLoading = true)
+            LoadingProgressBar(isLoading = true)
         }
         else {
-            PatientCard(uiState!!, modifier)
+            PatientCard(
+                uiState = uiState!!,
+                editButtonClick = editButtonClick,
+                viewModel = viewModel,
+                modifier = modifier
+            )
         }
     }
 
@@ -82,6 +78,8 @@ fun PatientDetailsScreen(
 @Composable
 private fun PatientCard(
     uiState: PatientDetailData,
+    editButtonClick: (PatientDetailData) -> Unit,
+    viewModel: PatientDetailsViewModel,
     modifier: Modifier = Modifier
 ) {
     Column (
@@ -90,7 +88,11 @@ private fun PatientCard(
 //            .background( MaterialTheme.colorScheme.inversePrimary, shape = RoundedCornerShape(4.dp) )
     ) {
         // Patient Details
-        PersonalCard(uiState!!.patient)
+        PersonalCard(
+            patientUiState = uiState!!.patient,
+            editButtonClick = editButtonClick,
+            viewModel = viewModel
+        )
         ObservationListCard(uiState!!.observations)
     }
 }
@@ -149,6 +151,8 @@ private fun ObservationListCard(
 @Composable
 private fun PersonalCard(
     patientUiState: PatientDetailsUiState,
+    editButtonClick:  (PatientDetailData) -> Unit = {},
+    viewModel: PatientDetailsViewModel,
     modifier: Modifier = Modifier
 ) {
 
@@ -173,7 +177,8 @@ private fun PersonalCard(
                     .background(MaterialTheme.colorScheme.tertiaryContainer, shape = RoundedCornerShape(15.dp) )
             ) {
                 IconButton(onClick = {
-                    // Edit personal information here
+                    println("========= editButtonClick ")
+                    editButtonClick(viewModel.patientDetailData!!)
                 }) {
                     Icon(
                         painterResource(id = com.google.android.material.R.drawable.material_ic_edit_black_24dp),
@@ -252,25 +257,25 @@ data class GridItem(
 )
 
 
-@Preview
-@Composable
-fun PreviewPatientDetails() {
-
-    val  patientUiState1 =   PatientDetailsUiState( "1","Test 1", "F", LocalDate.now(), "0123456789", "City 1", "Country 1" )
-    val obs = listOf<ObservationListItem>(
-       ObservationListItem ( id = "1", effective = "2012-01-01", value = "Fever" ),
-       ObservationListItem ( id = "2", effective = "2012-02-02", value = "Fever 2" )
-    )
-
-    val patientDetails = PatientDetailData( patientUiState1, emptyList(),  obs )
-    FHIRApplicationTheme(darkTheme = false) {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            PatientCard(patientDetails)
-        }
-    }
-
-}
+//@Preview
+//@Composable
+//fun PreviewPatientDetails() {
+//
+//    val  patientUiState1 =   PatientDetailsUiState( "1","Test 1", "F", LocalDate.now(), "0123456789", "City 1", "Country 1" )
+//    val obs = listOf<ObservationListItem>(
+//       ObservationListItem ( id = "1", effective = "2012-01-01", value = "Fever" ),
+//       ObservationListItem ( id = "2", effective = "2012-02-02", value = "Fever 2" )
+//    )
+//
+//    val patientDetails = PatientDetailData( patientUiState1, emptyList(),  obs )
+//    FHIRApplicationTheme(darkTheme = false) {
+//        Surface(
+//            modifier = Modifier
+//                .fillMaxSize(),
+//            color = MaterialTheme.colorScheme.background
+//        ) {
+//            PatientCard(patientDetails, {} )
+//        }
+//    }
+//
+//}

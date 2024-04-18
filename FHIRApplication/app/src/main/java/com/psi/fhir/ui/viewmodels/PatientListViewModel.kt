@@ -5,15 +5,12 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.fhir.FhirEngine
-import com.google.android.fhir.get
 import com.google.android.fhir.search.Order
 import com.google.android.fhir.search.StringFilterModifier
 import com.google.android.fhir.search.search
 import com.google.android.fhir.sync.Sync
 import com.psi.fhir.FhirApplication
-import com.psi.fhir.data.PatientDetailsUiState
 import com.psi.fhir.data.PatientListItemUiState
-import com.psi.fhir.helper.AppConfigurationHelper
 import com.psi.fhir.sync.FhirPeriodicSyncWorker
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,8 +19,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.hl7.fhir.r4.model.Patient
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 enum class SyncDataStatus {
     UNDEFINED,

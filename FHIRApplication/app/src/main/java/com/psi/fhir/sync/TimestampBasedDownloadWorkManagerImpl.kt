@@ -9,6 +9,7 @@ import org.hl7.fhir.r4.model.CarePlan
 import org.hl7.fhir.r4.model.Encounter
 import org.hl7.fhir.r4.model.OperationOutcome
 import org.hl7.fhir.r4.model.PlanDefinition
+import org.hl7.fhir.r4.model.QuestionnaireResponse
 import org.hl7.fhir.r4.model.Reference
 import org.hl7.fhir.r4.model.Resource
 import org.hl7.fhir.r4.model.ResourceType
@@ -37,7 +38,8 @@ class TimestampBasedDownloadWorkManagerImpl(
                 ResourceType.Task,
                 ResourceType.Encounter,
                 ResourceType.Observation,
-                ResourceType.Condition
+                ResourceType.Condition,
+                ResourceType.QuestionnaireResponse
             )
     }
 
@@ -62,7 +64,8 @@ class TimestampBasedDownloadWorkManagerImpl(
                 // Server should fetch the PractitionerRole corresponding to the health Professional
                 "PractitionerRole",
                 // Server should filter all the patients the Health Professional is assigned to
-                "Patient"
+                "Patient",
+                "QuestionnaireResponse"
             )
         )
 
@@ -75,12 +78,16 @@ class TimestampBasedDownloadWorkManagerImpl(
             dataStore.getLastUpdateTimestamp(resourceTypeToDownload)?.let {
                 url = affixLastUpdatedTimestamp(url, it)
             }
+
             DownloadRequest.of(url)
         }
     }
 
     private fun constructNextRequestFromResourceReferences(): DownloadRequest? {
         for (resourceType in resourceReferencesDownloadOrderByTypeSequence) {
+
+            println("============ resourceReferences ")
+            println(resourceReferences)
             if (resourceReferences.getOrDefault(resourceType, emptyMap()).isNotEmpty()) {
                 val resourceSearchValues = resourceReferences[resourceType]!!
                 resourceSearchValues.entries.forEach { (searchParameter, searchIds) ->
@@ -107,6 +114,8 @@ class TimestampBasedDownloadWorkManagerImpl(
         resourceIds: Set<String>
     ): DownloadRequest? {
         return if (resourceIds.isNotEmpty()) {
+            println("===================")
+            println("${resourceType.name}?$searchField=${resourceIds.joinToString(",")}")
             DownloadRequest.of("${resourceType.name}?$searchField=${resourceIds.joinToString(",")}")
         } else {
             null
@@ -158,10 +167,14 @@ class TimestampBasedDownloadWorkManagerImpl(
 
 
     private suspend fun processResourceForExtraction(resource: Resource): Collection<Resource> {
+
+        println("============= resource")
+        println(resource)
         when (resource) {
             is PlanDefinition -> return extractPlanDefinitionDependentResources(resource)
             is CarePlan -> return extractCarePlanDependentResources(resource)
             is Encounter -> return addEncounterRelatedResources(resource)
+            is QuestionnaireResponse -> return  addQuestionnaireResponseRelatedResources(resource)
         }
         return emptyList()
     }
@@ -205,6 +218,14 @@ class TimestampBasedDownloadWorkManagerImpl(
         addResourceIdsToSearch(ResourceType.Condition, "encounter", setOf(encounter.idElement.idPart))
         return emptyList()
     }
+
+    private fun addQuestionnaireResponseRelatedResources(questionnaireResponse: QuestionnaireResponse): Collection<Resource> {
+        // get all related observations and conditions for these encounters
+        addResourceIdsToSearch(ResourceType.Patient, "subject", setOf(questionnaireResponse.idElement.idPart))
+        return emptyList()
+    }
+
+
 
     private fun getResourceIdFromReference(reference: Reference): String {
         val referenceElements = reference.reference.split("/")

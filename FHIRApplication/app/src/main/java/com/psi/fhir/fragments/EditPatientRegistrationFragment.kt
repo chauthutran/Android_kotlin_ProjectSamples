@@ -3,23 +3,20 @@ package com.psi.fhir.fragments
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import com.google.android.fhir.datacapture.QuestionnaireFragment
 import com.psi.fhir.R
 import com.psi.fhir.ui.viewmodels.PatientDetailData
-import com.psi.fhir.ui.viewmodels.PatientRegistrationViewModel
+import com.psi.fhir.ui.viewmodels.QuestionnaireViewModel
 import kotlinx.coroutines.runBlocking
 import org.hl7.fhir.r4.model.QuestionnaireResponse
 
 class EditPatientRegistrationFragment(val patientDetailData: PatientDetailData) : Fragment() {
 
-    private val viewModel: PatientRegistrationViewModel by viewModels()
+    private val viewModel: QuestionnaireViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +57,7 @@ class EditPatientRegistrationFragment(val patientDetailData: PatientDetailData) 
     private fun genrerateQuestionnaireResponse(): QuestionnaireResponse {
         // Get a questionnaire response
         val questionnaireFragment = childFragmentManager.findFragmentByTag(
-            AddPatientRegistrationFragment.QUESTIONNAIRE_FRAGMENT_TAG
+            QUESTIONNAIRE_FRAGMENT_TAG
         ) as QuestionnaireFragment
         return questionnaireFragment.getQuestionnaireResponse()
     }
@@ -69,7 +66,7 @@ class EditPatientRegistrationFragment(val patientDetailData: PatientDetailData) 
     private fun addQuestionnaireFragment(pair: Pair<String, String>) {
         childFragmentManager.commit {
             add(
-                R.id.add_patient_container,
+                R.id.edit_patient_container,
                 QuestionnaireFragment.builder()
                     .setQuestionnaire(pair.first)
                     .setQuestionnaireResponse(pair.second)

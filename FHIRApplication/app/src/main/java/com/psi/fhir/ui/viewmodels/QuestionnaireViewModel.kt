@@ -8,20 +8,17 @@ import ca.uhn.fhir.context.FhirVersionEnum
 import ca.uhn.fhir.parser.IParser
 import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.datacapture.extensions.targetStructureMap
-import com.google.android.fhir.datacapture.mapping.ResourceMapper
-import com.google.android.fhir.get
-import com.google.android.fhir.testing.jsonParser
+import com.google.android.fhir.search.search
 import com.psi.fhir.FhirApplication
 import com.psi.fhir.data.RequestResult
 import com.psi.fhir.di.TransformSupportServices
-import com.psi.fhir.helper.AppConfigurationHelper
+import com.psi.fhir.helper.app.AppConfigurationHelper
 import com.psi.fhir.utils.ProcessStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.hl7.fhir.r4.model.Bundle
 import org.hl7.fhir.r4.model.DateType
-import org.hl7.fhir.r4.model.IdType
 import org.hl7.fhir.r4.model.Observation
 import org.hl7.fhir.r4.model.Patient
 import org.hl7.fhir.r4.model.Questionnaire
@@ -34,18 +31,22 @@ import timber.log.Timber
 import java.util.UUID
 
 
-class PatientRegistrationViewModel (application: Application) : AndroidViewModel(application) {
+class QuestionnaireViewModel (application: Application) : AndroidViewModel(application) {
 
     private var fhirEngine: FhirEngine = FhirApplication.fhirEngine(application.applicationContext)
 
-    val questionnaireJson: String
-        get() = fetchQuestionnaireJson()
+
+    lateinit var questionnaireJson: String
 
     private var questionnaire: Questionnaire? = null
 
     private var _resourceSaved =
         MutableStateFlow<ProcessStatus<Boolean>>(ProcessStatus.UnSpecified())
     val resourceSaved = _resourceSaved.asStateFlow()
+
+    init {
+        questionnaireJson = fetchQuestionnaireJson()
+    }
 
     private fun fetchQuestionnaireJson(): String {
         val questionnaireId = AppConfigurationHelper.getPatientRegistrationQuestionnaire()
@@ -62,10 +63,14 @@ class PatientRegistrationViewModel (application: Application) : AndroidViewModel
         viewModelScope.launch {
             val targetResource = transformResource(questionnaireResponse)
 
+            var patientId = "";
             if (targetResource is Bundle) {
                 targetResource.entry.forEach { bundleEntryComponent ->
                     // Save Resource
                     val resource = bundleEntryComponent.resource
+                    if( resource is Patient ) {
+                        patientId = resource.id
+                    }
                     if (resource is Observation && resource.effective is DateType) {
                         resource.effective = null
                     }
@@ -75,9 +80,28 @@ class PatientRegistrationViewModel (application: Application) : AndroidViewModel
 
                     fhirEngine.create(resource)
 
-
                     Timber.tag("saveResources").d("Resource ${resource.resourceType} is saved")
+
                 }
+
+                try {
+                    // Save QuestionnaireResponse
+                    questionnaireResponse.id = UUID.randomUUID().toString()
+                    questionnaireResponse.subject =
+                        Reference("${ResourceType.Patient.name}/${patientId}")
+                    fhirEngine.create(questionnaireResponse)
+
+                    val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
+                    val questionnaireResponseStr = iParser.encodeResourceToString(questionnaireResponse)
+
+                    println("======================== questionnaireResponse")
+                    println(questionnaireResponse.id)
+                    println(questionnaireResponseStr)
+                }
+                catch( ex: Exception) {
+                    ex.printStackTrace()
+                }
+
             }
         }
 
@@ -160,16 +184,33 @@ class PatientRegistrationViewModel (application: Application) : AndroidViewModel
     }
 
     suspend fun populateData(patientId: String): Pair<String, String> {
-        val patient = fhirEngine.get<Patient>(patientId)
-        val launchContexts = mapOf<String, Resource>("client" to patient)
+//    suspend fun populateData(patientId: String): String {
+//        val patient = fhirEngine.get<Patient>(patientId)
+//        val launchContexts = mapOf<String, Resource>("client" to patient)
 
         val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
         val questionnaireStr = iParser.encodeResourceToString(questionnaire)
 
-        val questionnaireResponse: QuestionnaireResponse =
-            ResourceMapper.populate(questionnaire!!, launchContexts)
-        val questionnaireResponseJson = iParser.encodeResourceToString(questionnaireResponse)
-        return questionnaireStr to questionnaireResponseJson
+        val foundQR = fhirEngine
+            .search<QuestionnaireResponse> {
+                filter(QuestionnaireResponse.SUBJECT, { value = "Patient/$patientId" })
+            }
+println("=============")
+        println(patientId)
+        if(foundQR.isNotEmpty()) {
+            return questionnaireStr to iParser.encodeResourceToString(foundQR[0].resource)
+        }
+
+        return "" to ""
+
+//        val questionnaireResponse: QuestionnaireResponse =
+//            ResourceMapper.populate(questionnaire!!, launchContexts)
+
+//        val questionnaireResponseJson = iParser.encodeResourceToString(questionnaireResponse)
+//        val fasdf = questionnaireStr to questionnaireResponseJson
+//        println("====================== ")
+//        println(questionnaireResponseJson)
+//        return fasdf
     }
 
 //    private suspend fun prepareEditPatient(): Pair<String, String> {

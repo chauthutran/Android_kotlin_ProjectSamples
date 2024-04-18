@@ -36,10 +36,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.psi.fhir.FhirScreen
 import com.psi.fhir.R
 import com.psi.fhir.data.PatientListItemUiState
-import com.psi.fhir.helper.AppConfigurationHelper
+import com.psi.fhir.helper.app.AppConfigurationHelper
 import com.psi.fhir.ui.theme.FHIRApplicationTheme
 import com.psi.fhir.ui.viewmodels.PatientListViewModel
 import kotlinx.coroutines.launch

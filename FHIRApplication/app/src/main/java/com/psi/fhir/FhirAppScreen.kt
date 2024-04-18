@@ -39,12 +39,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.psi.fhir.data.RequestResult
+import com.psi.fhir.fragments.AddPatientRegistrationFragment
+import com.psi.fhir.fragments.EditPatientRegistrationFragment
 import com.psi.fhir.ui.composes.EditTextField
 import com.psi.fhir.ui.composes.LoadingProgressBar
 import com.psi.fhir.ui.composes.LoginScreen
 import com.psi.fhir.ui.composes.PatientDetailsScreen
 import com.psi.fhir.ui.composes.PatientListScreen
 import com.psi.fhir.ui.composes.QuestionnaireScreen
+import com.psi.fhir.ui.viewmodels.PatientDetailData
 import com.psi.fhir.ui.viewmodels.PatientDetailsViewModel
 import com.psi.fhir.ui.viewmodels.PatientListViewModel
 import com.psi.fhir.ui.viewmodels.SyncDataStatus
@@ -113,11 +116,12 @@ fun FhirApp(
     ) { innerPadding ->
 
         var selectedPatientId by remember { mutableStateOf("") }
-
+        var patientDetailsData by remember { mutableStateOf<PatientDetailData?>(null) }
 
         NavHost(
             navController = navController,
-            startDestination = FhirScreen.LOGIN.name,
+//            startDestination = FhirScreen.LOGIN.name,
+            startDestination = FhirScreen.PATIENT_LIST.name,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(route = FhirScreen.LOGIN.name) {
@@ -144,7 +148,13 @@ fun FhirApp(
                 showActions = false
                 PatientDetailsScreen(
                     patientId = selectedPatientId,
-                    viewModel = patientDetailsViewModel
+                    viewModel = patientDetailsViewModel,
+                    editButtonClick = { data ->
+                        println("=========================")
+                        println(data)
+                        patientDetailsData = data
+                        navController.navigate(FhirScreen.EDIT_PATIENT.name)
+                    }
                 )
             }
 
@@ -156,8 +166,22 @@ fun FhirApp(
 //                    fhirEngine = FhirApplication.fhirEngine(context)
 //                )
 //                getSupportFragmentManager
-                QuestionnaireScreen( fragmentManager = fragmentManager )
+                QuestionnaireScreen(
+                    fragmentManager = fragmentManager,
+                    questionnaireContainerId = R.id.edit_patient_container,
+                    fragment = AddPatientRegistrationFragment()
+                )
             }
+
+            composable(route = FhirScreen.EDIT_PATIENT.name) {
+                showActions = false
+                QuestionnaireScreen(
+                    fragmentManager = fragmentManager,
+                    questionnaireContainerId = R.id.edit_patient_container,
+                    fragment = EditPatientRegistrationFragment(patientDetailsData!!)
+                )
+            }
+
         }
     }
 
@@ -192,6 +216,13 @@ fun FhirAppBar (
                currentScreen = currentScreen,
                navigateUp = navigateUp,
                viewModel = patientDetailsViewModel,
+               modifier = modifier
+           )
+
+       FhirScreen.EDIT_PATIENT ->
+           EditPatientToolBar(
+               currentScreen = currentScreen,
+               navigateUp = navigateUp,
                modifier = modifier
            )
 
@@ -256,6 +287,30 @@ fun AddPatientToolBar (
         }
     )
 }
+
+@Composable
+fun EditPatientToolBar (
+    currentScreen: FhirScreen,
+    navigateUp: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TopAppBar(
+        title = { Text(stringResource(currentScreen.title)) },
+        colors = TopAppBarDefaults.mediumTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        modifier = modifier,
+        navigationIcon = {
+            IconButton(onClick = navigateUp) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.back_button)
+                )
+            }
+        }
+    )
+}
+
 
 
 @Composable

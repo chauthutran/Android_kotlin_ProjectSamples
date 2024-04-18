@@ -1,5 +1,16 @@
 {
   "endPoint": "Patient with Medical Care",
+  "sync": {
+    "resourcesToSync":  [
+      "Patient",
+      "CarePlan",
+      "Task",
+      "Encounter",
+      "Observation",
+      "Questionnaire",
+      "QuestionnaireResponse"
+    ]
+  },
 
   "patientRegistrationQuestionnaire": "Questionnaire_PatientRegistration",
 

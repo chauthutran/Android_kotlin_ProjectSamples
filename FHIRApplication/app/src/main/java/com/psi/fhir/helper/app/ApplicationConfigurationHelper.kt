@@ -1,4 +1,4 @@
-package com.psi.fhir.helper
+package com.psi.fhir.helper.app
 
 import android.app.Application
 import com.psi.fhir.data.PatientListItemUiState
@@ -13,7 +13,7 @@ object AppConfigurationHelper {
     private var appConfigData : JSONObject? = null
 
     fun readConfiguration( application: Application ) {
-        appConfigData = AssestsFile.readAndConvertFileContentToJson(application, "app_configuration.json")
+        appConfigData = AssestsFile.readAndConvertFileContentToJson(application, "application_config.json")
     }
 
     fun getFormatDatePattern(): String? {

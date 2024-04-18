@@ -33,7 +33,7 @@
           "text": "Date of Birth",
           "answer": [
             {
-              "valueDate": "2024-04-01"
+              "valueDate": "2024-04-17"
             }
           ]
         },
@@ -44,8 +44,8 @@
             {
               "valueCoding": {
                 "system": "http://hl7.org/fhir/administrative-gender",
-                "code": "male",
-                "display": "Male"
+                "code": "female",
+                "display": "Female"
               }
             }
           ]
@@ -62,7 +62,7 @@
               "text": "Phone Number",
               "answer": [
                 {
-                  "valueString": "34567"
+                  "valueString": "0123456789"
                 }
               ]
             }
@@ -76,7 +76,7 @@
               "text": "City",
               "answer": [
                 {
-                  "valueString": "Hchcjvkgkg"
+                  "valueString": "City100"
                 }
               ]
             },
@@ -85,7 +85,7 @@
               "text": "Country",
               "answer": [
                 {
-                  "valueString": "Fjjcjfk"
+                  "valueString": "Country100"
                 }
               ]
             }
@@ -115,13 +115,6 @@
                 "system": "http://snomed.info/sct",
                 "code": "386661006",
                 "display": "Fever"
-              }
-            },
-            {
-              "valueCoding": {
-                "system": "http://snomed.info/sct",
-                "code": "49727002",
-                "display": "Cough"
               }
             },
             {

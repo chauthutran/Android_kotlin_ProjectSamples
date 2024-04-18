@@ -2,7 +2,6 @@ package com.psi.fhir.ui.viewmodels
 
 import android.app.Application
 import android.content.res.Resources
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.delete
@@ -13,9 +12,8 @@ import com.psi.fhir.FhirApplication
 import com.psi.fhir.R
 import com.psi.fhir.data.PatientDetailsUiState
 import com.psi.fhir.data.RequestResult
-import com.psi.fhir.helper.AppConfigurationHelper
+import com.psi.fhir.helper.app.AppConfigurationHelper
 import org.hl7.fhir.r4.model.Encounter
-import org.hl7.fhir.r4.model.MedicationRequest
 import org.hl7.fhir.r4.model.Observation
 import org.hl7.fhir.r4.model.Patient
 import java.time.LocalDate
@@ -24,7 +22,7 @@ import java.time.format.DateTimeFormatter
 class PatientDetailsViewModel (application: Application): AndroidViewModel(application) {
 
     var fhirEngine: FhirEngine = FhirApplication.fhirEngine(application.applicationContext)
-    private var patientDetailData : PatientDetailData? = null
+    var patientDetailData : PatientDetailData? = null
 
     suspend fun getPatientDetails(patientId: String): PatientDetailData {
         val patient = getPatient(patientId)
@@ -78,7 +76,7 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
 
         fhirEngine
             .search<Encounter> {
-                filter(Observation.SUBJECT, { value = "Patient/$patientId" })
+                filter(Encounter.SUBJECT, { value = "Patient/$patientId" })
             }
             .map { createEncounterItem(it.resource, getApplication<Application>().resources) }
             .let { encounters.addAll(it) }

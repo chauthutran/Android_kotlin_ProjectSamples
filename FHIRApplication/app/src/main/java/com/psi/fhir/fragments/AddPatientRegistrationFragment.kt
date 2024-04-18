@@ -12,14 +12,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.fhir.datacapture.QuestionnaireFragment
 import com.psi.fhir.R
-import com.psi.fhir.ui.viewmodels.PatientRegistrationViewModel
+import com.psi.fhir.ui.viewmodels.QuestionnaireViewModel
 import com.psi.fhir.utils.ProcessStatus
 import kotlinx.coroutines.runBlocking
 import org.hl7.fhir.r4.model.QuestionnaireResponse
 
 class AddPatientRegistrationFragment : Fragment() {
 
-    private val viewModel: PatientRegistrationViewModel by viewModels()
+    private val viewModel: QuestionnaireViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -82,7 +82,7 @@ class AddPatientRegistrationFragment : Fragment() {
             add(
                 R.id.add_patient_container,
                 QuestionnaireFragment.builder()
-                    .setQuestionnaire(viewModel.questionnaireJson)
+                    .setQuestionnaire(viewModel.questionnaireJson!!)
                     .setShowSubmitButton(true)
                     .build(),
                 QUESTIONNAIRE_FRAGMENT_TAG,

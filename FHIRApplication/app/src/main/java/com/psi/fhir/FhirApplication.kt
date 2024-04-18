@@ -14,7 +14,7 @@ import com.google.android.fhir.sync.remote.HttpLogger
 import com.psi.fhir.di.ComplexWorkerContext
 import com.psi.fhir.di.ReferenceUrlResolver
 import com.psi.fhir.di.ValueSetResolver
-import com.psi.fhir.helper.AppConfigurationHelper
+import com.psi.fhir.helper.app.AppConfigurationHelper
 import com.psi.fhir.sync.DemoDataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -91,14 +91,14 @@ class FhirApplication : Application(), DataCaptureConfig.Provider  {
         CoroutineScope(Dispatchers.IO).launch {
             println("**** creating contextR4")
 
-            val measlesIg = async {
-                NpmPackage.fromPackage(assets.open("packages.fhir.org-hl7.fhir.dk.core-1.1.0.tgz"))
-            }
-            val baseIg = async { NpmPackage.fromPackage(assets.open("packages.tgz")) }
-            val packages = arrayListOf<NpmPackage>(measlesIg.await(), baseIg.await())
-
+//            val measlesIg = async {
+//                NpmPackage.fromPackage(assets.open("packages.fhir.org-hl7.fhir.dk.core-1.1.0.tgz"))
+//            }
 //            val baseIg = async { NpmPackage.fromPackage(assets.open("packages.tgz")) }
-//            val packages = arrayListOf<NpmPackage>(baseIg.await())
+//            val packages = arrayListOf<NpmPackage>(measlesIg.await(), baseIg.await())
+
+            val baseIg = async { NpmPackage.fromPackage(assets.open("packages.tgz")) }
+            val packages = arrayListOf<NpmPackage>(baseIg.await())
 
             println("**** read assets contextR4")
             contextR4 = ComplexWorkerContext()
