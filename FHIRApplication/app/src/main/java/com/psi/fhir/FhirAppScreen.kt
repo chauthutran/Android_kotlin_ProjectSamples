@@ -3,14 +3,11 @@ package com.psi.fhir
 import android.app.AlertDialog
 import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -41,16 +36,14 @@ import androidx.navigation.compose.rememberNavController
 import com.psi.fhir.data.RequestResult
 import com.psi.fhir.fragments.AddPatientRegistrationFragment
 import com.psi.fhir.fragments.EditPatientRegistrationFragment
-import com.psi.fhir.ui.composes.EditTextField
 import com.psi.fhir.ui.composes.LoadingProgressBar
-import com.psi.fhir.ui.composes.LoginScreen
+import com.psi.fhir.ui.login.LoginScreen
 import com.psi.fhir.ui.composes.PatientDetailsScreen
 import com.psi.fhir.ui.composes.PatientListScreen
 import com.psi.fhir.ui.composes.QuestionnaireScreen
 import com.psi.fhir.ui.viewmodels.PatientDetailData
 import com.psi.fhir.ui.viewmodels.PatientDetailsViewModel
 import com.psi.fhir.ui.viewmodels.PatientListViewModel
-import com.psi.fhir.ui.viewmodels.SyncDataStatus
 import kotlinx.coroutines.launch
 
 
@@ -343,8 +336,8 @@ fun PatientDetailsToolBar (
         actions = {
             IconButton(onClick = {
                 val alertDialog = AlertDialog.Builder( context ).apply {
-                    setTitle("Order items")
-                    setMessage("Do you want to order the product cart items ?")
+                    setTitle("Delete Patient")
+                    setMessage("Do you want to delete this patient ?")
                     setNegativeButton("Cancel") { dialog, _ ->
                         dialog.dismiss()
                     }

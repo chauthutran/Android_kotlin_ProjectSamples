@@ -1,5 +1,6 @@
 {
   "endPoint": "Patient with Medical Care",
+  "appTitle" : "Simple FHIR Demo Application",
   "sync": {
     "resourcesToSync":  [
       "Patient",

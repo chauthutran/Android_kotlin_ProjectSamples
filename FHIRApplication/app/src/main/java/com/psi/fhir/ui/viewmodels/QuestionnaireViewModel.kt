@@ -8,17 +8,24 @@ import ca.uhn.fhir.context.FhirVersionEnum
 import ca.uhn.fhir.parser.IParser
 import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.datacapture.extensions.targetStructureMap
+import com.google.android.fhir.datacapture.mapping.ResourceMapper
+import com.google.android.fhir.datacapture.mapping.StructureMapExtractionContext
 import com.google.android.fhir.search.search
 import com.psi.fhir.FhirApplication
 import com.psi.fhir.data.RequestResult
 import com.psi.fhir.di.TransformSupportServices
 import com.psi.fhir.helper.app.AppConfigurationHelper
+import com.psi.fhir.utils.DateUtils
 import com.psi.fhir.utils.ProcessStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import org.hl7.fhir.r4.context.IWorkerContext
 import org.hl7.fhir.r4.model.Bundle
 import org.hl7.fhir.r4.model.DateType
+import org.hl7.fhir.r4.model.Meta
 import org.hl7.fhir.r4.model.Observation
 import org.hl7.fhir.r4.model.Patient
 import org.hl7.fhir.r4.model.Questionnaire
@@ -26,8 +33,10 @@ import org.hl7.fhir.r4.model.QuestionnaireResponse
 import org.hl7.fhir.r4.model.Reference
 import org.hl7.fhir.r4.model.Resource
 import org.hl7.fhir.r4.model.ResourceType
+import org.hl7.fhir.r4.model.StructureMap
 import org.hl7.fhir.r4.utils.StructureMapUtilities
 import timber.log.Timber
+import java.util.Date
 import java.util.UUID
 
 
@@ -78,6 +87,7 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
                         resource.id = UUID.randomUUID().toString()
                     }
 
+                    setLastUpdate(resource)
                     fhirEngine.create(resource)
 
                     Timber.tag("saveResources").d("Resource ${resource.resourceType} is saved")
@@ -146,29 +156,34 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
 
                 // Put IDs for resources
                 for (resourceType in updatedList.keys) {
+                    println("========== resourceType: ${resourceType}")
                     var list = updatedList[resourceType]!!
                     when (resourceType) {
                         ResourceType.Patient.toString() -> {
                             val resource = list[0]
+                            println("====== resourceId: ${resource}")
+                            setLastUpdate( resource )
                             resource.id = patientDetailData.patient.id
                             fhirEngine.update(resource)
                         }
 
-                        ResourceType.Encounter.toString() -> {
-                            (0..<list.size).forEach {
-                                val resource = list[it]
-                                resource.id = patientDetailData.encounters[it].id
-                                fhirEngine.update(resource)
-                            }
-                        }
-
-                        ResourceType.Observation.toString() -> {
-                            (0..<list.size).forEach {
-                                val resource = list[it]
-                                resource.id = patientDetailData.observations[it].id
-                                fhirEngine.update(resource)
-                            }
-                        }
+//                        ResourceType.Encounter.toString() -> {
+//                            (0..<list.size).forEach {
+//                                val resource = list[it]
+//                        setLastUpdate( resource )
+//                                resource.id = patientDetailData.encounters[it].id
+//                                fhirEngine.update(resource)
+//                            }
+//                        }
+//
+//                        ResourceType.Observation.toString() -> {
+//                            (0..<list.size).forEach {
+//                                val resource = list[it]
+//                                setLastUpdate( resource )
+//                                resource.id = patientDetailData.observations[it].id
+//                                fhirEngine.update(resource)
+//                            }
+//                        }
 
                         else -> {
                             Unit
@@ -183,6 +198,22 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
         return RequestResult(true)
     }
 
+
+    private fun setLastUpdate( resource: Resource ){
+
+        val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
+
+        if( resource.hasMeta() ) {
+            println("=========== setLastUpdate: ${Date()} " )
+            resource.meta.lastUpdated = Date()
+        }
+        else {
+            var meta = Meta()
+            meta.lastUpdated = Date()
+            resource.setMeta(meta)
+        }
+        println("=========== setLastUpdate 1 :  ${iParser.encodeResourceToString(resource)}")
+    }
     suspend fun populateData(patientId: String): Pair<String, String> {
 //    suspend fun populateData(patientId: String): String {
 //        val patient = fhirEngine.get<Patient>(patientId)
@@ -230,7 +261,28 @@ println("=============")
     // ---------------------------------------------------------------------------------------------
     // Supportive methods
 
-    private fun transformResource (questionnaireResponse: QuestionnaireResponse): Bundle {
+    private suspend fun transformResource (questionnaireResponse: QuestionnaireResponse): Bundle {
+//        val contextR4 =
+//            FhirApplication.contextR4(getApplication<FhirApplication>().applicationContext)
+//        val transformSupportServices = TransformSupportServices(contextR4)
+//
+//        return ResourceMapper.extract(
+//            questionnaire = questionnaire!!,
+//            questionnaireResponse = questionnaireResponse,
+//            structureMapExtractionContext =
+//                StructureMapExtractionContext(
+//                    context = getApplication<Application>().applicationContext,
+//                    transformSupportServices = transformSupportServices,
+//                    structureMapProvider = { structureMapUrl: String?, _: IWorkerContext ->
+//    //                    structureMapUrl?.substringAfterLast("/")?.let {
+//    //                //                        defaultRepository.loadResource(it)
+//    //                        fhirEngine.get(ResourceType.StructureMap, questionnaire!!.targetStructureMap!!)
+//    //                    } as StructureMap?
+//
+//                        contextR4.getTransform(questionnaire!!.targetStructureMap)
+//                    },
+//            ),
+//        )
 
 //        val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
 //        val questionnaireResponseStr = iParser.encodeResourceToString(questionnaireResponse)

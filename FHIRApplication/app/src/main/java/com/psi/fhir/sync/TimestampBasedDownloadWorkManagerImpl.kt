@@ -2,11 +2,13 @@ package com.psi.fhir.sync
 
 import android.net.Uri
 import com.google.android.fhir.sync.DownloadWorkManager
+import com.google.android.fhir.sync.SyncDataParams
 import com.google.android.fhir.sync.download.DownloadRequest
 import org.hl7.fhir.exceptions.FHIRException
 import org.hl7.fhir.r4.model.Bundle
 import org.hl7.fhir.r4.model.CarePlan
 import org.hl7.fhir.r4.model.Encounter
+import org.hl7.fhir.r4.model.ListResource
 import org.hl7.fhir.r4.model.OperationOutcome
 import org.hl7.fhir.r4.model.PlanDefinition
 import org.hl7.fhir.r4.model.QuestionnaireResponse
@@ -74,20 +76,31 @@ class TimestampBasedDownloadWorkManagerImpl(
         return if (url == null) {
             constructNextRequestFromResourceReferences()
         } else {
-            val resourceTypeToDownload = ResourceType.fromCode(url.findAnyOf(resourceTypeList, ignoreCase = true)!!.second)
+            val resourceTypeToDownload =
+                ResourceType.fromCode(url.findAnyOf(resourceTypeList, ignoreCase = true)!!.second)
             dataStore.getLastUpdateTimestamp(resourceTypeToDownload)?.let {
                 url = affixLastUpdatedTimestamp(url, it)
             }
-
+            println(" =========== getNextRequest: $url")
             DownloadRequest.of(url)
         }
+
+//        var url = urls.poll()
+//        return if (url == null) {
+//            constructNextRequestFromResourceReferences()
+//        } else {
+//            val resourceTypeToDownload = ResourceType.fromCode(url.findAnyOf(resourceTypeList, ignoreCase = true)!!.second)
+//            dataStore.getLastUpdateTimestamp(resourceTypeToDownload)?.let {
+//                url = affixLastUpdatedTimestamp(url, it)
+//            }
+//
+//            DownloadRequest.of(url)
+//        }
     }
 
     private fun constructNextRequestFromResourceReferences(): DownloadRequest? {
         for (resourceType in resourceReferencesDownloadOrderByTypeSequence) {
 
-            println("============ resourceReferences ")
-            println(resourceReferences)
             if (resourceReferences.getOrDefault(resourceType, emptyMap()).isNotEmpty()) {
                 val resourceSearchValues = resourceReferences[resourceType]!!
                 resourceSearchValues.entries.forEach { (searchParameter, searchIds) ->
@@ -114,22 +127,20 @@ class TimestampBasedDownloadWorkManagerImpl(
         resourceIds: Set<String>
     ): DownloadRequest? {
         return if (resourceIds.isNotEmpty()) {
-            println("===================")
-            println("${resourceType.name}?$searchField=${resourceIds.joinToString(",")}")
             DownloadRequest.of("${resourceType.name}?$searchField=${resourceIds.joinToString(",")}")
         } else {
             null
         }
     }
 
-//    override suspend fun getSummaryRequestUrls(): Map<ResourceType, String> {
-//        return urls.associate {
-//            ResourceType.fromCode(it.substringBefore("?")) to
-//                    it.plus("&${SyncDataParams.SUMMARY_KEY}=${SyncDataParams.SUMMARY_COUNT_VALUE}")
-//        }
-//    }
+    override suspend fun getSummaryRequestUrls(): Map<ResourceType, String> {
+        return urls.associate {
+            ResourceType.fromCode(it.substringBefore("?")) to
+                    it.plus("&${SyncDataParams.SUMMARY_KEY}=${SyncDataParams.SUMMARY_COUNT_VALUE}")
+        }
+    }
 
-    override suspend fun getSummaryRequestUrls(): Map<ResourceType, String> = emptyMap()
+//    override suspend fun getSummaryRequestUrls(): Map<ResourceType, String> = emptyMap()
 
 
     override suspend fun processResponse(response: Resource): Collection<Resource> {
@@ -141,17 +152,37 @@ class TimestampBasedDownloadWorkManagerImpl(
             throw FHIRException(response.issueFirstRep.diagnostics)
         }
 
+        println("============= processResponse 1")
+
+        // If the resource returned is a List containing Patients, extract Patient references and fetch
+        // all resources related to the patient using the $everything operation.
+        if (response is ListResource) {
+            for (entry in response.entry) {
+                val reference = Reference(entry.item.reference)
+                if (reference.referenceElement.resourceType.equals("Patient")) {
+                    val patientUrl = "${entry.item.reference}/\$everything"
+                    urls.add(patientUrl)
+                }
+            }
+        }
+
+
         // If the resource returned is a Bundle, check to see if there is a "next" relation referenced
         // in the Bundle.link component, if so, append the URL referenced to list of URLs to download.
         if (response is Bundle) {
             val nextUrl = response.link.firstOrNull { component -> component.relation == "next" }?.url
             if (nextUrl != null) {
                 urls.add(nextUrl)
+                println("============= processResponse 1.1 urls: ${urls}")
             }
         }
 
+        println("============= processResponse 2")
         // Finally, extract the downloaded resources from the bundle.
         var bundleCollection: Collection<Resource> = mutableListOf()
+
+        println("============= processResponse 3: ${response.resourceType.name}")
+
         if (response is Bundle && response.type == Bundle.BundleType.SEARCHSET) {
             bundleCollection =
                 response.entry
@@ -161,15 +192,13 @@ class TimestampBasedDownloadWorkManagerImpl(
                 bundleCollection += processResourceForExtraction(item.resource)
             }
         }
-        println("Bundle size is " + bundleCollection.size)
+        println("processResponse - Bundle size is " + bundleCollection.size)
         return bundleCollection
     }
 
 
     private suspend fun processResourceForExtraction(resource: Resource): Collection<Resource> {
 
-        println("============= resource")
-        println(resource)
         when (resource) {
             is PlanDefinition -> return extractPlanDefinitionDependentResources(resource)
             is CarePlan -> return extractCarePlanDependentResources(resource)

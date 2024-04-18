@@ -30,7 +30,7 @@ import timber.log.Timber
 class FhirApplication : Application(), DataCaptureConfig.Provider  {
 
 //    private val BASE_FHIR_URL = "https://hapi.fhir.org/baseR4/"
-    private val BASE_FHIR_URL = "http://172.30.1.27:8080/fhir/"
+    private val BASE_FHIR_URL = "http://172.30.1.26:8080/fhir/"
     /**
      * This instantiate of FHIR Engine ensures the FhirEngine instance is only created
      * when it's accessed for the first time, not immediately when the app starts.
@@ -91,14 +91,14 @@ class FhirApplication : Application(), DataCaptureConfig.Provider  {
         CoroutineScope(Dispatchers.IO).launch {
             println("**** creating contextR4")
 
-//            val measlesIg = async {
-//                NpmPackage.fromPackage(assets.open("packages.fhir.org-hl7.fhir.dk.core-1.1.0.tgz"))
-//            }
-//            val baseIg = async { NpmPackage.fromPackage(assets.open("packages.tgz")) }
-//            val packages = arrayListOf<NpmPackage>(measlesIg.await(), baseIg.await())
-
+            val measlesIg = async {
+                NpmPackage.fromPackage(assets.open("packages.fhir.org-hl7.fhir.dk.core-1.1.0.tgz"))
+            }
             val baseIg = async { NpmPackage.fromPackage(assets.open("packages.tgz")) }
-            val packages = arrayListOf<NpmPackage>(baseIg.await())
+            val packages = arrayListOf<NpmPackage>(measlesIg.await(), baseIg.await())
+
+//            val baseIg = async { NpmPackage.fromPackage(assets.open("packages.tgz")) }
+//            val packages = arrayListOf<NpmPackage>(baseIg.await())
 
             println("**** read assets contextR4")
             contextR4 = ComplexWorkerContext()
