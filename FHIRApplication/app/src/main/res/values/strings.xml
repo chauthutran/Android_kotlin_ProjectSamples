@@ -17,4 +17,6 @@
     <string name="message_no_datetime">No effect data time</string>
     <string name="observations">Observations</string>
     <string name="no_data_to_delete">No data to delete</string>
+    <string name="syncing_data_successfully">Syncing data successfully.</string>
+    <string name="syncing_data_failed">Syncing data failed.</string>
 </resources>

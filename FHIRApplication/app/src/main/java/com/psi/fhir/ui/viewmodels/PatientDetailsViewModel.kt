@@ -97,7 +97,6 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
     }
 
     private fun createEncounterItem( encounter: Encounter, resources: Resources): EncounterListItem {
-        println("============== Encounter : ${encounter.id}")
         return EncounterListItem(encounter.idElement.idPart)
     }
 

@@ -8,14 +8,18 @@ import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.search.Order
 import com.google.android.fhir.search.StringFilterModifier
 import com.google.android.fhir.search.search
+import com.google.android.fhir.sync.PeriodicSyncJobStatus
 import com.google.android.fhir.sync.Sync
 import com.psi.fhir.FhirApplication
 import com.psi.fhir.data.PatientListItemUiState
+import com.psi.fhir.data.RequestResult
 import com.psi.fhir.sync.FhirPeriodicSyncWorker
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.hl7.fhir.r4.model.Patient
@@ -29,7 +33,7 @@ enum class SyncDataStatus {
 
 class PatientListViewModel( private val application: Application ): AndroidViewModel(application) {
 
-    private val _pollState = MutableStateFlow<SyncDataStatus>(SyncDataStatus.UNDEFINED)
+    private val _pollState = MutableStateFlow(SyncDataStatus.UNDEFINED)
     val pollState = _pollState.asStateFlow()
 
     private val _uiState = MutableStateFlow<List<PatientListItemUiState>>(mutableListOf())
@@ -38,40 +42,25 @@ class PatientListViewModel( private val application: Application ): AndroidViewM
 
     var fhirEngine: FhirEngine = FhirApplication.fhirEngine(application.applicationContext)
 
+
     fun performSyncData() {
+
         viewModelScope.launch {
             _pollState.emit(SyncDataStatus.LOADING)
-
             try {
                 Sync.oneTimeSync<FhirPeriodicSyncWorker>(application)
-                    .shareIn(this, SharingStarted.Eagerly, 10)
-                    .collect {
-                        _pollState.emit(SyncDataStatus.SUCCESS)
+//                    .shareIn(this, SharingStarted.Eagerly, 10)
+                    .shareIn(this, SharingStarted.Eagerly, 1)
+                    .collectLatest {
                         searchPatientsByName("")
+                        _pollState.emit(SyncDataStatus.SUCCESS)
                     }
-            }
-            catch(e: Exception) {
+            } catch (e: Exception) {
                 _pollState.emit(SyncDataStatus.ERROR)
             }
-
         }
 
     }
-
-
-//    fun searchPatients(nameQuery: String = "") {
-//        updatePatientList({ searchPatientsByName(nameQuery) })
-//    }
-//
-//    private fun updatePatientList (
-//        getList: suspend () -> List<PatientListItemUiState>,
-////        getCount: suspend() -> Long
-//    ) {
-//        viewModelScope.launch {
-//            _uiState.value = getList()
-////            livePatientCount.value = getCount()
-//        }
-//    }
 
     suspend fun searchPatientsByName(nameQuery: String = ""): List<PatientListItemUiState> {
         val patients: MutableList<PatientListItemUiState> = mutableListOf()

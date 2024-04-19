@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +37,7 @@ import androidx.navigation.compose.rememberNavController
 import com.psi.fhir.data.RequestResult
 import com.psi.fhir.fragments.AddPatientRegistrationFragment
 import com.psi.fhir.fragments.EditPatientRegistrationFragment
+import com.psi.fhir.ui.composes.AutoAnimateVectorIcon
 import com.psi.fhir.ui.composes.LoadingProgressBar
 import com.psi.fhir.ui.login.LoginScreen
 import com.psi.fhir.ui.composes.PatientDetailsScreen
@@ -44,6 +46,7 @@ import com.psi.fhir.ui.composes.QuestionnaireScreen
 import com.psi.fhir.ui.viewmodels.PatientDetailData
 import com.psi.fhir.ui.viewmodels.PatientDetailsViewModel
 import com.psi.fhir.ui.viewmodels.PatientListViewModel
+import com.psi.fhir.ui.viewmodels.SyncDataStatus
 import kotlinx.coroutines.launch
 
 
@@ -230,6 +233,8 @@ fun PatientListToolBar (
     viewModel: PatientListViewModel,
     modifier: Modifier = Modifier
 ) {
+    val syncState by viewModel.pollState.collectAsState()
+
     TopAppBar(
         title = { Text(stringResource(currentScreen.title)) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -246,14 +251,43 @@ fun PatientListToolBar (
 
         },
         actions = {
-            IconButton(onClick = {
-                viewModel.performSyncData()
-            }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_sync_30),
-                    contentDescription = "Sync"
-                )
+            when( syncState ) {
+                SyncDataStatus.LOADING -> {
+                    AutoAnimateVectorIcon(R.drawable.ic_sync_30)
+                }
+
+                SyncDataStatus.SUCCESS -> {
+                    Toast.makeText( LocalContext.current,
+                        stringResource(R.string.syncing_data_successfully), Toast.LENGTH_SHORT).show()
+
+                    IconButton(onClick = {
+                        viewModel.performSyncData()
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_sync_30),
+                            contentDescription = "Sync"
+                        )
+                    }
+                }
+
+                SyncDataStatus.ERROR -> {
+                    Toast.makeText( LocalContext.current,
+                        stringResource(R.string.syncing_data_failed), Toast.LENGTH_SHORT ).show()
+                }
+
+                else -> {
+                    IconButton(onClick = {
+                        viewModel.performSyncData()
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_sync_30),
+                            contentDescription = "Sync"
+                        )
+                    }
+                }
+
             }
+
         }
     )
 }
