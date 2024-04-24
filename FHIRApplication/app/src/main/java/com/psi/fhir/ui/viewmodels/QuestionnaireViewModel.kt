@@ -10,13 +10,17 @@ import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.datacapture.extensions.targetStructureMap
 import com.google.android.fhir.search.search
 import com.psi.fhir.FhirApplication
+import com.psi.fhir.careplan.CarePlanManager
 import com.psi.fhir.data.RequestResult
 import com.psi.fhir.di.TransformSupportServices
 import com.psi.fhir.helper.app.AppConfigurationHelper
 import com.psi.fhir.utils.DispatcherStatus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.hl7.fhir.r4.model.Bundle
 import org.hl7.fhir.r4.model.DateType
 import org.hl7.fhir.r4.model.Meta
@@ -36,6 +40,7 @@ import java.util.UUID
 class QuestionnaireViewModel (application: Application) : AndroidViewModel(application) {
 
     private var fhirEngine: FhirEngine = FhirApplication.fhirEngine(application.applicationContext)
+    private var carePlanManager: CarePlanManager = FhirApplication.carePlanManager(application.applicationContext)
 
 
     lateinit var questionnaireJson: String
@@ -94,12 +99,19 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
                         Reference("${ResourceType.Patient.name}/${patientId}")
                     fhirEngine.create(questionnaireResponse)
 
-                    val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
-                    val questionnaireResponseStr = iParser.encodeResourceToString(questionnaireResponse)
+                    // Create CarePlan
+//                    runBlocking {
+                    CoroutineScope(Dispatchers.IO).launch {
+                    carePlanManager.createCarePlan(patientId, "")
+//                    }
+                }
 
-                    println("======================== questionnaireResponse")
-                    println(questionnaireResponse.id)
-                    println(questionnaireResponseStr)
+//                    val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
+//                    val questionnaireResponseStr = iParser.encodeResourceToString(questionnaireResponse)
+//
+//                    println("======================== questionnaireResponse")
+//                    println(questionnaireResponse.id)
+//                    println(questionnaireResponseStr)
                 }
                 catch( ex: Exception) {
                     ex.printStackTrace()
@@ -186,6 +198,10 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
         }
 
         fhirEngine.update(questionnaireResponse)
+
+          CoroutineScope(Dispatchers.IO).launch {
+            carePlanManager.createCarePlan("4422000a-dd01-4b18-8e64-4b61c777041b", "")
+        }
 
         return RequestResult(true)
     }

@@ -14,7 +14,6 @@ import com.google.android.fhir.datacapture.QuestionnaireFragment
 import com.psi.fhir.R
 import com.psi.fhir.ui.viewmodels.QuestionnaireViewModel
 import com.psi.fhir.utils.DispatcherStatus
-import kotlinx.coroutines.runBlocking
 import org.hl7.fhir.r4.model.QuestionnaireResponse
 
 class AddPatientRegistrationFragment : Fragment() {
@@ -65,19 +64,20 @@ class AddPatientRegistrationFragment : Fragment() {
             QuestionnaireFragment.SUBMIT_REQUEST_KEY,
             viewLifecycleOwner,
         ) { _, _ ->
-            runBlocking {
+//            runBlocking {
                 viewModel.addResources( genrerateQuestionnaireResponse() )
-            }
+//            }
 
         }
+
+
+//        val questionnaireFragment =
+//            childFragmentManager.findFragmentByTag(QUESTIONNAIRE_FRAGMENT_TAG) as QuestionnaireFragment
+//        viewModel.addResources(questionnaireFragment.getQuestionnaireResponse())
     }
 
     private fun addQuestionnaireFragment()
     {
-        runBlocking {
-
-        }
-
         childFragmentManager.commit {
             add(
                 R.id.add_patient_container,

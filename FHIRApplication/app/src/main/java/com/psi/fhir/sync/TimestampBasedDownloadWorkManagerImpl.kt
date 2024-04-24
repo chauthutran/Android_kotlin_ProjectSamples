@@ -63,6 +63,7 @@ class TimestampBasedDownloadWorkManagerImpl(
                 // Server should filter all the PlanDefinition that need to be executed by this Health
                 // Professional
                 "PlanDefinition",
+                "ActivityDefinition",
                 // Server should fetch the PractitionerRole corresponding to the health Professional
                 "PractitionerRole",
                 // Server should filter all the patients the Health Professional is assigned to
@@ -81,7 +82,6 @@ class TimestampBasedDownloadWorkManagerImpl(
             dataStore.getLastUpdateTimestamp(resourceTypeToDownload)?.let {
                 url = affixLastUpdatedTimestamp(url, it)
             }
-            println(" =========== getNextRequest: $url")
             DownloadRequest.of(url)
         }
 
@@ -173,15 +173,12 @@ class TimestampBasedDownloadWorkManagerImpl(
             val nextUrl = response.link.firstOrNull { component -> component.relation == "next" }?.url
             if (nextUrl != null) {
                 urls.add(nextUrl)
-                println("============= processResponse 1.1 urls: ${urls}")
             }
         }
 
-        println("============= processResponse 2")
         // Finally, extract the downloaded resources from the bundle.
         var bundleCollection: Collection<Resource> = mutableListOf()
 
-        println("============= processResponse 3: ${response.resourceType.name}")
 
         if (response is Bundle && response.type == Bundle.BundleType.SEARCHSET) {
             bundleCollection =
@@ -192,7 +189,6 @@ class TimestampBasedDownloadWorkManagerImpl(
                 bundleCollection += processResourceForExtraction(item.resource)
             }
         }
-        println("processResponse - Bundle size is " + bundleCollection.size)
         return bundleCollection
     }
 

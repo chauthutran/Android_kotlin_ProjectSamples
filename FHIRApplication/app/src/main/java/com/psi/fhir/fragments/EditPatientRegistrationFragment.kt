@@ -48,6 +48,7 @@ class EditPatientRegistrationFragment(val patientDetailData: PatientDetailData) 
             viewLifecycleOwner,
         ) { _, _ ->
             runBlocking {
+
                 viewModel.updateResources( genrerateQuestionnaireResponse(), patientDetailData )
             }
         }

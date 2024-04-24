@@ -2,6 +2,8 @@ package com.psi.fhir
 
 import android.app.Application
 import android.content.Context
+import ca.uhn.fhir.context.FhirContext
+import ca.uhn.fhir.context.FhirVersionEnum
 import com.google.android.fhir.DatabaseErrorStrategy
 import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.FhirEngineConfiguration
@@ -11,6 +13,8 @@ import com.google.android.fhir.datacapture.DataCaptureConfig
 import com.google.android.fhir.datacapture.XFhirQueryResolver
 import com.google.android.fhir.search.search
 import com.google.android.fhir.sync.remote.HttpLogger
+import com.google.android.fhir.workflow.FhirOperator
+import com.psi.fhir.careplan.CarePlanManager
 import com.psi.fhir.di.ComplexWorkerContext
 import com.psi.fhir.di.ReferenceUrlResolver
 import com.psi.fhir.di.ValueSetResolver
@@ -31,11 +35,14 @@ class FhirApplication : Application(), DataCaptureConfig.Provider  {
 
 //    private val BASE_FHIR_URL = "https://hapi.fhir.org/baseR4/"
     private val BASE_FHIR_URL = "http://172.30.1.26:8080/fhir/"
+    private val inSync = LazyThreadSafetyMode.SYNCHRONIZED
+
     /**
      * This instantiate of FHIR Engine ensures the FhirEngine instance is only created
      * when it's accessed for the first time, not immediately when the app starts.
      **/
     private val fhirEngine: FhirEngine by lazy { constructFhirEngine() }
+    private val carePlanManager: CarePlanManager by lazy { constructCarePlanManager() }
     private var dataCaptureConfig: DataCaptureConfig? = null
     private lateinit var contextR4: ComplexWorkerContext
     private val dataStore by lazy { DemoDataStore(this) }
@@ -85,6 +92,12 @@ class FhirApplication : Application(), DataCaptureConfig.Provider  {
                 valueSetResolverExternal = object : ValueSetResolver() {}
                 xFhirQueryResolver = XFhirQueryResolver { fhirEngine.search(it).map { it.resource } }
             }
+
+    }
+
+
+    private fun constructCarePlanManager(): CarePlanManager {
+        return CarePlanManager(fhirEngine, FhirContext.forR4(), this)
     }
 
     private fun constructR4Context() =
@@ -129,5 +142,8 @@ class FhirApplication : Application(), DataCaptureConfig.Provider  {
 
         fun contextR4(context: Context) = (context.applicationContext as FhirApplication).contextR4
 
+
+        fun carePlanManager(context: Context) =
+            (context.applicationContext as FhirApplication).carePlanManager
     }
 }
