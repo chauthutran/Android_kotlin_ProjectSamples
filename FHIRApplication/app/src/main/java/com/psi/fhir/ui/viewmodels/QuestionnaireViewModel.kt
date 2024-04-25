@@ -158,6 +158,7 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
                     updatedList[resourceType]!!.add(resource)
                 }
             }
+
             // Put IDs for resources
             for (resourceType in updatedList.keys) {
                 println("========== resourceType: ${resourceType}")
@@ -171,23 +172,23 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
                         fhirEngine.update(resource)
                     }
 
-                    ResourceType.Encounter.toString() -> {
-                        (0..<list.size).forEach {
-                            val resource = list[it]
-                    setLastUpdate( resource )
-                            resource.id = patientDetailData.encounters[it].id
-                            fhirEngine.update(resource)
-                        }
-                    }
+//                    ResourceType.Encounter.toString() -> {
+//                        (0..<list.size).forEach {
+//                            val resource = list[it]
+//                    setLastUpdate( resource )
+//                            resource.id = patientDetailData.encounters[it].id
+//                            fhirEngine.update(resource)
+//                        }
+//                    }
 
-                    ResourceType.Observation.toString() -> {
-                        (0..<list.size).forEach {
-                            val resource = list[it]
-                            setLastUpdate( resource )
-                            resource.id = patientDetailData.observations[it].id
-                            fhirEngine.update(resource)
-                        }
-                    }
+//                    ResourceType.Observation.toString() -> {
+//                        (0..<list.size).forEach {
+//                            val resource = list[it]
+//                            setLastUpdate( resource )
+//                            resource.id = patientDetailData.observations[it].id
+//                            fhirEngine.update(resource)
+//                        }
+//                    }
 
                     else -> {
                         Unit
@@ -200,7 +201,8 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
         fhirEngine.update(questionnaireResponse)
 
           CoroutineScope(Dispatchers.IO).launch {
-            carePlanManager.createCarePlan("4422000a-dd01-4b18-8e64-4b61c777041b", "")
+//            carePlanManager.createCarePlan("4422000a-dd01-4b18-8e64-4b61c777041b", "")
+              carePlanManager.createCarePlan(patientDetailData.patient.id, "")
         }
 
         return RequestResult(true)

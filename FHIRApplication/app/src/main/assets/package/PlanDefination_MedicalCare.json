@@ -1,11 +1,12 @@
 {
-"resourceType": "PlanDefinition",
-"id": "MedRequest-Example",
-"title": "This example illustrates a medication request",
-"status": "active",
-"action": [{
-"id": "medication-action-1",
-"title": "Administer Medication 1",
-"definitionCanonical": "http://localhost/ActivityDefinition/MedicationRequest-1"
-}]
+  "resourceType": "PlanDefinition",
+  "id": "14568",
+  "title": "This example illustrates a medication request",
+  "url": "http://172.30.1.26:8080/fhir/PlanDefinition/14568",
+  "status": "active",
+  "action": [{
+    "id": "medication-action-1",
+    "title": "Administer Medication 1",
+    "definitionCanonical": "http://172.30.1.26:8080/fhir/ActivityDefinition/14503"
+  }]
 }

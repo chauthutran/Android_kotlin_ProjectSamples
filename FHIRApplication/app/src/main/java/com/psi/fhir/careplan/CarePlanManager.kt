@@ -70,9 +70,11 @@ class CarePlanManager (
 
 
         var planDefinition = fhirEngine.get<PlanDefinition>("14568")
+        println("=========== planDefinition: ${planDefinition}" )
         knowledgeManager.install(writeToFile(planDefinition))
 
         var activityDefinition = fhirEngine.get<ActivityDefinition>("14503")
+        println("=========== activityDefinition: ${activityDefinition}" )
         knowledgeManager.install(writeToFile(activityDefinition))
     }
 
@@ -121,7 +123,11 @@ println("==================== createCarePlan ")
 
         val plan: CarePlan = fhirOperator.generateCarePlan(
 //            planDefinitionId = "MedRequest-Example",
-            planDefinitionId = "14568",
+//            planDefinitionId = "14568",
+            planDefinition =
+            CanonicalType(
+                "http://172.30.1.26:8080/fhir/PlanDefinition/14568",
+            ),
             subject = "Patient/$patientId"
 //            patientId = patientId,
 //            encounterId = encounterId

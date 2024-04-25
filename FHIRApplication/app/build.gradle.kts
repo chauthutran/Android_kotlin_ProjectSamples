@@ -196,13 +196,15 @@ dependencies {
 //    implementation("org.opencds.cqf.cql:evaluator.builder:3.0.0-PRE5")
 
 
-    implementation("com.diffplug.spotless:spotless-plugin-gradle:6.22.0")
-    implementation("com.android.tools.build:gradle:8.1.4")
-    implementation("app.cash.licensee:licensee-gradle-plugin:1.8.0")
-    implementation("com.osacky.flank.gradle:fladle:0.17.4")
-    implementation("com.spotify.ruler:ruler-gradle-plugin:1.4.0")
-    implementation("ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.10.0")
-    implementation("com.squareup:kotlinpoet:1.15.3")
+//    implementation("com.diffplug.spotless:spotless-plugin-gradle:6.22.0")
+//    implementation("com.android.tools.build:gradle:8.1.4")
+//    implementation("app.cash.licensee:licensee-gradle-plugin:1.8.0")
+//    implementation("com.osacky.flank.gradle:fladle:0.17.4")
+//    implementation("com.spotify.ruler:ruler-gradle-plugin:1.4.0")
+//    implementation("ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.10.0")
+//    implementation("com.squareup:kotlinpoet:1.15.3")
+
+//    implementation ("javax.xml:javax.xml.stream-api:1.0")
 
 }
 
@@ -212,7 +214,7 @@ configurations {
         exclude(group = "org.eclipse.persistence")
         exclude(group = "javax.activation", module = "activation")
         exclude(group = "javax", module = "javaee-api")
-        exclude(group = "xml-apis")
+//        exclude(group = "xml-apis")
         exclude(group = "xpp3")
 
         removeIncompatibleDependencies()
