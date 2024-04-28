@@ -11,14 +11,18 @@ import com.google.android.fhir.knowledge.KnowledgeManager
 import com.google.android.fhir.workflow.FhirOperator
 import com.google.android.fhir.workflow.FhirOperator.Builder
 import com.psi.fhir.FhirApplication
+import com.psi.fhir.helper.app.AppConfigurationHelper
 import org.hl7.fhir.r4.model.ActivityDefinition
 import org.hl7.fhir.r4.model.CanonicalType
 import org.hl7.fhir.r4.model.CarePlan
+import org.hl7.fhir.r4.model.Meta
 import org.hl7.fhir.r4.model.MetadataResource
 import org.hl7.fhir.r4.model.Patient
 import org.hl7.fhir.r4.model.PlanDefinition
 import org.hl7.fhir.r4.model.Resource
 import java.io.File
+import java.util.Date
+import java.util.UUID
 
 /** The care plan creator interface allows healthcare providers to easily create, update, and manage
 care plans for patients. It provides a user-friendly way to input information such as goals, interventions, and timelines.
@@ -31,13 +35,6 @@ class CarePlanManager (
 ){
 
     private var knowledgeManager = KnowledgeManager.create(context, inMemory = true)
-
-
-
-//    private val fhirOperator = Builder(context.applicationContext)
-//                                .withFhirEngine(fhirEngine)
-//                                .withFhirContext(fhirContext)
-//                                .withIgManager(knowledgeManager ).build()
 
     private val fhirOperator = Builder(context.applicationContext)
     .fhirContext(fhirContext)
@@ -66,15 +63,12 @@ class CarePlanManager (
 //        }
 
 
-
-
-
-        var planDefinition = fhirEngine.get<PlanDefinition>("14568")
-        println("=========== planDefinition: ${planDefinition}" )
+        val planDefinitionId = AppConfigurationHelper.getPlanDefinitionId()!!
+        var planDefinition = fhirEngine.get<PlanDefinition>(planDefinitionId)
         knowledgeManager.install(writeToFile(planDefinition))
 
-        var activityDefinition = fhirEngine.get<ActivityDefinition>("14503")
-        println("=========== activityDefinition: ${activityDefinition}" )
+        val activityDefinitionId = AppConfigurationHelper.getActivityDefinitionId()!!
+        var activityDefinition = fhirEngine.get<ActivityDefinition>(activityDefinitionId)
         knowledgeManager.install(writeToFile(activityDefinition))
     }
 
@@ -121,22 +115,40 @@ println("==================== createCarePlan ")
 //            ) as CarePlan
 
 
-        val plan: CarePlan = fhirOperator.generateCarePlan(
+        val carePlan: CarePlan = fhirOperator.generateCarePlan(
 //            planDefinitionId = "MedRequest-Example",
-//            planDefinitionId = "14568",
+//            planDefinitionId = "1",
             planDefinition =
             CanonicalType(
-                "http://172.30.1.26:8080/fhir/PlanDefinition/14568",
+                "http://172.30.1.26:8080/fhir/PlanDefinition/1",
             ),
             subject = "Patient/$patientId"
 //            patientId = patientId,
 //            encounterId = encounterId
         ) as CarePlan
 
-        val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
-        println(iParser.encodeResourceToString(plan))
+        carePlan.id = UUID.randomUUID().toString()
+        setLastUpdate(carePlan)
 
-        fhirEngine.create(plan)
+        val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
+        println(iParser.encodeResourceToString(carePlan))
+
+        fhirEngine.create(carePlan)
     }
 
+    private fun setLastUpdate( resource: Resource ){
+
+        val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
+
+        if( resource.hasMeta() ) {
+            println("=========== setLastUpdate: ${Date()} " )
+            resource.meta.lastUpdated = Date()
+        }
+        else {
+            var meta = Meta()
+            meta.lastUpdated = Date()
+            resource.setMeta(meta)
+        }
+        println("=========== setLastUpdate 1 :  ${iParser.encodeResourceToString(resource)}")
+    }
 }

@@ -224,6 +224,7 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
         }
         println("=========== setLastUpdate 1 :  ${iParser.encodeResourceToString(resource)}")
     }
+
     suspend fun populateData(patientId: String): Pair<String, String> {
 //    suspend fun populateData(patientId: String): String {
 //        val patient = fhirEngine.get<Patient>(patientId)

@@ -99,5 +99,25 @@ object AppConfigurationHelper {
         return appConfigData!!.getString("patientPersonalDataEditQuestionnaire")
     }
 
+
+    // ---------------------------------------------------------------------------------------------
+    // For CarePlan form
+
+    fun getPlanDefinitionId(): String? {
+        if( appConfigData == null || appConfigData!!.isNull("carePlan") ) {
+            return null
+        }
+
+        return appConfigData!!.getJSONObject("carePlan").getString("planDefinitionId")
+    }
+
+    fun getActivityDefinitionId(): String? {
+        if( appConfigData == null || appConfigData!!.isNull("carePlan") ) {
+            return null
+        }
+
+        return appConfigData!!.getJSONObject("carePlan").getString("activityDefinitionId")
+    }
+
 }
 

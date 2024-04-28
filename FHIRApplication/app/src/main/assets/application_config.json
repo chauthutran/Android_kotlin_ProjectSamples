@@ -3,6 +3,8 @@
   "appTitle" : "Simple FHIR Demo Application",
   "sync": {
     "resourcesToSync":  [
+      "ActivityDefinition",
+      "PlanDefinition",
       "Patient",
       "CarePlan",
       "Task",
@@ -12,6 +14,12 @@
       "QuestionnaireResponse"
     ]
   },
+
+  "carePlan": {
+    "planDefinitionId": "1",
+    "activityDefinitionId": "2"
+  },
+
 
   "patientRegistrationQuestionnaire": "Questionnaire_PatientRegistration",
 
