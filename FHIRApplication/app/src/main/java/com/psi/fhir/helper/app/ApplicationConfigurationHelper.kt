@@ -119,5 +119,14 @@ object AppConfigurationHelper {
         return appConfigData!!.getJSONObject("carePlan").getString("activityDefinitionId")
     }
 
+    fun getTaskQuestionnaireId(): String? {
+        if( appConfigData == null || appConfigData!!.isNull("taskQuestionnaireId") ) {
+            return null
+        }
+
+        return appConfigData!!.getJSONObject("carePlan").getString("taskQuestionnaireId")
+    }
+
+
 }
 

@@ -19,4 +19,5 @@
     <string name="no_data_to_delete">No data to delete</string>
     <string name="syncing_data_successfully">Syncing data successfully.</string>
     <string name="syncing_data_failed">Syncing data failed.</string>
+    <string name="care_plans">Care Plans</string>
 </resources>

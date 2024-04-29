@@ -10,9 +10,11 @@ import com.google.android.fhir.logicalId
 import com.google.android.fhir.search.search
 import com.psi.fhir.FhirApplication
 import com.psi.fhir.R
+import com.psi.fhir.careplan.CarePlanManager
 import com.psi.fhir.data.PatientDetailsUiState
 import com.psi.fhir.data.RequestResult
 import com.psi.fhir.helper.app.AppConfigurationHelper
+import org.hl7.fhir.r4.model.CarePlan
 import org.hl7.fhir.r4.model.Encounter
 import org.hl7.fhir.r4.model.Observation
 import org.hl7.fhir.r4.model.Patient
@@ -22,6 +24,8 @@ import java.time.format.DateTimeFormatter
 class PatientDetailsViewModel (application: Application): AndroidViewModel(application) {
 
     var fhirEngine: FhirEngine = FhirApplication.fhirEngine(application.applicationContext)
+    private var carePlanManager: CarePlanManager = FhirApplication.carePlanManager(application.applicationContext)
+
     var patientDetailData : PatientDetailData? = null
 
     suspend fun getPatientDetails(patientId: String): PatientDetailData {
@@ -34,7 +38,9 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
             observations.addAll( getObservationsById( enc.id) )
         }
 
-        patientDetailData = PatientDetailData(patient = patient, encounters = encounters, observations = observations )
+        val carePlans = getCarePlan(patientId)
+
+        patientDetailData = PatientDetailData(patient = patient, encounters = encounters, observations = observations, carePlans = carePlans )
 
         return patientDetailData!!
     }
@@ -82,6 +88,24 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
             .let { encounters.addAll(it) }
 
         return encounters
+    }
+
+    private suspend fun getCarePlan(patientId: String): List<CarePlan> {
+
+        val carePlans: MutableList<CarePlan> = mutableListOf()
+
+        fhirEngine.search<CarePlan> {
+            filter (
+                CarePlan.SUBJECT,
+                {
+                    value = "Patient/${patientId}"
+                }
+            )
+        }
+            .mapIndexed {index, searchResult -> searchResult.resource }
+            .let { carePlans.addAll(it) }
+
+        return carePlans
     }
 
     private suspend fun getObservationsById(encounterId: String): List<ObservationListItem> {
@@ -140,6 +164,7 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
 data class PatientDetailData (
     val patient: PatientDetailsUiState,
     val encounters: List<EncounterListItem>,
+    val carePlans: List<CarePlan>,
     val observations: List<ObservationListItem>
 )
 data class ObservationListItem (

@@ -100,11 +100,9 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
                     fhirEngine.create(questionnaireResponse)
 
                     // Create CarePlan
-//                    runBlocking {
                     CoroutineScope(Dispatchers.IO).launch {
-                    carePlanManager.createCarePlan(patientId, "")
-//                    }
-                }
+                        carePlanManager.createCarePlan(patientId, "")
+                    }
 
 //                    val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
 //                    val questionnaireResponseStr = iParser.encodeResourceToString(questionnaireResponse)
@@ -200,21 +198,16 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
 
         fhirEngine.update(questionnaireResponse)
 
-          CoroutineScope(Dispatchers.IO).launch {
-//            carePlanManager.createCarePlan("4422000a-dd01-4b18-8e64-4b61c777041b", "")
-              carePlanManager.createCarePlan(patientDetailData.patient.id, "")
-        }
+//          CoroutineScope(Dispatchers.IO).launch {
+//              carePlanManager.createCarePlan(patientDetailData.patient.id, "")
+//        }
 
         return RequestResult(true)
     }
 
 
     private fun setLastUpdate( resource: Resource ){
-
-        val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
-
         if( resource.hasMeta() ) {
-            println("=========== setLastUpdate: ${Date()} " )
             resource.meta.lastUpdated = Date()
         }
         else {
@@ -222,13 +215,9 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
             meta.lastUpdated = Date()
             resource.setMeta(meta)
         }
-        println("=========== setLastUpdate 1 :  ${iParser.encodeResourceToString(resource)}")
     }
 
     suspend fun populateData(patientId: String): Pair<String, String> {
-//    suspend fun populateData(patientId: String): String {
-//        val patient = fhirEngine.get<Patient>(patientId)
-//        val launchContexts = mapOf<String, Resource>("client" to patient)
 
         val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
         val questionnaireStr = iParser.encodeResourceToString(questionnaire)
@@ -253,19 +242,6 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
 //        println(questionnaireResponseJson)
 //        return fasdf
     }
-
-//    private suspend fun prepareEditPatient(): Pair<String, String> {
-//        val patient = fhirEngine.get<Patient>(patientId)
-//        val launchContexts = mapOf<String, Resource>("client" to patient)
-//        val question = readFileFromAssets("new-patient-registration-paginated.json").trimIndent()
-//        val parser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
-//        val questionnaire = parser.parseResource(Questionnaire::class.java, question) as Questionnaire
-//
-//        val questionnaireResponse: QuestionnaireResponse =
-//            ResourceMapper.populate(questionnaire, launchContexts)
-//        val questionnaireResponseJson = parser.encodeResourceToString(questionnaireResponse)
-//        return question to questionnaireResponseJson
-//    }
 
 
     // ---------------------------------------------------------------------------------------------

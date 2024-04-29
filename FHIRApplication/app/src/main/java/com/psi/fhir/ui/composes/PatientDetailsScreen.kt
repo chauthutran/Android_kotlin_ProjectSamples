@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -40,6 +41,7 @@ import com.psi.fhir.utils.DateUtils
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.psi.fhir.ui.viewmodels.ObservationListItem
 import com.psi.fhir.ui.viewmodels.PatientDetailData
+import org.hl7.fhir.r4.model.CarePlan
 
 @Composable
 fun PatientDetailsScreen(
@@ -93,10 +95,69 @@ private fun PatientCard(
             editButtonClick = editButtonClick,
             viewModel = viewModel
         )
+        CarePlanScreen( uiState!!.carePlans )
         ObservationListCard(uiState!!.observations)
     }
 }
 
+@Composable
+private fun CarePlanScreen(
+    carePlans: List<CarePlan>,
+    modifier: Modifier = Modifier
+) {
+    Column (
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.inversePrimary, shape = RoundedCornerShape(4.dp))
+    ) {
+        Text(
+            text = stringResource(R.string.care_plans),
+            style = MaterialTheme.typography.displayMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = modifier.padding(top = 10.dp, start = 10.dp)
+        )
+
+        Card (
+            modifier = modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = 300.dp)
+                .padding(10.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.inverseOnSurface,
+            )
+        ){
+            LazyVerticalGrid(
+                modifier = modifier.padding(10.dp),
+                columns = GridCells.Fixed(1),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
+            ) {
+                items(carePlans) { gridItem ->
+                    Column {
+                        Text(
+                            text = gridItem.status.display,
+                            modifier = Modifier.padding(end = 10.dp)
+                        )
+
+                        IconButton(onClick = {
+//                            editButtonClick(viewModel.patientDetailData!!)
+                            println("Button 'Care Plan' is clicked !!")
+                        }) {
+                            Icon(
+                                painterResource(id = com.google.android.material.R.drawable.material_ic_edit_black_24dp),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(5.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+
+    }
+}
 
 @Composable
 private fun ObservationListCard(
@@ -174,7 +235,10 @@ private fun PersonalCard(
                 modifier = Modifier
                     .padding(12.dp)
                     .size(30.dp)
-                    .background(MaterialTheme.colorScheme.tertiaryContainer, shape = RoundedCornerShape(15.dp) )
+                    .background(
+                        MaterialTheme.colorScheme.tertiaryContainer,
+                        shape = RoundedCornerShape(15.dp)
+                    )
             ) {
                 IconButton(onClick = {
                     println("========= editButtonClick ")
