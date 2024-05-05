@@ -1,6 +1,7 @@
 {
   "endPoint": "Patient with Medical Care",
   "appTitle" : "Simple FHIR Demo Application",
+  "fhirBaseUrl": "http://172.30.1.26:8080/fhir",
   "sync": {
     "resourcesToSync":  [
       "ActivityDefinition",
@@ -16,9 +17,21 @@
   },
 
   "carePlan": {
-    "planDefinitionId": "1",
-    "activityDefinitionId": "2",
-    "taskQuestionnaireId": "10"
+    "planDefinitionId": "14",
+    "resource": [
+      {
+        "type": "planDefinitionId",
+        "id": "14"
+      },
+      {
+        "type": "Questionnaire",
+        "id": ""
+      },
+      {
+        "type": "Questionnaire",
+        "id": ""
+      }
+    ]
   },
 
 

@@ -7,6 +7,8 @@ import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.delete
 import com.google.android.fhir.get
 import com.google.android.fhir.logicalId
+import com.google.android.fhir.search.Order
+import com.google.android.fhir.search.StringFilterModifier
 import com.google.android.fhir.search.search
 import com.psi.fhir.FhirApplication
 import com.psi.fhir.R
@@ -18,6 +20,8 @@ import org.hl7.fhir.r4.model.CarePlan
 import org.hl7.fhir.r4.model.Encounter
 import org.hl7.fhir.r4.model.Observation
 import org.hl7.fhir.r4.model.Patient
+import org.hl7.fhir.r4.model.QuestionnaireResponse
+import org.hl7.fhir.r4.model.Task
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -49,18 +53,62 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
         try {
            
             patientDetailData?.let {
+                // Delete Observations
                 for( item in it.observations ) {
                     fhirEngine.delete<Observation>(item.id)
                 }
 
+                // Delete Encounters
                 for( item in it.encounters ) {
                     fhirEngine.delete<Encounter>(item.id)
                 }
 
-                fhirEngine.delete<Patient>(it.patient.id)
 
-                return RequestResult(true)
+                // Delete QuestionnaireResponse
+                var quesResponses = fhirEngine.search<QuestionnaireResponse> {
+                        filter(
+                            QuestionnaireResponse.SUBJECT,
+                            {
+                                value = "Patient/${it.patient.id}"
+                            },
+                        )
+                    }
+
+                for(element in quesResponses) {
+                    fhirEngine.delete<QuestionnaireResponse>(element.resource.id);
+                }
+
+                // Delete CarePlan if any
+                var carePlans = fhirEngine.search<CarePlan> {
+                    filter(
+                        CarePlan.SUBJECT,
+                        {
+                            value = "Patient/${it.patient.id}"
+                        },
+                    )
+                }
+                for(element in carePlans) {
+                    fhirEngine.delete<CarePlan>(element.resource.id);
+                }
+
+//                // Delete Task if any
+//                var tasks = fhirEngine.search<Task> {
+//                    filter(
+//                        Task.,
+//                        {
+//                            value = "Patient/${it.patient.id}"
+//                        },
+//                    )
+//                }
+//                for(element in tasks) {
+//                    fhirEngine.delete<Task>(element.resource.id);
+//                }
+
+                // Delete Patient
+                fhirEngine.delete<Patient>(it.patient.id)
             }
+
+            return RequestResult(true)
         }
         catch (ex : Exception ){
             return RequestResult(false, ex.message)

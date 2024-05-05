@@ -12,6 +12,9 @@ object AppConfigurationHelper {
 
     private var appConfigData : JSONObject? = null
 
+
+
+
     fun readConfiguration( application: Application ) {
         appConfigData = AssestsFile.readAndConvertFileContentToJson(application, "application_config.json")
     }
@@ -23,6 +26,18 @@ object AppConfigurationHelper {
 
         return appConfigData!!.getString("formatDatePattern")
     }
+
+    // ---------------------------------------------------------------------------------------------
+    // For FHIR server
+
+    fun getFhirBaseUrl(): String? {
+        if( appConfigData == null ) {
+            return null
+        }
+
+        return appConfigData!!.getString("fhirBaseUrl")
+    }
+
 
     // ---------------------------------------------------------------------------------------------
     // For ListItem configuration
@@ -111,21 +126,21 @@ object AppConfigurationHelper {
         return appConfigData!!.getJSONObject("carePlan").getString("planDefinitionId")
     }
 
-    fun getActivityDefinitionId(): String? {
-        if( appConfigData == null || appConfigData!!.isNull("carePlan") ) {
-            return null
-        }
-
-        return appConfigData!!.getJSONObject("carePlan").getString("activityDefinitionId")
-    }
-
-    fun getTaskQuestionnaireId(): String? {
-        if( appConfigData == null || appConfigData!!.isNull("taskQuestionnaireId") ) {
-            return null
-        }
-
-        return appConfigData!!.getJSONObject("carePlan").getString("taskQuestionnaireId")
-    }
+//    fun getActivityDefinitionId(): String? {
+//        if( appConfigData == null || appConfigData!!.isNull("carePlan") ) {
+//            return null
+//        }
+//
+//        return appConfigData!!.getJSONObject("carePlan").getString("activityDefinitionId")
+//    }
+//
+//    fun getTaskQuestionnaireId(): String? {
+//        if( appConfigData == null || appConfigData!!.isNull("taskQuestionnaireId") ) {
+//            return null
+//        }
+//
+//        return appConfigData!!.getJSONObject("carePlan").getString("taskQuestionnaireId")
+//    }
 
 
 }

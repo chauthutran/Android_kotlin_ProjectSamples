@@ -1,0 +1,15 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "medical-request-vaccination",
+  "url": "http://172.30.1.26:8080/fhir/Questionnaire/14",
+  "status": "active",
+  "subjectType": ["MedicalRequest"],
+  "item": [
+    {
+      "linkId": "vaccinationDate",
+      "text": "Enter the date to take the vaccination",
+      "type": "date",
+      "required": true
+    }
+  ]
+}
