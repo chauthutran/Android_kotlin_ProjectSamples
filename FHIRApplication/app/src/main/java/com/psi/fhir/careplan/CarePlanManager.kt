@@ -83,17 +83,28 @@ class CarePlanManager (
 //        var planDefinition = fhirEngine.get<PlanDefinition>(planDefinitionId)
 //        knowledgeManager.install(writeToFile(planDefinition))
 
-        var resources = AppConfigurationHelper.getCarePlanResources()
-        for (i in 0..<resources.size) {
-            var resource = resources[i]
-            when( resource.type ) {
-                "PlanDefination" ->  fhirEngine.get<PlanDefinition>(resource.id)
-                "Questionnaire" ->  fhirEngine.get<Questionnaire>(resource.id)
+//        val planDefinitionId = AppConfigurationHelper.getPlanDefinitionId()!!
+        var planDefinition = fhirEngine.get<PlanDefinition>("14")
+        knowledgeManager.install(writeToFile(planDefinition))
 
-                else -> Unit
-            }
 
-        }
+//        var resources = AppConfigurationHelper.getCarePlanResources()
+//        for (i in 0..<resources.size) {
+//            var resource = resources[i]
+//            when( resource.type ) {
+//                "PlanDefination" -> {
+//                    var data = fhirEngine.get<PlanDefinition>(resource.id)
+//                    knowledgeManager.install(writeToFile(data))
+//                }
+//                "Questionnaire" -> {
+//                   var data = fhirEngine.get<Questionnaire>(resource.id)
+//                    knowledgeManager.install(writeToFile(data))
+//                }
+//
+//                else -> Unit
+//            }
+//
+//        }
 
 
 //        val activityDefinitionId = AppConfigurationHelper.getActivityDefinitionId()!!
@@ -115,8 +126,11 @@ class CarePlanManager (
 //        }
 
         // Create CarePlan
+
+        println("planDefination: [${AppConfigurationHelper.getFhirBaseUrl()}/PlanDefinition/${AppConfigurationHelper.getPlanDefinitionId()}]")
         val carePlan: CarePlan = fhirOperator.generateCarePlan(
             planDefinition = CanonicalType("${AppConfigurationHelper.getFhirBaseUrl()}/PlanDefinition/${AppConfigurationHelper.getPlanDefinitionId()}"),
+//            planDefinitionId = AppConfigurationHelper.getPlanDefinitionId()!!,
             subject = "Patient/$patientId"
         ) as CarePlan
 
@@ -156,7 +170,8 @@ println(carePlan)
                 restriction.period.end = Date.from(Instant.now().plus(Period.ofDays(180)))
             }
         fhirEngine.create(task)
-
+println("------------- Task : ")
+        println(task)
         carePlan.addActivity().setReference(Reference(task)).detail.status =
             CarePlan.CarePlanActivityStatus.NOTSTARTED
         fhirEngine.update(carePlan)

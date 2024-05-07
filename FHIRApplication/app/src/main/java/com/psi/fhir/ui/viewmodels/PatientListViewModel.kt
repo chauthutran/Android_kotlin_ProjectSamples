@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.hl7.fhir.r4.model.Patient
+import org.hl7.fhir.r4.model.Questionnaire
 
 enum class SyncDataStatus {
     UNDEFINED,
@@ -63,6 +64,7 @@ class PatientListViewModel( private val application: Application ): AndroidViewM
     }
 
     suspend fun searchPatientsByName(nameQuery: String = ""): List<PatientListItemUiState> {
+
         val patients: MutableList<PatientListItemUiState> = mutableListOf()
         fhirEngine.search<Patient> {
             if (nameQuery.isNotEmpty()) {

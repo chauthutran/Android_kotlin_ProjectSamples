@@ -21,6 +21,7 @@ import org.hl7.fhir.r4.model.Encounter
 import org.hl7.fhir.r4.model.Observation
 import org.hl7.fhir.r4.model.Patient
 import org.hl7.fhir.r4.model.QuestionnaireResponse
+import org.hl7.fhir.r4.model.ServiceRequest
 import org.hl7.fhir.r4.model.Task
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -42,9 +43,9 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
             observations.addAll( getObservationsById( enc.id) )
         }
 
-        val carePlans = getCarePlan(patientId)
+        val carePlan = getCarePlan(patientId)
 
-        patientDetailData = PatientDetailData(patient = patient, encounters = encounters, observations = observations, carePlans = carePlans )
+        patientDetailData = PatientDetailData(patient = patient, encounters = encounters, observations = observations, carePlan = carePlan!! )
 
         return patientDetailData!!
     }
@@ -118,8 +119,6 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
     }
 
 
-
-
     private suspend fun getPatient(patientId: String): PatientDetailsUiState {
         val patient = fhirEngine.get<Patient>(patientId)
         return patient.toPatientDetailsUiState()
@@ -138,7 +137,7 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
         return encounters
     }
 
-    private suspend fun getCarePlan(patientId: String): List<CarePlan> {
+    private suspend fun getCarePlan(patientId: String): CarePlan? {
 
         val carePlans: MutableList<CarePlan> = mutableListOf()
 
@@ -153,7 +152,43 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
             .mapIndexed {index, searchResult -> searchResult.resource }
             .let { carePlans.addAll(it) }
 
-        return carePlans
+        return if (carePlans.size > 0 ) carePlans[0] else null
+    }
+
+    private suspend fun getTasks(patientId: String): List<Task> {
+
+        val tasks: MutableList<Task> = mutableListOf()
+
+        fhirEngine.search<Task> {
+            filter (
+                Task.SUBJECT,
+                {
+                    value = "Patient/${patientId}"
+                }
+            )
+        }
+        .mapIndexed {index, searchResult -> searchResult.resource }
+        .let { tasks.addAll(it) }
+
+        return tasks
+    }
+
+    private suspend fun getServiceRequests(patientId: String): List<ServiceRequest> {
+
+        val serviceRequests: MutableList<ServiceRequest> = mutableListOf()
+
+        fhirEngine.search<ServiceRequest> {
+            filter (
+                ServiceRequest.SUBJECT,
+                {
+                    value = "Patient/${patientId}"
+                }
+            )
+        }
+            .mapIndexed {index, searchResult -> searchResult.resource }
+            .let { serviceRequests.addAll(it) }
+
+        return serviceRequests
     }
 
     private suspend fun getObservationsById(encounterId: String): List<ObservationListItem> {
@@ -212,7 +247,7 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
 data class PatientDetailData (
     val patient: PatientDetailsUiState,
     val encounters: List<EncounterListItem>,
-    val carePlans: List<CarePlan>,
+    val carePlan: CarePlan,
     val observations: List<ObservationListItem>
 )
 data class ObservationListItem (

@@ -32,8 +32,22 @@ class AddPatientRegistrationFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         if (savedInstanceState == null) {
-            addQuestionnaireFragment()
+//            addQuestionnaireFragment()
         }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.formFetched.collect { it ->
+                when (it) {
+
+                    is DispatcherStatus.Success -> {
+                        addQuestionnaireFragment()
+                    }
+
+                    else -> Unit
+                }
+            }
+        }
+
 
         val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
 

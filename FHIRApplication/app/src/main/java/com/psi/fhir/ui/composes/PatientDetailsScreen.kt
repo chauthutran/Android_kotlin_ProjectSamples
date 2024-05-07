@@ -1,5 +1,6 @@
 package com.psi.fhir.ui.composes
 
+import android.view.Surface
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,6 +22,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,6 +35,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.psi.fhir.R
 import com.psi.fhir.data.PatientDetailsUiState
@@ -39,9 +43,11 @@ import com.psi.fhir.helper.app.AppConfigurationHelper
 import com.psi.fhir.ui.viewmodels.PatientDetailsViewModel
 import com.psi.fhir.utils.DateUtils
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.psi.fhir.ui.theme.FHIRApplicationTheme
 import com.psi.fhir.ui.viewmodels.ObservationListItem
 import com.psi.fhir.ui.viewmodels.PatientDetailData
 import org.hl7.fhir.r4.model.CarePlan
+import java.time.LocalDate
 
 @Composable
 fun PatientDetailsScreen(
@@ -95,14 +101,14 @@ private fun PatientCard(
             editButtonClick = editButtonClick,
             viewModel = viewModel
         )
-        CarePlanScreen( uiState!!.carePlans )
+        CarePlanScreen( uiState!!.carePlan )
         ObservationListCard(uiState!!.observations)
     }
 }
 
 @Composable
 private fun CarePlanScreen(
-    carePlans: List<CarePlan>,
+    carePlan: CarePlan,
     modifier: Modifier = Modifier
 ) {
     Column (
@@ -111,7 +117,7 @@ private fun CarePlanScreen(
             .background(MaterialTheme.colorScheme.inversePrimary, shape = RoundedCornerShape(4.dp))
     ) {
         Text(
-            text = stringResource(R.string.care_plans),
+            text = stringResource(R.string.care_plan),
             style = MaterialTheme.typography.displayMedium,
             fontWeight = FontWeight.Bold,
             modifier = modifier.padding(top = 10.dp, start = 10.dp)
@@ -132,12 +138,12 @@ private fun CarePlanScreen(
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
             ) {
-                items(carePlans) { gridItem ->
+                items(carePlan.activity) { gridItem ->
                     Column {
-                        Text(
-                            text = gridItem.status.display,
-                            modifier = Modifier.padding(end = 10.dp)
-                        )
+//                        Text(
+//                            text = gridItem.status.display,
+//                            modifier = Modifier.padding(end = 10.dp)
+//                        )
 
                         IconButton(onClick = {
 //                            editButtonClick(viewModel.patientDetailData!!)
@@ -321,25 +327,27 @@ data class GridItem(
 )
 
 
-//@Preview
-//@Composable
-//fun PreviewPatientDetails() {
-//
-//    val  patientUiState1 =   PatientDetailsUiState( "1","Test 1", "F", LocalDate.now(), "0123456789", "City 1", "Country 1" )
-//    val obs = listOf<ObservationListItem>(
-//       ObservationListItem ( id = "1", effective = "2012-01-01", value = "Fever" ),
-//       ObservationListItem ( id = "2", effective = "2012-02-02", value = "Fever 2" )
-//    )
-//
-//    val patientDetails = PatientDetailData( patientUiState1, emptyList(),  obs )
-//    FHIRApplicationTheme(darkTheme = false) {
-//        Surface(
-//            modifier = Modifier
-//                .fillMaxSize(),
-//            color = MaterialTheme.colorScheme.background
-//        ) {
-//            PatientCard(patientDetails, {} )
-//        }
-//    }
-//
-//}
+@Preview
+@Composable
+fun PreviewPatientDetails() {
+
+    val  patientUiState1 =   PatientDetailsUiState( "1","Test 1", "F", LocalDate.now(), "0123456789", "City 1", "Country 1" )
+    val obs = listOf<ObservationListItem>(
+       ObservationListItem ( id = "1", effective = "2012-01-01", value = "Fever" ),
+       ObservationListItem ( id = "2", effective = "2012-02-02", value = "Fever 2" )
+    )
+
+    val patientDetails = PatientDetailData( patientUiState1, emptyList(),  CarePlan(), obs )
+    var patientDetailsViewModel: PatientDetailsViewModel = viewModel()
+
+    FHIRApplicationTheme(darkTheme = false) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            PatientCard(patientDetails, {}, patientDetailsViewModel  )
+        }
+    }
+
+}

@@ -7,10 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.android.fhir.datacapture.QuestionnaireFragment
 import com.psi.fhir.R
 import com.psi.fhir.ui.viewmodels.PatientDetailData
 import com.psi.fhir.ui.viewmodels.QuestionnaireViewModel
+import com.psi.fhir.utils.DispatcherStatus
 import kotlinx.coroutines.runBlocking
 import org.hl7.fhir.r4.model.QuestionnaireResponse
 
@@ -33,13 +35,28 @@ class EditPatientRegistrationFragment(val patientDetailData: PatientDetailData) 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (savedInstanceState == null) {
-            runBlocking {
-                var data = viewModel.populateData(patientDetailData.patient.id)
-                addQuestionnaireFragment(data)
-            }
+//        if (savedInstanceState == null) {
+//            runBlocking {
+//                var data = viewModel.populateData(patientDetailData.patient.id)
+//                addQuestionnaireFragment(data)
+//            }
+//
+//        }
 
+        lifecycleScope.launchWhenStarted {
+            viewModel.formFetched.collect { it ->
+                when (it) {
+
+                    is DispatcherStatus.Success -> {
+                        var data = viewModel.populateData(patientDetailData.patient.id)
+                        addQuestionnaireFragment(data)
+                    }
+
+                    else -> Unit
+                }
+            }
         }
+
 
         /** Use the provided cancel|submit buttons from the sdc library */
         /** Use the provided Submit button from the Structured Data Capture Library  */

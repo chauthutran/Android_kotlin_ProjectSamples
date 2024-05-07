@@ -41,6 +41,7 @@ class TimestampBasedDownloadWorkManagerImpl(
                 ResourceType.Encounter,
                 ResourceType.Observation,
                 ResourceType.Condition,
+                ResourceType.ServiceRequest,
                 ResourceType.QuestionnaireResponse
             )
     }
@@ -62,6 +63,8 @@ class TimestampBasedDownloadWorkManagerImpl(
             listOf(
                 // Server should filter all the PlanDefinition that need to be executed by this Health
                 // Professional
+                "Questionnaire",
+                "StructureMap",
                 "PlanDefinition",
                 "ActivityDefinition",
                 // Server should fetch the PractitionerRole corresponding to the health Professional
@@ -74,6 +77,8 @@ class TimestampBasedDownloadWorkManagerImpl(
 
     override suspend fun getNextRequest(): DownloadRequest? {
         var url = urls.poll()
+        println("-------------------------- getNextRequest ")
+        println(url)
         return if (url == null) {
             constructNextRequestFromResourceReferences()
         } else {
@@ -81,7 +86,9 @@ class TimestampBasedDownloadWorkManagerImpl(
                 ResourceType.fromCode(url.findAnyOf(resourceTypeList, ignoreCase = true)!!.second)
             dataStore.getLastUpdateTimestamp(resourceTypeToDownload)?.let {
                 url = affixLastUpdatedTimestamp(url, it)
+
             }
+            println(url)
             DownloadRequest.of(url)
         }
 
@@ -152,7 +159,7 @@ class TimestampBasedDownloadWorkManagerImpl(
             throw FHIRException(response.issueFirstRep.diagnostics)
         }
 
-        println("============= processResponse 1")
+        println(" =================================== processResponse")
 
         // If the resource returned is a List containing Patients, extract Patient references and fetch
         // all resources related to the patient using the $everything operation.
@@ -161,6 +168,7 @@ class TimestampBasedDownloadWorkManagerImpl(
                 val reference = Reference(entry.item.reference)
                 if (reference.referenceElement.resourceType.equals("Patient")) {
                     val patientUrl = "${entry.item.reference}/\$everything"
+                    println(patientUrl)
                     urls.add(patientUrl)
                 }
             }
@@ -172,6 +180,7 @@ class TimestampBasedDownloadWorkManagerImpl(
         if (response is Bundle) {
             val nextUrl = response.link.firstOrNull { component -> component.relation == "next" }?.url
             if (nextUrl != null) {
+                println(nextUrl)
                 urls.add(nextUrl)
             }
         }

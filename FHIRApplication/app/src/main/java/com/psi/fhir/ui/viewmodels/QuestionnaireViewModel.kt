@@ -8,6 +8,7 @@ import ca.uhn.fhir.context.FhirVersionEnum
 import ca.uhn.fhir.parser.IParser
 import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.datacapture.extensions.targetStructureMap
+import com.google.android.fhir.get
 import com.google.android.fhir.search.search
 import com.psi.fhir.FhirApplication
 import com.psi.fhir.careplan.CarePlanManager
@@ -30,6 +31,7 @@ import org.hl7.fhir.r4.model.QuestionnaireResponse
 import org.hl7.fhir.r4.model.Reference
 import org.hl7.fhir.r4.model.Resource
 import org.hl7.fhir.r4.model.ResourceType
+import org.hl7.fhir.r4.model.StructureMap
 import org.hl7.fhir.r4.utils.StructureMapUtilities
 import timber.log.Timber
 import java.util.Date
@@ -46,23 +48,39 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
 
     private var questionnaire: Questionnaire? = null
 
+
+    private var _formFetched =
+        MutableStateFlow<DispatcherStatus<Boolean>>(DispatcherStatus.UnSpecified())
+    val formFetched = _formFetched.asStateFlow()
+
     private var _resourceSaved =
         MutableStateFlow<DispatcherStatus<Boolean>>(DispatcherStatus.UnSpecified())
     val resourceSaved = _resourceSaved.asStateFlow()
 
     init {
-        questionnaireJson = fetchQuestionnaireJson()
+        viewModelScope.launch {
+            fetchQuestionnaireJson()
+        }
     }
 
-    private fun fetchQuestionnaireJson(): String {
-        val questionnaireId = AppConfigurationHelper.getPatientRegistrationQuestionnaire()
-        val contextR4 =
-            FhirApplication.contextR4(getApplication<FhirApplication>().applicationContext)
-        questionnaire = contextR4.searchResourceById(questionnaireId!!)
+    private suspend fun fetchQuestionnaireJson() {
+            questionnaire = fhirEngine.get<Questionnaire>("17")
+            val jsonParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
+            questionnaireJson = jsonParser.encodeResourceToString(questionnaire)
 
-        val jsonParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
-        return jsonParser.encodeResourceToString(questionnaire)
+            viewModelScope.launch { _formFetched.emit(DispatcherStatus.Success(true)) }
     }
+
+//    private fun fetchQuestionnaireJson(): String {
+//        val questionnaireId = AppConfigurationHelper.getPatientRegistrationQuestionnaire()
+//            val contextR4 =
+//                FhirApplication.contextR4(getApplication<FhirApplication>().applicationContext)
+//            questionnaire = contextR4.searchResourceById(questionnaireId!!)
+//
+//
+//            val jsonParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
+//            return jsonParser.encodeResourceToString(questionnaire)
+//    }
 
     fun addPatient(questionnaireResponse: QuestionnaireResponse) {
 
@@ -278,12 +296,14 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
         val transformSupportServices = TransformSupportServices(contextR4)
         val structureMapUtilities = StructureMapUtilities(contextR4, transformSupportServices)
 
-        val structureMapStr = contextR4.getTransform(questionnaire!!.targetStructureMap)
+        var structureMap = fhirEngine.get<StructureMap>("19")
+//        val structureMapStr = contextR4.getTransform(questionnaire!!.targetStructureMap)
+
         val targetResource = Bundle()
         structureMapUtilities.transform(
             contextR4,
             questionnaireResponse,
-            structureMapStr,
+            structureMap,
             targetResource
         )
 
