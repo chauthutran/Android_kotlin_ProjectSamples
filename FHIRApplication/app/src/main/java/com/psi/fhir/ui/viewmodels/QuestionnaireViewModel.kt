@@ -20,7 +20,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.hl7.fhir.r4.model.Bundle
 import org.hl7.fhir.r4.model.DateType
 import org.hl7.fhir.r4.model.Meta
@@ -65,7 +64,7 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
         return jsonParser.encodeResourceToString(questionnaire)
     }
 
-    fun addResources(questionnaireResponse: QuestionnaireResponse) {
+    fun addPatient(questionnaireResponse: QuestionnaireResponse) {
 
         viewModelScope.launch {
             val targetResource = transformResource(questionnaireResponse)
@@ -139,7 +138,7 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
     // ---------------------------------------------------------------------------------------------
     // For Update resources
 
-    suspend fun updateResources( questionnaireResponse: QuestionnaireResponse, patientDetailData: PatientDetailData): RequestResult {
+    suspend fun updatePatient(questionnaireResponse: QuestionnaireResponse, patientDetailData: PatientDetailData): RequestResult {
         val targetResource = transformResource (questionnaireResponse)
 
         var updatedList: MutableMap<String, ArrayList<Resource>> = mutableMapOf()

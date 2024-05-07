@@ -49,7 +49,7 @@ class EditPatientRegistrationFragment(val patientDetailData: PatientDetailData) 
         ) { _, _ ->
             runBlocking {
 
-                viewModel.updateResources( genrerateQuestionnaireResponse(), patientDetailData )
+                viewModel.updatePatient( genrerateQuestionnaireResponse(), patientDetailData )
             }
         }
 

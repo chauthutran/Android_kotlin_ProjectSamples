@@ -4,12 +4,12 @@
   "language": "en",
   "status": "active",
   "date": "2020-11-18T07:24:47.111Z",
+  "url": "http://172.30.1.26:8080/fhir/Questionnaire/Questionnaire_PatientRegistration",
   "extension" : [{
     "url" : "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-targetStructureMap",
     "valueCanonical" : "https://com.psi.fhir/fhir/StructureMap/StructureMap_PatientRegistration"
   }],
   "item": [
-
     {
       "linkId": "PR",
       "type": "group",

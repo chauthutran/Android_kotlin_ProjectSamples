@@ -65,7 +65,7 @@ class AddPatientRegistrationFragment : Fragment() {
             viewLifecycleOwner,
         ) { _, _ ->
 //            runBlocking {
-                viewModel.addResources( genrerateQuestionnaireResponse() )
+                viewModel.addPatient( genrerateQuestionnaireResponse() )
 //            }
 
         }

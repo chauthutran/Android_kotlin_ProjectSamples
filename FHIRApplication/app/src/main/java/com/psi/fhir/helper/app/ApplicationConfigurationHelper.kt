@@ -118,6 +118,25 @@ object AppConfigurationHelper {
     // ---------------------------------------------------------------------------------------------
     // For CarePlan form
 
+    fun getCarePlanResources(): ArrayList<AppResource> {
+
+        var resources = JSONArray()
+        var result = ArrayList<AppResource>()
+
+        if( appConfigData != null
+            && appConfigData!!.getJSONObject("carePlan") != null
+            && appConfigData!!.getJSONObject("carePlan")!!.getJSONArray("resources") != null ) {
+            resources = appConfigData!!.getJSONObject("carePlan")!!.getJSONArray("resources")
+        }
+
+        for (i in 0..<resources.length()) {
+            var resource = resources.getJSONObject(i)
+            result.add(AppResource(resource.getString("type"), resource.getString("id")))
+        }
+
+        return result
+    }
+
     fun getPlanDefinitionId(): String? {
         if( appConfigData == null || appConfigData!!.isNull("carePlan") ) {
             return null

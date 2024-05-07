@@ -1,7 +1,36 @@
 {
-  "endPoint": "Patient with Medical Care",
+  "endPoint": "Patient with Hepatitis B Vaccination",
   "appTitle" : "Simple FHIR Demo Application",
   "fhirBaseUrl": "http://172.30.1.26:8080/fhir",
+
+  "implementationGuideConfig": {
+    "patientRegistrationQuestionnaire": "17",
+    "entryPoint": "Hepatitis B Vaccination",
+    "triggers": [
+      {
+        "description": "Registration Patient",
+        "event": "Questionnaire/17",
+        "planDefinition":"",
+        "structureMap": "StructureMap/19",
+        "targetResourceType": "Bundle"
+      },
+      {
+        "description": "Hepapits B - Blood Test",
+        "event": "Questionnaire/15",
+        "planDefinition":"PlanDefination/14",
+        "structureMap": "",
+        "targetResourceType": "Bundle"
+      },
+      {
+        "description": "Hepapits B - Vaccination Dose",
+        "event": "Questionnaire/16",
+        "planDefinition":"",
+        "structureMap": "",
+        "targetResourceType": "Bundle"
+      }
+    ]
+  },
+
   "sync": {
     "resourcesToSync":  [
       "ActivityDefinition",
@@ -18,18 +47,18 @@
 
   "carePlan": {
     "planDefinitionId": "14",
-    "resource": [
+    "resources": [
       {
-        "type": "planDefinitionId",
+        "type": "PlanDefinition",
         "id": "14"
       },
       {
         "type": "Questionnaire",
-        "id": ""
+        "id": "15"
       },
       {
         "type": "Questionnaire",
-        "id": ""
+        "id": "16"
       }
     ]
   },

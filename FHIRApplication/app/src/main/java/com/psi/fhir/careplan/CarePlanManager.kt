@@ -27,6 +27,7 @@ import org.hl7.fhir.r4.model.Meta
 import org.hl7.fhir.r4.model.MetadataResource
 import org.hl7.fhir.r4.model.Patient
 import org.hl7.fhir.r4.model.PlanDefinition
+import org.hl7.fhir.r4.model.Questionnaire
 import org.hl7.fhir.r4.model.Reference
 import org.hl7.fhir.r4.model.Resource
 import org.hl7.fhir.r4.model.ServiceRequest
@@ -76,9 +77,24 @@ class CarePlanManager (
 //        }
 
 
-        val planDefinitionId = AppConfigurationHelper.getPlanDefinitionId()!!
-        var planDefinition = fhirEngine.get<PlanDefinition>(planDefinitionId)
-        knowledgeManager.install(writeToFile(planDefinition))
+
+
+//        val planDefinitionId = AppConfigurationHelper.getPlanDefinitionId()!!
+//        var planDefinition = fhirEngine.get<PlanDefinition>(planDefinitionId)
+//        knowledgeManager.install(writeToFile(planDefinition))
+
+        var resources = AppConfigurationHelper.getCarePlanResources()
+        for (i in 0..<resources.size) {
+            var resource = resources[i]
+            when( resource.type ) {
+                "PlanDefination" ->  fhirEngine.get<PlanDefinition>(resource.id)
+                "Questionnaire" ->  fhirEngine.get<Questionnaire>(resource.id)
+
+                else -> Unit
+            }
+
+        }
+
 
 //        val activityDefinitionId = AppConfigurationHelper.getActivityDefinitionId()!!
 //        var activityDefinition = fhirEngine.get<ActivityDefinition>(activityDefinitionId)
@@ -106,10 +122,14 @@ class CarePlanManager (
 
         carePlan.id = UUID.randomUUID().toString()
         setLastUpdate(carePlan)
+println("================================ carePlan 1")
 println(carePlan)
         fhirEngine.create(carePlan)
 
         createBloodTestServiceRequest(patientId, carePlan)
+println("================================ carePlan 2")
+println(carePlan)
+
     }
 
     suspend fun createBloodTestServiceRequest(patientId: String, carePlan: CarePlan){
@@ -132,7 +152,6 @@ println(carePlan)
                 status = Task.TaskStatus.REQUESTED
                 intent = Task.TaskIntent.PROPOSAL
                 description = "Blood Test"
-//                focus.reference = "Questionnaire/${taskQuestionnaire}"
                 `for`.reference = "Patient/${IdType(patientId).idPart}"
                 restriction.period.end = Date.from(Instant.now().plus(Period.ofDays(180)))
             }
