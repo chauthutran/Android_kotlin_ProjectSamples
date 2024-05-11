@@ -64,11 +64,11 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
     }
 
     private suspend fun fetchQuestionnaireJson() {
-            questionnaire = fhirEngine.get<Questionnaire>("17")
-            val jsonParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
-            questionnaireJson = jsonParser.encodeResourceToString(questionnaire)
+        questionnaire = fhirEngine.get<Questionnaire>("2")
+        val jsonParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
+        questionnaireJson = jsonParser.encodeResourceToString(questionnaire)
 
-            viewModelScope.launch { _formFetched.emit(DispatcherStatus.Success(true)) }
+        viewModelScope.launch { _formFetched.emit(DispatcherStatus.Success(true)) }
     }
 
 //    private fun fetchQuestionnaireJson(): String {
@@ -296,7 +296,7 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
         val transformSupportServices = TransformSupportServices(contextR4)
         val structureMapUtilities = StructureMapUtilities(contextR4, transformSupportServices)
 
-        var structureMap = fhirEngine.get<StructureMap>("19")
+        var structureMap = fhirEngine.get<StructureMap>("5")
 //        val structureMapStr = contextR4.getTransform(questionnaire!!.targetStructureMap)
 
         val targetResource = Bundle()

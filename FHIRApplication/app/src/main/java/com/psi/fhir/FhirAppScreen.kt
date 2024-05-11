@@ -36,6 +36,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.psi.fhir.data.RequestResult
 import com.psi.fhir.fragments.AddPatientRegistrationFragment
+import com.psi.fhir.fragments.BloodTestFragment
 import com.psi.fhir.fragments.EditPatientRegistrationFragment
 import com.psi.fhir.ui.composes.AutoAnimateVectorIcon
 import com.psi.fhir.ui.composes.LoadingProgressBar
@@ -48,6 +49,7 @@ import com.psi.fhir.ui.viewmodels.PatientDetailsViewModel
 import com.psi.fhir.ui.viewmodels.PatientListViewModel
 import com.psi.fhir.ui.viewmodels.SyncDataStatus
 import kotlinx.coroutines.launch
+import org.hl7.fhir.r4.model.Task
 
 
 enum class FhirScreen(@StringRes val title: Int) {
@@ -55,7 +57,8 @@ enum class FhirScreen(@StringRes val title: Int) {
     PATIENT_LIST(title = R.string.app_name),
     PATIENT_DETAILS(title = R.string.patient_details),
     ADD_PATIENT(title = R.string.add_patient),
-    EDIT_PATIENT(title = R.string.edit_patient)
+    EDIT_PATIENT(title = R.string.edit_patient),
+    BLOOD_TEST_FRAGMENT(title = R.string.blood_test)
 }
 
 @Composable
@@ -113,6 +116,7 @@ fun FhirApp(
 
         var selectedPatientId by remember { mutableStateOf("") }
         var patientDetailsData by remember { mutableStateOf<PatientDetailData?>(null) }
+        var task by remember { mutableStateOf<Task?>(null) }
 
         NavHost(
             navController = navController,
@@ -146,11 +150,22 @@ fun FhirApp(
                     patientId = selectedPatientId,
                     viewModel = patientDetailsViewModel,
                     editButtonClick = { data ->
-                        println("=========================")
-                        println(data)
                         patientDetailsData = data
                         navController.navigate(FhirScreen.EDIT_PATIENT.name)
+                    },
+                    openBloodTestBtnClick = { _task ->
+                        task = _task
+                        navController.navigate(FhirScreen.BLOOD_TEST_FRAGMENT.name)
                     }
+                )
+            }
+
+            composable(route = FhirScreen.BLOOD_TEST_FRAGMENT.name) {
+                showActions = false
+                QuestionnaireScreen(
+                    fragmentManager = fragmentManager,
+                    questionnaireContainerId = R.id.blood_test_container,
+                    fragment = BloodTestFragment(task!!)
                 )
             }
 
@@ -216,6 +231,13 @@ fun FhirAppBar (
            )
 
        FhirScreen.EDIT_PATIENT ->
+           EditPatientToolBar(
+               currentScreen = currentScreen,
+               navigateUp = navigateUp,
+               modifier = modifier
+           )
+
+       FhirScreen.BLOOD_TEST_FRAGMENT ->
            EditPatientToolBar(
                currentScreen = currentScreen,
                navigateUp = navigateUp,

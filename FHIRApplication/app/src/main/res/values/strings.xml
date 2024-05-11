@@ -20,4 +20,6 @@
     <string name="syncing_data_successfully">Syncing data successfully.</string>
     <string name="syncing_data_failed">Syncing data failed.</string>
     <string name="care_plan">Care Plan</string>
+    <string name="tasks">Tasks</string>
+    <string name="blood_test">Blood test</string>
 </resources>

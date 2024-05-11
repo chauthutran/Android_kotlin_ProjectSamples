@@ -1,0 +1,20 @@
+{
+  "resourceType": "QuestionnaireResponse",
+  "questionnaire": "http://172.30.1.26:8080/fhir/Questionnaire/3",
+  "item": [
+
+    {
+      "linkId": "bloodTestResult",
+      "text": "Do you get the Hepatitis B?",
+      "answer": [
+        {
+          "valueCoding": {
+            "system": "http://hl7.org/fhir/blood-test-result-hepatitisB",
+            "code": "positive",
+            "display": "Positive"
+          }
+        }
+      ]
+    }
+  ]
+}

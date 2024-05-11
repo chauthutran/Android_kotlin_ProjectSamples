@@ -4,26 +4,26 @@
   "fhirBaseUrl": "http://172.30.1.26:8080/fhir",
 
   "implementationGuideConfig": {
-    "patientRegistrationQuestionnaire": "17",
+    "patientRegistrationQuestionnaire": "2",
     "entryPoint": "Hepatitis B Vaccination",
     "triggers": [
       {
         "description": "Registration Patient",
-        "event": "Questionnaire/17",
+        "event": "Questionnaire/2",
         "planDefinition":"",
-        "structureMap": "StructureMap/19",
+        "structureMap": "StructureMap/5",
         "targetResourceType": "Bundle"
       },
       {
         "description": "Hepapits B - Blood Test",
-        "event": "Questionnaire/15",
+        "event": "Questionnaire/3",
         "planDefinition":"PlanDefination/14",
         "structureMap": "",
         "targetResourceType": "Bundle"
       },
       {
         "description": "Hepapits B - Vaccination Dose",
-        "event": "Questionnaire/16",
+        "event": "Questionnaire/4",
         "planDefinition":"",
         "structureMap": "",
         "targetResourceType": "Bundle"
@@ -46,19 +46,19 @@
   },
 
   "carePlan": {
-    "planDefinitionId": "14",
+    "planDefinitionId": "1",
     "resources": [
       {
         "type": "PlanDefinition",
-        "id": "14"
+        "id": "1"
       },
       {
         "type": "Questionnaire",
-        "id": "15"
+        "id": "3"
       },
       {
         "type": "Questionnaire",
-        "id": "16"
+        "id": "4"
       }
     ]
   },

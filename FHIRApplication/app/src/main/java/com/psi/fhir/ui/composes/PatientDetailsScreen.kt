@@ -43,10 +43,12 @@ import com.psi.fhir.helper.app.AppConfigurationHelper
 import com.psi.fhir.ui.viewmodels.PatientDetailsViewModel
 import com.psi.fhir.utils.DateUtils
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.psi.fhir.fragments.AddPatientRegistrationFragment
 import com.psi.fhir.ui.theme.FHIRApplicationTheme
 import com.psi.fhir.ui.viewmodels.ObservationListItem
 import com.psi.fhir.ui.viewmodels.PatientDetailData
 import org.hl7.fhir.r4.model.CarePlan
+import org.hl7.fhir.r4.model.Task
 import java.time.LocalDate
 
 @Composable
@@ -54,6 +56,7 @@ fun PatientDetailsScreen(
     patientId: String,
     viewModel: PatientDetailsViewModel = viewModel(),
     editButtonClick: (PatientDetailData) -> Unit,
+    openBloodTestBtnClick: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var uiState by remember { mutableStateOf<PatientDetailData?>(null) }
@@ -75,6 +78,7 @@ fun PatientDetailsScreen(
             PatientCard(
                 uiState = uiState!!,
                 editButtonClick = editButtonClick,
+                openBloodTestBtnClick = openBloodTestBtnClick,
                 viewModel = viewModel,
                 modifier = modifier
             )
@@ -87,6 +91,7 @@ fun PatientDetailsScreen(
 private fun PatientCard(
     uiState: PatientDetailData,
     editButtonClick: (PatientDetailData) -> Unit,
+    openBloodTestBtnClick: (Task) -> Unit = {},
     viewModel: PatientDetailsViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -101,14 +106,15 @@ private fun PatientCard(
             editButtonClick = editButtonClick,
             viewModel = viewModel
         )
-        CarePlanScreen( uiState!!.carePlan )
+        uiState!!.tasks?.let{ CarePlanScreen( it, openBloodTestBtnClick) }
         ObservationListCard(uiState!!.observations)
     }
 }
 
 @Composable
 private fun CarePlanScreen(
-    carePlan: CarePlan,
+    tasks: List<Task>,
+    openBloodTestBtnClick: (Task) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column (
@@ -117,7 +123,7 @@ private fun CarePlanScreen(
             .background(MaterialTheme.colorScheme.inversePrimary, shape = RoundedCornerShape(4.dp))
     ) {
         Text(
-            text = stringResource(R.string.care_plan),
+            text = stringResource(R.string.tasks),
             style = MaterialTheme.typography.displayMedium,
             fontWeight = FontWeight.Bold,
             modifier = modifier.padding(top = 10.dp, start = 10.dp)
@@ -138,24 +144,33 @@ private fun CarePlanScreen(
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
             ) {
-                items(carePlan.activity) { gridItem ->
+                items(tasks) { task ->
                     Column {
-//                        Text(
-//                            text = gridItem.status.display,
-//                            modifier = Modifier.padding(end = 10.dp)
-//                        )
+                        Text(
+                            text = task.description,
+                            modifier = Modifier.padding(end = 10.dp)
+                        )
 
-                        IconButton(onClick = {
-//                            editButtonClick(viewModel.patientDetailData!!)
-                            println("Button 'Care Plan' is clicked !!")
-                        }) {
-                            Icon(
-                                painterResource(id = com.google.android.material.R.drawable.material_ic_edit_black_24dp),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(5.dp)
-                            )
+                        Text(
+                            text = task.status.display,
+                            modifier = Modifier.padding(end = 10.dp)
+                        )
+
+                        if( task.status == Task.TaskStatus.REQUESTED ) {
+                            IconButton(onClick = {
+                                println("==== Enter blood test result.")
+                                openBloodTestBtnClick(task)
+                            }) {
+                                Icon(
+                                    painterResource(id = com.google.android.material.R.drawable.material_ic_edit_black_24dp),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(5.dp)
+                                )
+                            }
                         }
+
+
                     }
                 }
             }
@@ -337,7 +352,7 @@ fun PreviewPatientDetails() {
        ObservationListItem ( id = "2", effective = "2012-02-02", value = "Fever 2" )
     )
 
-    val patientDetails = PatientDetailData( patientUiState1, emptyList(),  CarePlan(), obs )
+    val patientDetails = PatientDetailData( patientUiState1, emptyList(),  emptyList(), obs )
     var patientDetailsViewModel: PatientDetailsViewModel = viewModel()
 
     FHIRApplicationTheme(darkTheme = false) {
@@ -346,7 +361,7 @@ fun PreviewPatientDetails() {
                 .fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            PatientCard(patientDetails, {}, patientDetailsViewModel  )
+            PatientCard(patientDetails, {}, {}, patientDetailsViewModel  )
         }
     }
 

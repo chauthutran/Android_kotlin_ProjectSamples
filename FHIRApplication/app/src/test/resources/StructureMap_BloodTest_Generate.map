@@ -1,0 +1,30 @@
+map "https://com.psi.fhir/fhir/StructureMap/PatientRegistration_BloodTest" = 'Blood Test'
+
+uses "http://hl7.org/fhir/StructureDefinition/QuestionnaireReponse" as source
+uses "http://hl7.org/fhir/StructureDefinition/Bundle" as target
+uses "http://hl7.org/fhir/StructureDefinition/Observation" as target
+
+group QuestionnaireResponseToPatientMapping(source src : QuestionnaireResponse, target bundle: Bundle) {
+    src -> bundle.id = uuid() "r_b_id";
+    src -> bundle.type = 'collection' "r_bun_type";
+
+     src -> bundle.entry as entry, entry.resource = create('Observation') as obs then
+           ExtractObservation(src, obs) "r_bun_entries";
+
+}
+
+group ExtractObservation(source src : QuestionnaireResponse, target obs : Observation) {
+         src -> obs.id = uuid() "r_ob_id";
+         src -> obs.status = "final" "r_ob_st";
+         src -> obs.effective = evaluate(src, now()) "r_ob_eff";
+
+         //src.item as item_date where(linkId = 'bloodTestDate' and answer.count() > 0) ->  obs.effective = evaluate(item_date, $this.answer.value) "r_ob_eff";
+
+         src.item as item_data where(linkId = 'bloodTestResult' and answer.count() > 0 ) then {
+            item_data.answer as valueanswer -> obs.value = create('CodeableConcept') as codeableConcept then {
+              valueanswer -> codeableConcept.coding = evaluate(item_data, valueanswer.value.code) "r_ob_cc_cod";
+              valueanswer -> codeableConcept.text = evaluate(item_data, valueanswer.value.display) "r_ob_cc_cod_disp";
+           } "r_obs_val";
+         } "r_obs_value";
+}
+

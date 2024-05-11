@@ -84,7 +84,7 @@ class CarePlanManager (
 //        knowledgeManager.install(writeToFile(planDefinition))
 
 //        val planDefinitionId = AppConfigurationHelper.getPlanDefinitionId()!!
-        var planDefinition = fhirEngine.get<PlanDefinition>("14")
+        var planDefinition = fhirEngine.get<PlanDefinition>("1")
         knowledgeManager.install(writeToFile(planDefinition))
 
 
@@ -127,6 +127,7 @@ class CarePlanManager (
 
         // Create CarePlan
 
+
         println("planDefination: [${AppConfigurationHelper.getFhirBaseUrl()}/PlanDefinition/${AppConfigurationHelper.getPlanDefinitionId()}]")
         val carePlan: CarePlan = fhirOperator.generateCarePlan(
             planDefinition = CanonicalType("${AppConfigurationHelper.getFhirBaseUrl()}/PlanDefinition/${AppConfigurationHelper.getPlanDefinitionId()}"),
@@ -148,17 +149,19 @@ println(carePlan)
 
     suspend fun createBloodTestServiceRequest(patientId: String, carePlan: CarePlan){
 
-        val bloodTestRequest = ServiceRequest().apply {
-            // Set blood test details
-            // Trigger: Before the first vaccination dose
-            // Other relevant details such as code, performer, etc.
+//        val bloodTestRequest = ServiceRequest().apply {
+//            // Set blood test details
+//            // Trigger: Before the first vaccination dose
+//            // Other relevant details such as code, performer, etc.
+//
+//            status = ServiceRequest.ServiceRequestStatus.ACTIVE
+//            intent = ServiceRequest.ServiceRequestIntent.DIRECTIVE
+//            subject.reference = "Patient/${patientId}"
+//        }
+//        setLastUpdate(bloodTestRequest)
+//        fhirEngine.create(bloodTestRequest)
 
-            status = ServiceRequest.ServiceRequestStatus.ACTIVE
-            intent = ServiceRequest.ServiceRequestIntent.DIRECTIVE
-            subject.reference = "Patient/${patientId}"
-        }
-
-        fhirEngine.create(bloodTestRequest)
+        val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
 
         val task =
             Task().apply {
@@ -169,13 +172,16 @@ println(carePlan)
                 `for`.reference = "Patient/${IdType(patientId).idPart}"
                 restriction.period.end = Date.from(Instant.now().plus(Period.ofDays(180)))
             }
+        setLastUpdate(task)
         fhirEngine.create(task)
-println("------------- Task : ")
-        println(task)
-        carePlan.addActivity().setReference(Reference(task)).detail.status =
-            CarePlan.CarePlanActivityStatus.NOTSTARTED
-        fhirEngine.update(carePlan)
-
+//println("------------- Task : ${iParser.encodeResourceToString(task)}")
+//
+//        println("------------- carePlan 1: ${iParser.encodeResourceToString(carePlan)}")
+//        carePlan.addActivity().setReference(Reference(task)).detail.status =
+//            CarePlan.CarePlanActivityStatus.NOTSTARTED
+//        println("------------- carePlan 2: ${iParser.encodeResourceToString(carePlan)}")
+//        fhirEngine.update(carePlan)
+//        println("------------- carePlan 3: ${iParser.encodeResourceToString(carePlan)}")
     }
 
     private fun setLastUpdate( resource: Resource ) {

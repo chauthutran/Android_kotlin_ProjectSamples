@@ -43,9 +43,9 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
             observations.addAll( getObservationsById( enc.id) )
         }
 
-        val carePlan = getCarePlan(patientId)
+//        val carePlan = getCarePlan(patientId)
 
-        patientDetailData = PatientDetailData(patient = patient, encounters = encounters, observations = observations, carePlan = carePlan!! )
+        patientDetailData = PatientDetailData(patient = patient, encounters = encounters, observations = observations, tasks = getTasks(patientId) )
 
         return patientDetailData!!
     }
@@ -247,7 +247,7 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
 data class PatientDetailData (
     val patient: PatientDetailsUiState,
     val encounters: List<EncounterListItem>,
-    val carePlan: CarePlan,
+    val tasks: List<Task>? = null,
     val observations: List<ObservationListItem>
 )
 data class ObservationListItem (

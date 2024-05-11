@@ -48,7 +48,6 @@ class ExampleUnitTest {
 //        val pcm = FilesystemPackageCacheManager(true, ToolsVersion.TOOLS_VERSION)
         val pcm = FilesystemPackageCacheManager(false)
 
-        // Package name manually checked from https://simplifier.net/packages?Text=hl7.fhir.core&fhirVersion=All+FHIR+Versions
         // Create R4 context
         val contextR4 =
             SimpleWorkerContext.fromPackage(pcm.loadPackage("hl7.fhir.r4.core", "4.0.1"))
@@ -61,7 +60,8 @@ class ExampleUnitTest {
 //        val map = structureMapUtilities.parse("StructureMap_PatientReg_Generate.map", "FHIRMapperTutorial")
 
         val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
-        val immunizationStructureMap = getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/StructureMap_PatientReg_Generate.map")
+//        val immunizationStructureMap = getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/StructureMap_PatientReg_Generate.map")
+        val immunizationStructureMap = getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/StructureMap_BloodTest_Generate.map")
 
         val structureMap =
             structureMapUtilities.parse(immunizationStructureMap, "psi reg")
@@ -70,7 +70,9 @@ class ExampleUnitTest {
 println("===== structureMap: ${mapString}")
 
         // Generate empty target resource object
-        val registrationQuestionnaireResponseString =  getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/QuestionnaireResponse_PatientReg.json")
+//        val registrationQuestionnaireResponseString =  getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/QuestionnaireResponse_PatientReg.json")
+        val registrationQuestionnaireResponseString =  getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/QuestionnaireResponse_BloodTest.json")
+
 
         val targetResource = Bundle()
         val baseElement =
