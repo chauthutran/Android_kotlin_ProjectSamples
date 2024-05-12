@@ -122,62 +122,41 @@ private fun CarePlanScreen(
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.inversePrimary, shape = RoundedCornerShape(4.dp))
     ) {
-        Text(
-            text = stringResource(R.string.tasks),
-            style = MaterialTheme.typography.displayMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = modifier.padding(top = 10.dp, start = 10.dp)
-        )
+        LazyVerticalGrid(
+            modifier = modifier.padding(10.dp),
+            columns = GridCells.Fixed(1),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
+        ) {
+            items(tasks) { task ->
+                Row {
+                    Text(
+                        text = task.description,
+                        modifier = Modifier.padding(end = 10.dp)
+                    )
 
-        Card (
-            modifier = modifier
-                .fillMaxWidth()
-                .defaultMinSize(minHeight = 300.dp)
-                .padding(10.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.inverseOnSurface,
-            )
-        ){
-            LazyVerticalGrid(
-                modifier = modifier.padding(10.dp),
-                columns = GridCells.Fixed(1),
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
-            ) {
-                items(tasks) { task ->
-                    Column {
-                        Text(
-                            text = task.description,
-                            modifier = Modifier.padding(end = 10.dp)
-                        )
+                    Text(
+                        text = task.status.display,
+                        modifier = Modifier.padding(end = 10.dp)
+                    )
 
-                        Text(
-                            text = task.status.display,
-                            modifier = Modifier.padding(end = 10.dp)
-                        )
-
-                        if( task.status == Task.TaskStatus.REQUESTED ) {
-                            IconButton(onClick = {
-                                println("==== Enter blood test result.")
-                                openBloodTestBtnClick(task)
-                            }) {
-                                Icon(
-                                    painterResource(id = com.google.android.material.R.drawable.material_ic_edit_black_24dp),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .padding(5.dp)
-                                )
-                            }
+                    if( task.status == Task.TaskStatus.REQUESTED ) {
+                        IconButton(onClick = {
+                            openBloodTestBtnClick(task)
+                        }) {
+                            Icon(
+                                painterResource(id = R.drawable.ic_vaccination_24),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(5.dp)
+                            )
                         }
-
-
                     }
                 }
             }
         }
-
-
     }
+
 }
 
 @Composable
@@ -185,27 +164,24 @@ private fun ObservationListCard(
     observations: List<ObservationListItem>,
     modifier: Modifier = Modifier
 ) {
-    Column (
+    Card (
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.inversePrimary, shape = RoundedCornerShape(4.dp))
-    ) {
-        Text(
-            text = stringResource(R.string.observations),
-            style = MaterialTheme.typography.displayMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = modifier.padding(top = 10.dp, start = 10.dp)
+//            .defaultMinSize(minHeight = 300.dp)
+            .padding(10.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.inverseOnSurface,
         )
-
-        Card (
-            modifier = modifier
-                .fillMaxWidth()
-                .defaultMinSize(minHeight = 300.dp)
-                .padding(10.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.inverseOnSurface,
-            )
-        ){
+    ) {
+        Box(
+            modifier = Modifier
+//                .padding(12.dp)
+//                .size(30.dp)
+                .background(
+                    MaterialTheme.colorScheme.tertiaryContainer,
+                    shape = RoundedCornerShape(15.dp)
+                )
+        ) {
             LazyVerticalGrid(
                 modifier = modifier.padding(10.dp),
                 columns = GridCells.Fixed(1),
@@ -227,6 +203,7 @@ private fun ObservationListCard(
             }
         }
     }
+
 
 }
 
@@ -262,7 +239,6 @@ private fun PersonalCard(
                     )
             ) {
                 IconButton(onClick = {
-                    println("========= editButtonClick ")
                     editButtonClick(viewModel.patientDetailData!!)
                 }) {
                     Icon(

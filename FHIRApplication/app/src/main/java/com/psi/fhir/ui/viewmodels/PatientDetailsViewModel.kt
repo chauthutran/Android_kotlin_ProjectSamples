@@ -7,6 +7,7 @@ import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.delete
 import com.google.android.fhir.get
 import com.google.android.fhir.logicalId
+import com.google.android.fhir.search.Operation
 import com.google.android.fhir.search.Order
 import com.google.android.fhir.search.StringFilterModifier
 import com.google.android.fhir.search.search
@@ -40,7 +41,7 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
         val observations: MutableList<ObservationListItem> = mutableListOf()
 
         for( enc in encounters ) {
-            observations.addAll( getObservationsById( enc.id) )
+            observations.addAll( getObservationsById( enc.id, patientId) )
         }
 
 //        val carePlan = getCarePlan(patientId)
@@ -173,29 +174,15 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
         return tasks
     }
 
-    private suspend fun getServiceRequests(patientId: String): List<ServiceRequest> {
 
-        val serviceRequests: MutableList<ServiceRequest> = mutableListOf()
-
-        fhirEngine.search<ServiceRequest> {
-            filter (
-                ServiceRequest.SUBJECT,
-                {
-                    value = "Patient/${patientId}"
-                }
-            )
-        }
-            .mapIndexed {index, searchResult -> searchResult.resource }
-            .let { serviceRequests.addAll(it) }
-
-        return serviceRequests
-    }
-
-    private suspend fun getObservationsById(encounterId: String): List<ObservationListItem> {
+    private suspend fun getObservationsById(encounterId: String, patientId: String): List<ObservationListItem> {
         val observations: MutableList<ObservationListItem> = mutableListOf()
         fhirEngine
             .search<Observation> {
                 filter(Observation.ENCOUNTER, { value = "Encounter/$encounterId" })
+                filter(Observation.SUBJECT, { value = "Patient/$patientId" })
+
+                operation = Operation.OR
             }
             .map { createObservationItem(it.resource, getApplication<Application>().resources) }
             .let { observations.addAll(it) }
