@@ -10,16 +10,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.fhir.datacapture.QuestionnaireFragment
 import com.psi.fhir.R
-import com.psi.fhir.ui.viewmodels.BloodTestViewModel
-import com.psi.fhir.ui.viewmodels.PatientDetailData
+import com.psi.fhir.ui.viewmodels.VaccinationViewModel
 import com.psi.fhir.utils.DispatcherStatus
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.runBlocking
 import org.hl7.fhir.r4.model.Task
 
 class BloodTestFragment(val task: Task) : Fragment() {
 
-    private val viewModel: BloodTestViewModel by viewModels()
+    private val viewModel: VaccinationViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

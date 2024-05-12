@@ -1,0 +1,15 @@
+{
+  "resourceType": "QuestionnaireResponse",
+  "questionnaire": "http://172.30.1.26:8080/fhir/Questionnaire/3",
+  "item": [
+    {
+      "linkId": "bloodTestDate",
+      "text": "Date to take the vaccination",
+      "answer": [
+        {
+          "valueDate": "2024-05-11"
+        }
+      ]
+    }
+  ]
+}

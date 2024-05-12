@@ -8,7 +8,6 @@ import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.context.FhirVersionEnum
 import ca.uhn.fhir.parser.IParser
 import com.google.android.fhir.FhirEngine
-import com.google.android.fhir.datacapture.mapping.ResourceMapper
 import com.google.android.fhir.get
 import com.psi.fhir.FhirApplication
 import com.psi.fhir.di.TransformSupportServices
@@ -16,23 +15,18 @@ import com.psi.fhir.utils.DispatcherStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.hl7.fhir.r4.context.SimpleWorkerContext
 import org.hl7.fhir.r4.model.Bundle
-import org.hl7.fhir.r4.model.DateType
 import org.hl7.fhir.r4.model.Meta
 import org.hl7.fhir.r4.model.Observation
-import org.hl7.fhir.r4.model.Patient
 import org.hl7.fhir.r4.model.Questionnaire
 import org.hl7.fhir.r4.model.QuestionnaireResponse
 import org.hl7.fhir.r4.model.Resource
 import org.hl7.fhir.r4.model.StructureMap
 import org.hl7.fhir.r4.model.Task
 import org.hl7.fhir.r4.utils.StructureMapUtilities
-import org.hl7.fhir.utilities.npm.FilesystemPackageCacheManager
 import java.util.Date
-import java.util.UUID
 
-class BloodTestViewModel( application: Application) : AndroidViewModel(application){
+class VaccinationViewModel(application: Application) : AndroidViewModel(application){
 
     private var fhirEngine: FhirEngine = FhirApplication.fhirEngine(application.applicationContext)
 
@@ -59,7 +53,7 @@ class BloodTestViewModel( application: Application) : AndroidViewModel(applicati
     }
 
     private suspend fun fetchQuestionnaireJson() {
-        questionnaire = fhirEngine.get<Questionnaire>("3")
+        questionnaire = fhirEngine.get<Questionnaire>("4")
         val jsonParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
         questionnaireJson = jsonParser.encodeResourceToString(questionnaire)
 
@@ -71,18 +65,6 @@ class BloodTestViewModel( application: Application) : AndroidViewModel(applicati
         viewModelScope.launch {
 
             val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
-            println(
-                "------------- questionnaireResponse : ${
-                    iParser.encodeResourceToString(
-                        questionnaireResponse
-                    )
-                }"
-            )
-
-//            val bundle = ResourceMapper.extract(questionnaire!!, questionnaireResponse)
-//            println("------------- Task : ${iParser.encodeResourceToString(bundle)}")
-//
-//            val entry = bundle.entryFirstRep
             val targetResource = transformResource(questionnaireResponse)
             if (targetResource is Bundle) {
                 targetResource.entry.forEach { bundleEntryComponent ->

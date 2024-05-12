@@ -61,7 +61,7 @@ class ExampleUnitTest {
 
         val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
 //        val immunizationStructureMap = getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/StructureMap_PatientReg_Generate.map")
-        val immunizationStructureMap = getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/StructureMap_BloodTest_Generate.map")
+        val immunizationStructureMap = getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/StructureMap_Vaccination_Generate.map")
 
         val structureMap =
             structureMapUtilities.parse(immunizationStructureMap, "psi reg")
@@ -71,7 +71,7 @@ println("===== structureMap: ${mapString}")
 
         // Generate empty target resource object
 //        val registrationQuestionnaireResponseString =  getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/QuestionnaireResponse_PatientReg.json")
-        val registrationQuestionnaireResponseString =  getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/QuestionnaireResponse_BloodTest.json")
+        val registrationQuestionnaireResponseString =  getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/QuestionnaireResponse_VaccinationPrevenar13.json")
 
 
         val targetResource = Bundle()

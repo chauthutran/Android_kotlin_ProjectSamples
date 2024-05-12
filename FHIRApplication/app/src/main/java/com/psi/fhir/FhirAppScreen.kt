@@ -58,7 +58,7 @@ enum class FhirScreen(@StringRes val title: Int) {
     PATIENT_DETAILS(title = R.string.patient_details),
     ADD_PATIENT(title = R.string.add_patient),
     EDIT_PATIENT(title = R.string.edit_patient),
-    BLOOD_TEST_FRAGMENT(title = R.string.blood_test)
+    VACCINATION_FRAGMENT(title = R.string.vaccination_details)
 }
 
 @Composable
@@ -155,12 +155,12 @@ fun FhirApp(
                     },
                     openBloodTestBtnClick = { _task ->
                         task = _task
-                        navController.navigate(FhirScreen.BLOOD_TEST_FRAGMENT.name)
+                        navController.navigate(FhirScreen.VACCINATION_FRAGMENT.name)
                     }
                 )
             }
 
-            composable(route = FhirScreen.BLOOD_TEST_FRAGMENT.name) {
+            composable(route = FhirScreen.VACCINATION_FRAGMENT.name) {
                 showActions = false
                 QuestionnaireScreen(
                     fragmentManager = fragmentManager,
@@ -237,7 +237,7 @@ fun FhirAppBar (
                modifier = modifier
            )
 
-       FhirScreen.BLOOD_TEST_FRAGMENT ->
+       FhirScreen.VACCINATION_FRAGMENT ->
            EditPatientToolBar(
                currentScreen = currentScreen,
                navigateUp = navigateUp,

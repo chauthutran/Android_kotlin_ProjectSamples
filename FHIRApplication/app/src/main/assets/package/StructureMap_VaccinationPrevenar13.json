@@ -1,12 +1,12 @@
 {
   "resourceType": "StructureMap",
-  "id": "PatientRegistration_BloodTest",
+  "id": "PatientRegistration_VaccinationPrevenar13",
   "text": {
     "status": "additional",
-    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><pre>map &quot;https://com.psi.fhir/fhir/StructureMap/PatientRegistration_BloodTest&quot; = 'Blood Test'\n\nuses &quot;http://hl7.org/fhir/StructureDefinition/QuestionnaireReponse&quot; as source\nuses &quot;http://hl7.org/fhir/StructureDefinition/Bundle&quot; as target\nuses &quot;http://hl7.org/fhir/StructureDefinition/Observation&quot; as target\n\ngroup QuestionnaireResponseToPatientMapping(source src : QuestionnaireResponse, target bundle: Bundle) {\n    src -&gt; bundle.id = uuid() &quot;r_b_id&quot;;\n    src -&gt; bundle.type = 'collection' &quot;r_bun_type&quot;;\n\n     src -&gt; bundle.entry as entry, entry.resource = create('Observation') as obs then\n           ExtractObservation(src, obs) &quot;r_bun_entries&quot;;\n\n}\n\ngroup ExtractObservation(source src : QuestionnaireResponse, target obs : Observation) {\n         src -&gt; obs.id = uuid() &quot;r_ob_id&quot;;\n         src -&gt; obs.status = &quot;final&quot; &quot;r_ob_st&quot;;\n         src -&gt; obs.effective = evaluate(src, now()) &quot;r_ob_eff&quot;;\n\n         //src.item as item_date where(linkId = 'bloodTestDate' and answer.count() &gt; 0) -&gt;  obs.effective = evaluate(item_date, $this.answer.value) &quot;r_ob_eff&quot;;\n\n         src.item as item_data where(linkId = 'bloodTestResult' and answer.count() &gt; 0 ) then {\n            item_data.answer as valueanswer -&gt; obs.value = create('CodeableConcept') as codeableConcept then {\n              valueanswer -&gt; codeableConcept.coding = evaluate(item_data, valueanswer.value.code) &quot;r_ob_cc_cod&quot;;\n              valueanswer -&gt; codeableConcept.text = evaluate(item_data, valueanswer.value.display) &quot;r_ob_cc_cod_disp&quot;;\n           } &quot;r_obs_val&quot;;\n         } &quot;r_obs_value&quot;;\n}\n\n</pre></div>"
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><pre>map &quot;https://com.psi.fhir/fhir/StructureMap/PatientRegistration_BloodTest&quot; = 'Blood Test'\n\nuses &quot;http://hl7.org/fhir/StructureDefinition/QuestionnaireReponse&quot; as source\nuses &quot;http://hl7.org/fhir/StructureDefinition/Bundle&quot; as target\nuses &quot;http://hl7.org/fhir/StructureDefinition/Observation&quot; as target\n\ngroup QuestionnaireResponseToPatientMapping(source src : QuestionnaireResponse, target bundle: Bundle) {\n    src -&gt; bundle.id = uuid() &quot;r_b_id&quot;;\n    src -&gt; bundle.type = 'collection' &quot;r_bun_type&quot;;\n\n     src -&gt; bundle.entry as entry, entry.resource = create('Observation') as obs then\n           ExtractObservation(src, obs) &quot;r_bun_entries&quot;;\n\n}\n\ngroup ExtractObservation(source src : QuestionnaireResponse, target obs : Observation) {\n         src -&gt; obs.id = uuid() &quot;r_ob_id&quot;;\n         src -&gt; obs.status = &quot;final&quot; &quot;r_ob_st&quot;;\n         src -&gt; obs.effective = evaluate(src, now()) &quot;r_ob_eff&quot;;\n\n         src.item as item_date where(linkId = 'vaccinationDate' and answer.count() &gt; 0) -&gt;  obs.value = $this.answer &quot;r_v_date&quot;;\n\n}\n\n</pre></div>"
   },
-  "url": "https://com.psi.fhir/fhir/StructureMap/176",
-  "name": "Blood Test",
+  "url": "http://172.30.1.26:8080/fhir/StructureMap/176",
+  "name": "Vaccination Prevenar 13",
   "structure": [
     {
       "url": "http://hl7.org/fhir/StructureDefinition/QuestionnaireReponse",
@@ -192,87 +192,24 @@
           ]
         },
         {
-          "name": "r_obs_value",
+          "name": "r_v_date",
           "source": [
             {
               "context": "src",
               "element": "item",
-              "variable": "item_data",
-              "condition": "((linkId = 'bloodTestResult') and (answer.count() > 0))"
+              "variable": "item_date",
+              "condition": "((linkId = 'vaccinationDate') and (answer.count() > 0))"
             }
           ],
-          "rule": [
+          "target": [
             {
-              "name": "r_obs_val",
-              "source": [
+              "context": "obs",
+              "contextType": "variable",
+              "element": "value",
+              "transform": "copy",
+              "parameter": [
                 {
-                  "context": "item_data",
-                  "element": "answer",
-                  "variable": "valueanswer"
-                }
-              ],
-              "target": [
-                {
-                  "context": "obs",
-                  "contextType": "variable",
-                  "element": "value",
-                  "variable": "codeableConcept",
-                  "transform": "create",
-                  "parameter": [
-                    {
-                      "valueString": "CodeableConcept"
-                    }
-                  ]
-                }
-              ],
-              "rule": [
-                {
-                  "name": "r_ob_cc_cod",
-                  "source": [
-                    {
-                      "context": "valueanswer"
-                    }
-                  ],
-                  "target": [
-                    {
-                      "context": "codeableConcept",
-                      "contextType": "variable",
-                      "element": "coding",
-                      "transform": "evaluate",
-                      "parameter": [
-                        {
-                          "valueId": "item_data"
-                        },
-                        {
-                          "valueString": "valueanswer.value.code"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "name": "r_ob_cc_cod_disp",
-                  "source": [
-                    {
-                      "context": "valueanswer"
-                    }
-                  ],
-                  "target": [
-                    {
-                      "context": "codeableConcept",
-                      "contextType": "variable",
-                      "element": "text",
-                      "transform": "evaluate",
-                      "parameter": [
-                        {
-                          "valueId": "item_data"
-                        },
-                        {
-                          "valueString": "valueanswer.value.display"
-                        }
-                      ]
-                    }
-                  ]
+                  "valueId": "$this.answer"
                 }
               ]
             }

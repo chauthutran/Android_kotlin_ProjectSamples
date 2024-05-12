@@ -1,33 +1,20 @@
 package com.psi.fhir.careplan
 
-import android.app.ActivityManager.TaskDescription
 import android.content.Context
 import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.context.FhirVersionEnum
 import ca.uhn.fhir.parser.IParser
 import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.get
-import com.google.android.fhir.knowledge.FhirNpmPackage
 import com.google.android.fhir.knowledge.KnowledgeManager
-import com.google.android.fhir.search.Order
-import com.google.android.fhir.search.StringFilterModifier
-import com.google.android.fhir.search.search
-import com.google.android.fhir.workflow.FhirOperator
 import com.google.android.fhir.workflow.FhirOperator.Builder
-import com.psi.fhir.FhirApplication
-import com.psi.fhir.data.PatientListItemUiState
 import com.psi.fhir.helper.app.AppConfigurationHelper
-import com.psi.fhir.helper.app.ApplicationConfiguration
-import com.psi.fhir.ui.viewmodels.toPatientItem
-import org.hl7.fhir.r4.model.ActivityDefinition
 import org.hl7.fhir.r4.model.CanonicalType
 import org.hl7.fhir.r4.model.CarePlan
 import org.hl7.fhir.r4.model.IdType
 import org.hl7.fhir.r4.model.Meta
 import org.hl7.fhir.r4.model.MetadataResource
-import org.hl7.fhir.r4.model.Patient
 import org.hl7.fhir.r4.model.PlanDefinition
-import org.hl7.fhir.r4.model.Questionnaire
 import org.hl7.fhir.r4.model.Reference
 import org.hl7.fhir.r4.model.Resource
 import org.hl7.fhir.r4.model.ServiceRequest
@@ -58,130 +45,44 @@ class CarePlanManager (
 
 
     suspend fun setKnowledgeResouces() {
-//        val rootDirectory = File(javaClass.getResource("/package")!!.file)
-//        knowledgeManager.install(
-//            FhirNpmPackage(
-//                "com.google.android.fhir",
-//                "1.0.0",
-//                "http://github.com/google/android-fhir",
-//            ),
-//            rootDirectory,
-//        )
-
-//        val fileList = context.assets.list("/package")
-//        if (fileList != null) {
-//            for (filename in fileList) {
-//                if (filename.contains(".json")) {
-//                    val contents = AssestsFile(context, "$path/$filename")
-//            fhirEngine.create(resource)
-//        }
-
-
-
-
-//        val planDefinitionId = AppConfigurationHelper.getPlanDefinitionId()!!
-//        var planDefinition = fhirEngine.get<PlanDefinition>(planDefinitionId)
-//        knowledgeManager.install(writeToFile(planDefinition))
-
-//        val planDefinitionId = AppConfigurationHelper.getPlanDefinitionId()!!
         var planDefinition = fhirEngine.get<PlanDefinition>("1")
         knowledgeManager.install(writeToFile(planDefinition))
-
-
-//        var resources = AppConfigurationHelper.getCarePlanResources()
-//        for (i in 0..<resources.size) {
-//            var resource = resources[i]
-//            when( resource.type ) {
-//                "PlanDefination" -> {
-//                    var data = fhirEngine.get<PlanDefinition>(resource.id)
-//                    knowledgeManager.install(writeToFile(data))
-//                }
-//                "Questionnaire" -> {
-//                   var data = fhirEngine.get<Questionnaire>(resource.id)
-//                    knowledgeManager.install(writeToFile(data))
-//                }
-//
-//                else -> Unit
-//            }
-//
-//        }
-
-
-//        val activityDefinitionId = AppConfigurationHelper.getActivityDefinitionId()!!
-//        var activityDefinition = fhirEngine.get<ActivityDefinition>(activityDefinitionId)
-//        knowledgeManager.install(writeToFile(activityDefinition))
     }
 
 
     suspend fun createCarePlan(patientId: String, encounterId: String) {
         setKnowledgeResouces()
-//        val jsonParser = FhirApplication.fhirContext(this).newJsonParser()
-
-        // We need to add all resource defination inside the fhirEngine local storage,
-        // then we can use them to create a CarePlan
-//        FhirApplication.fhirEngine(this).apply {
-//            create(jsonParser.parseResource(planDefinitionStr) as PlanDefinition)
-//            create(jsonParser.parseResource(activityDefinitionStr) as ActivityDefinition)
-//            create(jsonParser.parseResource(patientStr) as Patient)
-//        }
 
         // Create CarePlan
-
-
-        println("planDefination: [${AppConfigurationHelper.getFhirBaseUrl()}/PlanDefinition/${AppConfigurationHelper.getPlanDefinitionId()}]")
         val carePlan: CarePlan = fhirOperator.generateCarePlan(
             planDefinition = CanonicalType("${AppConfigurationHelper.getFhirBaseUrl()}/PlanDefinition/${AppConfigurationHelper.getPlanDefinitionId()}"),
-//            planDefinitionId = AppConfigurationHelper.getPlanDefinitionId()!!,
             subject = "Patient/$patientId"
         ) as CarePlan
 
         carePlan.id = UUID.randomUUID().toString()
         setLastUpdate(carePlan)
-println("================================ carePlan 1")
-println(carePlan)
+
         fhirEngine.create(carePlan)
 
-        createBloodTestServiceRequest(patientId, carePlan)
-println("================================ carePlan 2")
-println(carePlan)
-
+        createCarePlanActivities(patientId, carePlan)
     }
 
-    suspend fun createBloodTestServiceRequest(patientId: String, carePlan: CarePlan){
+    suspend fun createCarePlanActivities(patientId: String, carePlan: CarePlan){
 
-//        val bloodTestRequest = ServiceRequest().apply {
-//            // Set blood test details
-//            // Trigger: Before the first vaccination dose
-//            // Other relevant details such as code, performer, etc.
-//
-//            status = ServiceRequest.ServiceRequestStatus.ACTIVE
-//            intent = ServiceRequest.ServiceRequestIntent.DIRECTIVE
-//            subject.reference = "Patient/${patientId}"
-//        }
-//        setLastUpdate(bloodTestRequest)
-//        fhirEngine.create(bloodTestRequest)
-
-        val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
-
+//        val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
         val task =
             Task().apply {
                 id = UUID.randomUUID().toString()
                 status = Task.TaskStatus.REQUESTED
                 intent = Task.TaskIntent.PROPOSAL
-                description = "Blood Test"
-                `for`.reference = "Patient/${IdType(patientId).idPart}"
+                description = "Dose of Prevenar 13 vaccine"
+                focus.reference = "CarePlan/${carePlan.id}"
+                `for`.reference = "Patient/${patientId}"
                 restriction.period.end = Date.from(Instant.now().plus(Period.ofDays(180)))
             }
-        setLastUpdate(task)
+
         fhirEngine.create(task)
-//println("------------- Task : ${iParser.encodeResourceToString(task)}")
-//
-//        println("------------- carePlan 1: ${iParser.encodeResourceToString(carePlan)}")
-//        carePlan.addActivity().setReference(Reference(task)).detail.status =
-//            CarePlan.CarePlanActivityStatus.NOTSTARTED
-//        println("------------- carePlan 2: ${iParser.encodeResourceToString(carePlan)}")
-//        fhirEngine.update(carePlan)
-//        println("------------- carePlan 3: ${iParser.encodeResourceToString(carePlan)}")
+
     }
 
     private fun setLastUpdate( resource: Resource ) {

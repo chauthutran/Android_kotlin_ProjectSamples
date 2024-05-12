@@ -18,13 +18,7 @@ group ExtractObservation(source src : QuestionnaireResponse, target obs : Observ
          src -> obs.status = "final" "r_ob_st";
          src -> obs.effective = evaluate(src, now()) "r_ob_eff";
 
-         //src.item as item_date where(linkId = 'bloodTestDate' and answer.count() > 0) ->  obs.effective = evaluate(item_date, $this.answer.value) "r_ob_eff";
+         src.item as item_date where(linkId = 'vaccinationDate' and answer.count() > 0) ->  obs.value = $this.answer "r_v_date";
 
-         src.item as item_data where(linkId = 'bloodTestResult' and answer.count() > 0 ) then {
-            item_data.answer as valueanswer -> obs.value = create('CodeableConcept') as codeableConcept then {
-              valueanswer -> codeableConcept.coding = evaluate(item_data, valueanswer.value.code) "r_ob_cc_cod";
-              valueanswer -> codeableConcept.text = evaluate(item_data, valueanswer.value.display) "r_ob_cc_cod_disp";
-           } "r_obs_val";
-         } "r_obs_value";
 }
 
