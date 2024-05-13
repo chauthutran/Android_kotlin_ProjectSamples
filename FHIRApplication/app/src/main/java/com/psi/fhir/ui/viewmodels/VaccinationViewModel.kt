@@ -40,12 +40,6 @@ class VaccinationViewModel(application: Application) : AndroidViewModel(applicat
         MutableStateFlow<DispatcherStatus<Boolean>>(DispatcherStatus.UnSpecified())
     val questionnaireLoaded = _isQuestionnaireLoaded.asStateFlow()
 
-//    private val questionnaireResource: Questionnaire
-//        get() =
-//            FhirContext.forCached(FhirVersionEnum.R4).newJsonParser().parseResource(questionnaire)
-//                    as Questionnaire
-
-
     init {
         viewModelScope.launch {
             fetchQuestionnaireJson()
@@ -63,37 +57,26 @@ class VaccinationViewModel(application: Application) : AndroidViewModel(applicat
 
     fun createObservation(questionnaireResponse: QuestionnaireResponse, task: Task) {
         viewModelScope.launch {
-
             val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
+//            println("============ questionnaireResponse: ${iParser.encodeResourceToString(questionnaireResponse)}")
+
             val targetResource = transformResource(questionnaireResponse)
+            println("============ targetResource: ${iParser.encodeResourceToString(targetResource)}")
             if (targetResource is Bundle) {
                 targetResource.entry.forEach { bundleEntryComponent ->
                     val resource = bundleEntryComponent.resource
                     if ( resource is Observation ) {
                         resource.subject.reference = task.`for`.reference
                         setLastUpdate(resource)
-            println("============ Observation: ${iParser.encodeResourceToString(resource)}")
                         fhirEngine.create(resource)
 
                         task.status = Task.TaskStatus.COMPLETED
                         fhirEngine.update(task)
-        println("============ task: ${iParser.encodeResourceToString(task)}")
                     }
                 }
-
-//                {
-//                    var obs: Observation = entry.resource as Observation
-//                    obs.id = UUID.randomUUID().toString()
-//                    fhirEngine.create(obs)
-//
-//                    task.status = Task.TaskStatus.COMPLETED
-//                    fhirEngine.update(task)
-//
-//                    println("------------- Task : ${iParser.encodeResourceToString(task)}")
-//
-//                    isResourceSaved.value = true
-//                }
             }
+
+            isResourceSaved.value = true
         }
     }
 
@@ -115,20 +98,12 @@ class VaccinationViewModel(application: Application) : AndroidViewModel(applicat
     private suspend fun transformResource (questionnaireResponse: QuestionnaireResponse): Bundle {
         val contextR4 =
             FhirApplication.contextR4(getApplication<FhirApplication>().applicationContext)
-//        contextR4.isCanRunWithoutTerminology = true
 
         val transformSupportServices = TransformSupportServices(contextR4)
         val structureMapUtilities = StructureMapUtilities(contextR4, transformSupportServices)
 
         var structureMap = fhirEngine.get<StructureMap>("176")
 
-//        val targetResource = Bundle()
-//        structureMapUtilities.transform(
-//            contextR4,
-//            questionnaireResponse,
-//            structureMap,
-//            targetResource
-//        )
         val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
         val targetResource = Bundle()
         val baseElement =
@@ -140,35 +115,6 @@ class VaccinationViewModel(application: Application) : AndroidViewModel(applicat
         structureMapUtilities.transform(contextR4, baseElement, structureMap, targetResource)
 
         return targetResource
-
-
-//
-////        val pcm = FilesystemPackageCacheManager(false)
-////
-////        // Create R4 context
-////        val contextR4 =
-////            SimpleWorkerContext.fromPackage(pcm.loadPackage("hl7.fhir.r4.core", "4.0.1"))
-////        contextR4.isCanRunWithoutTerminology = true
-//        val contextR4 =
-//            FhirApplication.contextR4(getApplication<FhirApplication>().applicationContext)
-//        var structureMap = fhirEngine.get<StructureMap>("176")
-//
-//        // Create an instance of StructureMapUtilities to use R4 context
-//        val structureMapUtilities = StructureMapUtilities(contextR4)
-//
-//        val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
-//
-//
-//        val targetResource = Bundle()
-//        val baseElement =
-//            iParser.parseResource(
-//                QuestionnaireResponse::class.java,
-//                iParser.encodeResourceToString(questionnaireResponse),
-//            )
-//
-//        structureMapUtilities.transform(contextR4, baseElement, structureMap, targetResource)
-//println(iParser.encodeResourceToString( targetResource))
-//        return targetResource
     }
 
 }

@@ -43,11 +43,8 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
     private var fhirEngine: FhirEngine = FhirApplication.fhirEngine(application.applicationContext)
     private var carePlanManager: CarePlanManager = FhirApplication.carePlanManager(application.applicationContext)
 
-
     lateinit var questionnaireJson: String
-
     private var questionnaire: Questionnaire? = null
-
 
     private var _formFetched =
         MutableStateFlow<DispatcherStatus<Boolean>>(DispatcherStatus.UnSpecified())
@@ -70,17 +67,6 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
 
         viewModelScope.launch { _formFetched.emit(DispatcherStatus.Success(true)) }
     }
-
-//    private fun fetchQuestionnaireJson(): String {
-//        val questionnaireId = AppConfigurationHelper.getPatientRegistrationQuestionnaire()
-//            val contextR4 =
-//                FhirApplication.contextR4(getApplication<FhirApplication>().applicationContext)
-//            questionnaire = contextR4.searchResourceById(questionnaireId!!)
-//
-//
-//            val jsonParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
-//            return jsonParser.encodeResourceToString(questionnaire)
-//    }
 
     fun addPatient(questionnaireResponse: QuestionnaireResponse) {
 
@@ -106,7 +92,6 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
                     fhirEngine.create(resource)
 
                     Timber.tag("saveResources").d("Resource ${resource.resourceType} is saved")
-
                 }
 
                 try {
@@ -121,105 +106,62 @@ class QuestionnaireViewModel (application: Application) : AndroidViewModel(appli
                         carePlanManager.createCarePlan(patientId, "")
                     }
 
-//                    val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
-//                    val questionnaireResponseStr = iParser.encodeResourceToString(questionnaireResponse)
-//
-//                    println("======================== questionnaireResponse")
-//                    println(questionnaireResponse.id)
-//                    println(questionnaireResponseStr)
+                    viewModelScope.launch { _resourceSaved.emit(DispatcherStatus.Success(data = true)) }
                 }
                 catch( ex: Exception) {
                     ex.printStackTrace()
+                    viewModelScope.launch { _resourceSaved.emit(DispatcherStatus.Error(ex.message?: "There are some error while saving resources.")) }
                 }
 
             }
         }
-
-//            else if (targetResource is Resource) {
-//                // Save Resource
-//                if (targetResource.id == null) {
-//                    targetResource.id = UUID.randomUUID().toString()
-//                }
-//                fhirEngine.create(targetResource)
-//
-//                // Save QuestionnaireResponse
-//                questionnaireResponse.id = UUID.randomUUID().toString()
-//                questionnaireResponse.subject =
-//                    Reference("${targetResource.resourceType}/${IdType(targetResource.id).idPart}")
-//                fhirEngine.create(questionnaireResponse)
-//            }
-
-            viewModelScope.launch { _resourceSaved.emit(DispatcherStatus.Success(true)) }
-//        }
     }
 
     // ---------------------------------------------------------------------------------------------
     // For Update resources
 
-    suspend fun updatePatient(questionnaireResponse: QuestionnaireResponse, patientDetailData: PatientDetailData): RequestResult {
-        val targetResource = transformResource (questionnaireResponse)
+    fun updatePatient(questionnaireResponse: QuestionnaireResponse, patientDetailData: PatientDetailData) {
+        viewModelScope.launch {
 
-        var updatedList: MutableMap<String, ArrayList<Resource>> = mutableMapOf()
-        if (targetResource is Bundle) {
-            targetResource.entry.forEach { bundleEntryComponent ->
-                // Save Resource
-                val resource = bundleEntryComponent.resource
-                val resourceType = resource.resourceType.toString()
-                if (updatedList[resourceType] == null) {
-                    val list = ArrayList<Resource>()
-                    list.add(resource)
-                    updatedList[resourceType] = list
-                } else {
-                    updatedList[resourceType]!!.add(resource)
-                }
-            }
+            val targetResource = transformResource(questionnaireResponse)
 
-            // Put IDs for resources
-            for (resourceType in updatedList.keys) {
-                println("========== resourceType: ${resourceType}")
-                var list = updatedList[resourceType]!!
-                when (resourceType) {
-                    ResourceType.Patient.toString() -> {
-                        val resource = list[0]
-                        println("====== resourceId: ${resource}")
-                        setLastUpdate( resource )
-                        resource.id = patientDetailData.patient.id
-                        fhirEngine.update(resource)
+            var updatedList: MutableMap<String, ArrayList<Resource>> = mutableMapOf()
+            if (targetResource is Bundle) {
+                targetResource.entry.forEach { bundleEntryComponent ->
+                    // Save Resource
+                    val resource = bundleEntryComponent.resource
+                    val resourceType = resource.resourceType.toString()
+                    if (updatedList[resourceType] == null) {
+                        val list = ArrayList<Resource>()
+                        list.add(resource)
+                        updatedList[resourceType] = list
+                    } else {
+                        updatedList[resourceType]!!.add(resource)
                     }
+                }
 
-//                    ResourceType.Encounter.toString() -> {
-//                        (0..<list.size).forEach {
-//                            val resource = list[it]
-//                    setLastUpdate( resource )
-//                            resource.id = patientDetailData.encounters[it].id
-//                            fhirEngine.update(resource)
-//                        }
-//                    }
+                // Put IDs for resources
+                for (resourceType in updatedList.keys) {
+                    var list = updatedList[resourceType]!!
+                    when (resourceType) {
+                        ResourceType.Patient.toString() -> {
+                            val resource = list[0]
+                            setLastUpdate(resource)
+                            resource.id = patientDetailData.patient.id
+                            fhirEngine.update(resource)
+                        }
 
-//                    ResourceType.Observation.toString() -> {
-//                        (0..<list.size).forEach {
-//                            val resource = list[it]
-//                            setLastUpdate( resource )
-//                            resource.id = patientDetailData.observations[it].id
-//                            fhirEngine.update(resource)
-//                        }
-//                    }
-
-                    else -> {
-                        Unit
+                        else -> {
+                            Unit
+                        }
                     }
                 }
             }
 
+            fhirEngine.update(questionnaireResponse)
+
+            viewModelScope.launch { _resourceSaved.emit(DispatcherStatus.Success(true)) }
         }
-
-        fhirEngine.update(questionnaireResponse)
-
-//          CoroutineScope(Dispatchers.IO).launch {
-//              carePlanManager.createCarePlan(patientDetailData.patient.id, "")
-//        }
-
-        return RequestResult(true)
     }
 
 

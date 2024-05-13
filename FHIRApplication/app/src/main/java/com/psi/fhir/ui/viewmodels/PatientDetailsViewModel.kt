@@ -3,6 +3,9 @@ package com.psi.fhir.ui.viewmodels
 import android.app.Application
 import android.content.res.Resources
 import androidx.lifecycle.AndroidViewModel
+import ca.uhn.fhir.context.FhirContext
+import ca.uhn.fhir.context.FhirVersionEnum
+import ca.uhn.fhir.parser.IParser
 import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.delete
 import com.google.android.fhir.get
@@ -138,23 +141,23 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
         return encounters
     }
 
-    private suspend fun getCarePlan(patientId: String): CarePlan? {
-
-        val carePlans: MutableList<CarePlan> = mutableListOf()
-
-        fhirEngine.search<CarePlan> {
-            filter (
-                CarePlan.SUBJECT,
-                {
-                    value = "Patient/${patientId}"
-                }
-            )
-        }
-            .mapIndexed {index, searchResult -> searchResult.resource }
-            .let { carePlans.addAll(it) }
-
-        return if (carePlans.size > 0 ) carePlans[0] else null
-    }
+//    private suspend fun getCarePlan(patientId: String): CarePlan? {
+//
+//        val carePlans: MutableList<CarePlan> = mutableListOf()
+//
+//        fhirEngine.search<CarePlan> {
+//            filter (
+//                CarePlan.SUBJECT,
+//                {
+//                    value = "Patient/${patientId}"
+//                }
+//            )
+//        }
+//            .mapIndexed {index, searchResult -> searchResult.resource }
+//            .let { carePlans.addAll(it) }
+//
+//        return if (carePlans.size > 0 ) carePlans[0] else null
+//    }
 
     private suspend fun getTasks(patientId: String): List<Task> {
 
@@ -197,6 +200,9 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
     private fun createObservationItem( observation: Observation, resources: Resources): ObservationListItem {
         val observationCode = observation.code.text ?: observation.code.codingFirstRep.display
 
+//        val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
+//            println("============ Observation: ${iParser.encodeResourceToString(observation)}")
+
         // Show nothing if no values available for datetime and value quantity.
         val dateTimeString =
             if (observation.hasEffectiveDateTimeType()) {
@@ -209,9 +215,12 @@ class PatientDetailsViewModel (application: Application): AndroidViewModel(appli
             if (observation.hasValueQuantity()) {
                 observation.valueQuantity.value.toString()
             } else if (observation.hasValueCodeableConcept()) {
-//                observation.valueCodeableConcept.coding.firstOrNull()?.display ?: ""
                 observation.valueCodeableConcept.text ?: ""
-            } else {
+            }
+            else if (observation.hasValueStringType()) {
+                observation.value
+            }
+            else {
                 ""
             }
         val valueUnit =

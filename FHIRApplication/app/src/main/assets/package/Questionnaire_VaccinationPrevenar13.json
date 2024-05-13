@@ -7,8 +7,8 @@
   "item": [
     {
       "linkId": "vaccinationDate",
-      "text": "Date to take the vaccination",
-      "type": "date",
+      "text": "Note after taking the vaccination Prevenar 13",
+      "type": "string",
       "required": true
     }
   ]

@@ -106,8 +106,12 @@ private fun PatientCard(
             editButtonClick = editButtonClick,
             viewModel = viewModel
         )
+
+        if( uiState.observations.size > 0 ) {
+            ObservationListCard(uiState!!.observations)
+        }
+
         uiState!!.tasks?.let{ CarePlanScreen( it, openBloodTestBtnClick) }
-        ObservationListCard(uiState!!.observations)
     }
 }
 
@@ -167,7 +171,6 @@ private fun ObservationListCard(
     Card (
         modifier = modifier
             .fillMaxWidth()
-//            .defaultMinSize(minHeight = 300.dp)
             .padding(10.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.inverseOnSurface,
@@ -175,8 +178,6 @@ private fun ObservationListCard(
     ) {
         Box(
             modifier = Modifier
-//                .padding(12.dp)
-//                .size(30.dp)
                 .background(
                     MaterialTheme.colorScheme.tertiaryContainer,
                     shape = RoundedCornerShape(15.dp)

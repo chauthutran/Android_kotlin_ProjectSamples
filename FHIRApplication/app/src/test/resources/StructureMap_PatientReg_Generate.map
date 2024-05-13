@@ -89,7 +89,7 @@ group ExtractEncounter(source src : QuestionnaireResponse, source patient : Pati
 
 
 group ExtractObservation_1_1_0(source src : QuestionnaireResponse, target bundle : Bundle, target encounter : Encounter ) {
-    src.item as item_bio where(linkId = '1.0.0' ) then {
+    src.item as item_bio where(linkId = '1.0.0' and answer.count() > 0 ) then {
       src -> bundle.entry as entry, entry.resource = create('Observation') as obs then {
          src -> obs.id = uuid() "r_ob_id";
          src -> obs.status = "final" "r_ob_st";

@@ -101,17 +101,7 @@ fun FhirApp(
                     )
                 }
             }
-        },
-//        content = {
-//            // Your content goes here
-//            Column(
-//                modifier = Modifier.fillMaxSize(),
-//                verticalArrangement = Arrangement.Center,
-//                horizontalAlignment = Alignment.CenterHorizontally
-//            ) {
-//                Text("Hello, Jetpack Compose!")
-//            }
-//        }
+        }
     ) { innerPadding ->
 
         var selectedPatientId by remember { mutableStateOf("") }
@@ -171,16 +161,10 @@ fun FhirApp(
 
             composable(route = FhirScreen.ADD_PATIENT.name) {
                 showActions = false
-//                val context = LocalContext.current
-//                FormScreen(
-//                    formConfig = AppConfigurationHelper.getRegistrationForm()!!,
-//                    fhirEngine = FhirApplication.fhirEngine(context)
-//                )
-//                getSupportFragmentManager
                 QuestionnaireScreen(
                     fragmentManager = fragmentManager,
                     questionnaireContainerId = R.id.edit_patient_container,
-                    fragment = AddPatientRegistrationFragment()
+                    fragment = AddPatientRegistrationFragment(navigateUp = { navController.navigateUp() })
                 )
             }
 
@@ -189,7 +173,7 @@ fun FhirApp(
                 QuestionnaireScreen(
                     fragmentManager = fragmentManager,
                     questionnaireContainerId = R.id.edit_patient_container,
-                    fragment = EditPatientRegistrationFragment(patientDetailsData!!)
+                    fragment = EditPatientRegistrationFragment(patientDetailData = patientDetailsData!!, navigateUp = { navController.navigateUp() },)
                 )
             }
 

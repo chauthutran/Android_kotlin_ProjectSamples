@@ -22,13 +22,11 @@ fun QuestionnaireScreen(
     AndroidView(
         factory = { context ->
             // Create the Fragment instance
-
             val containerId = questionnaireContainerId // some unique id
             val fragmentContainerView = FragmentContainerView(context).apply {
                 id = containerId
             }
 
-//            val fragment = AddPatientRegistrationFragment()
             fragmentManager.beginTransaction()
                 .replace(containerId, fragment, fragment.javaClass.simpleName)
                 .commitAllowingStateLoss()

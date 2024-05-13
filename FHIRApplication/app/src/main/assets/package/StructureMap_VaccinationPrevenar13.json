@@ -1,12 +1,13 @@
 {
   "resourceType": "StructureMap",
-  "id": "PatientRegistration_VaccinationPrevenar13",
+  "id": "Vaccination_Prevanar13",
+  "url": "http://172.30.1.26:8080/fhir/StructureMap/176",
   "text": {
     "status": "additional",
-    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><pre>map &quot;https://com.psi.fhir/fhir/StructureMap/PatientRegistration_BloodTest&quot; = 'Blood Test'\n\nuses &quot;http://hl7.org/fhir/StructureDefinition/QuestionnaireReponse&quot; as source\nuses &quot;http://hl7.org/fhir/StructureDefinition/Bundle&quot; as target\nuses &quot;http://hl7.org/fhir/StructureDefinition/Observation&quot; as target\n\ngroup QuestionnaireResponseToPatientMapping(source src : QuestionnaireResponse, target bundle: Bundle) {\n    src -&gt; bundle.id = uuid() &quot;r_b_id&quot;;\n    src -&gt; bundle.type = 'collection' &quot;r_bun_type&quot;;\n\n     src -&gt; bundle.entry as entry, entry.resource = create('Observation') as obs then\n           ExtractObservation(src, obs) &quot;r_bun_entries&quot;;\n\n}\n\ngroup ExtractObservation(source src : QuestionnaireResponse, target obs : Observation) {\n         src -&gt; obs.id = uuid() &quot;r_ob_id&quot;;\n         src -&gt; obs.status = &quot;final&quot; &quot;r_ob_st&quot;;\n         src -&gt; obs.effective = evaluate(src, now()) &quot;r_ob_eff&quot;;\n\n         src.item as item_date where(linkId = 'vaccinationDate' and answer.count() &gt; 0) -&gt;  obs.value = $this.answer &quot;r_v_date&quot;;\n\n}\n\n</pre></div>"
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><pre>map &quot;https://com.psi.fhir/fhir/StructureMap/Vaccination_Prevanar13&quot; = 'Vaccination Prevanar 13'\n\nuses &quot;http://hl7.org/fhir/StructureDefinition/QuestionnaireReponse&quot; as source\nuses &quot;http://hl7.org/fhir/StructureDefinition/Bundle&quot; as target\nuses &quot;http://hl7.org/fhir/StructureDefinition/Observation&quot; as target\n\ngroup QuestionnaireResponseToPatientMapping(source src : QuestionnaireResponse, target bundle: Bundle) {\n    src -&gt; bundle.id = uuid() &quot;r_b_id&quot;;\n    src -&gt; bundle.type = 'collection' &quot;r_bun_type&quot;;\n\n    src -&gt; bundle.entry as entry, entry.resource = create('Observation') as obs1 then {\n     src -&gt; bundle.entry as entry, entry.resource = create('Observation') as obs2 then\n          ExtractObservationVaccinate(src, obs1), ExtractObservationNode(src, obs2) &quot;r_bun_entries&quot;;\n    } &quot;r_bun_created&quot;;\n\n    /* src -&gt; bundle.entry as entry then\n           ExtractObservationVaccinate(src, bundle), ExtractObservationNode(src, bundle) &quot;r_bun_entries&quot;; */\n\n}\n\ngroup ExtractObservationVaccinate(source src : QuestionnaireResponse, target obs : Observation) {\n   src -&gt; obs.id = uuid() &quot;r_ob_id&quot;;\n   src -&gt; obs.status = &quot;final&quot; &quot;r_ob_st&quot;;\n   src -&gt; obs.effective = evaluate(src, now()) &quot;r_ob_eff&quot;;\n\n   src -&gt; obs.value = &quot;Take the vaccine Prevenar 13.&quot; &quot;r_ob_vvac&quot;;\n}\n\ngroup ExtractObservationNode(source src : QuestionnaireResponse, target obs : Observation) {\n   src -&gt; obs.id = uuid() &quot;r_ob_id&quot;;\n   src -&gt; obs.status = &quot;final&quot; &quot;r_ob_st&quot;;\n   src -&gt; obs.effective = evaluate(src, now()) &quot;r_ob_eff&quot;;\n\n   src.item as item_date where(linkId = 'vaccinationDate') -&gt; obs.value = evaluate(item_date, $this.answer.value) 'r_obs_vnote';\n}\n</pre></div>"
   },
-  "url": "http://172.30.1.26:8080/fhir/StructureMap/176",
-  "name": "Vaccination Prevenar 13",
+  "url": "https://com.psi.fhir/fhir/StructureMap/Vaccination_Prevanar13",
+  "name": "Vaccination Prevanar 13",
   "structure": [
     {
       "url": "http://hl7.org/fhir/StructureDefinition/QuestionnaireReponse",
@@ -76,7 +77,7 @@
           ]
         },
         {
-          "name": "r_bun_entries",
+          "name": "r_bun_created",
           "source": [
             {
               "context": "src"
@@ -93,7 +94,7 @@
               "context": "entry",
               "contextType": "variable",
               "element": "resource",
-              "variable": "obs",
+              "variable": "obs1",
               "transform": "create",
               "parameter": [
                 {
@@ -102,12 +103,49 @@
               ]
             }
           ],
-          "dependent": [
+          "rule": [
             {
-              "name": "ExtractObservation",
-              "variable": [
-                "src",
-                "obs"
+              "name": "r_bun_entries",
+              "source": [
+                {
+                  "context": "src"
+                }
+              ],
+              "target": [
+                {
+                  "context": "bundle",
+                  "contextType": "variable",
+                  "element": "entry",
+                  "variable": "entry"
+                },
+                {
+                  "context": "entry",
+                  "contextType": "variable",
+                  "element": "resource",
+                  "variable": "obs2",
+                  "transform": "create",
+                  "parameter": [
+                    {
+                      "valueString": "Observation"
+                    }
+                  ]
+                }
+              ],
+              "dependent": [
+                {
+                  "name": "ExtractObservationVaccinate",
+                  "variable": [
+                    "src",
+                    "obs1"
+                  ]
+                },
+                {
+                  "name": "ExtractObservationNode",
+                  "variable": [
+                    "src",
+                    "obs2"
+                  ]
+                }
               ]
             }
           ]
@@ -115,7 +153,7 @@
       ]
     },
     {
-      "name": "ExtractObservation",
+      "name": "ExtractObservationVaccinate",
       "typeMode": "none",
       "input": [
         {
@@ -192,13 +230,10 @@
           ]
         },
         {
-          "name": "r_v_date",
+          "name": "r_ob_vvac",
           "source": [
             {
-              "context": "src",
-              "element": "item",
-              "variable": "item_date",
-              "condition": "((linkId = 'vaccinationDate') and (answer.count() > 0))"
+              "context": "src"
             }
           ],
           "target": [
@@ -209,7 +244,113 @@
               "transform": "copy",
               "parameter": [
                 {
-                  "valueId": "$this.answer"
+                  "valueString": "Take the vaccine Prevenar 13."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ExtractObservationNode",
+      "typeMode": "none",
+      "input": [
+        {
+          "name": "src",
+          "type": "QuestionnaireResponse",
+          "mode": "source"
+        },
+        {
+          "name": "obs",
+          "type": "Observation",
+          "mode": "target"
+        }
+      ],
+      "rule": [
+        {
+          "name": "r_ob_id",
+          "source": [
+            {
+              "context": "src"
+            }
+          ],
+          "target": [
+            {
+              "context": "obs",
+              "contextType": "variable",
+              "element": "id",
+              "transform": "uuid"
+            }
+          ]
+        },
+        {
+          "name": "r_ob_st",
+          "source": [
+            {
+              "context": "src"
+            }
+          ],
+          "target": [
+            {
+              "context": "obs",
+              "contextType": "variable",
+              "element": "status",
+              "transform": "copy",
+              "parameter": [
+                {
+                  "valueString": "final"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "r_ob_eff",
+          "source": [
+            {
+              "context": "src"
+            }
+          ],
+          "target": [
+            {
+              "context": "obs",
+              "contextType": "variable",
+              "element": "effective",
+              "transform": "evaluate",
+              "parameter": [
+                {
+                  "valueId": "src"
+                },
+                {
+                  "valueString": "now()"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "r_obs_vnote",
+          "source": [
+            {
+              "context": "src",
+              "element": "item",
+              "variable": "item_date",
+              "condition": "(linkId = 'vaccinationDate')"
+            }
+          ],
+          "target": [
+            {
+              "context": "obs",
+              "contextType": "variable",
+              "element": "value",
+              "transform": "evaluate",
+              "parameter": [
+                {
+                  "valueId": "item_date"
+                },
+                {
+                  "valueString": "$this.answer.value"
                 }
               ]
             }

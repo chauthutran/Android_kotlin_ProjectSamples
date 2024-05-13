@@ -10,13 +10,14 @@ import android.widget.Toast
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
 import com.google.android.fhir.datacapture.QuestionnaireFragment
 import com.psi.fhir.R
 import com.psi.fhir.ui.viewmodels.QuestionnaireViewModel
 import com.psi.fhir.utils.DispatcherStatus
 import org.hl7.fhir.r4.model.QuestionnaireResponse
 
-class AddPatientRegistrationFragment : Fragment() {
+class AddPatientRegistrationFragment(val navigateUp: () -> Unit,) : Fragment() {
 
     private val viewModel: QuestionnaireViewModel by viewModels()
 
@@ -31,18 +32,12 @@ class AddPatientRegistrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (savedInstanceState == null) {
-//            addQuestionnaireFragment()
-        }
-
         lifecycleScope.launchWhenStarted {
             viewModel.formFetched.collect { it ->
                 when (it) {
-
                     is DispatcherStatus.Success -> {
                         addQuestionnaireFragment()
                     }
-
                     else -> Unit
                 }
             }
@@ -60,12 +55,13 @@ class AddPatientRegistrationFragment : Fragment() {
 
                     is DispatcherStatus.Success -> {
                         progressBar.visibility = View.GONE
-                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), getString(R.string.data_is_saved), Toast.LENGTH_SHORT).show()
+                        navigateUp()
                     }
 
                     is DispatcherStatus.Error -> {
                         progressBar.visibility = View.GONE
-//                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
                     }
 
                     else -> Unit
@@ -78,16 +74,9 @@ class AddPatientRegistrationFragment : Fragment() {
             QuestionnaireFragment.SUBMIT_REQUEST_KEY,
             viewLifecycleOwner,
         ) { _, _ ->
-//            runBlocking {
-                viewModel.addPatient( genrerateQuestionnaireResponse() )
-//            }
-
+            viewModel.addPatient( genrerateQuestionnaireResponse() )
         }
 
-
-//        val questionnaireFragment =
-//            childFragmentManager.findFragmentByTag(QUESTIONNAIRE_FRAGMENT_TAG) as QuestionnaireFragment
-//        viewModel.addResources(questionnaireFragment.getQuestionnaireResponse())
     }
 
     private fun addQuestionnaireFragment()
@@ -111,7 +100,7 @@ class AddPatientRegistrationFragment : Fragment() {
     }
 
     companion object {
-        const val QUESTIONNAIRE_FRAGMENT_TAG = "questionnaire-fragment-tag"
+        const val QUESTIONNAIRE_FRAGMENT_TAG = "add-questionnaire-fragment-tag"
     }
 
 }

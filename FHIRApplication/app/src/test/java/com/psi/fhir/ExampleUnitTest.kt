@@ -48,20 +48,34 @@ class ExampleUnitTest {
 //        val pcm = FilesystemPackageCacheManager(true, ToolsVersion.TOOLS_VERSION)
         val pcm = FilesystemPackageCacheManager(false)
 
-        // Create R4 context
-        val contextR4 =
-            SimpleWorkerContext.fromPackage(pcm.loadPackage("hl7.fhir.r4.core", "4.0.1"))
-        contextR4.isCanRunWithoutTerminology = true
+//        // Create R4 context
+//        val contextR4 =
+//            SimpleWorkerContext.fromPackage(pcm.loadPackage("hl7.fhir.r4.core", "4.0.1"))
+//        contextR4.isCanRunWithoutTerminology = true
 
         // Create an instance of StructureMapUtilities to use R4 context
-        val structureMapUtilities = StructureMapUtilities(contextR4)
+//        val structureMapUtilities = StructureMapUtilities(contextR4)
+
+
+//        val packageCacheManager = FilesystemPackageCacheManager(true, "fasd'")
+        val contextR4 =
+            SimpleWorkerContext.fromPackage(pcm.loadPackage("hl7.fhir.r4.core", "4.0.1"))
+                .apply {
+                    setExpansionProfile(Parameters())
+                    isCanRunWithoutTerminology = true
+                }
+
+        val transformSupportServices = TransformSupportServices(contextR4)
+        val structureMapUtilities =
+            org.hl7.fhir.r4.utils.StructureMapUtilities(contextR4, transformSupportServices)
+
 
 //        // Deserialize structuremap string
 //        val map = structureMapUtilities.parse("StructureMap_PatientReg_Generate.map", "FHIRMapperTutorial")
 
         val iParser: IParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
-//        val immunizationStructureMap = getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/StructureMap_PatientReg_Generate.map")
-        val immunizationStructureMap = getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/StructureMap_Vaccination_Generate.map")
+        val immunizationStructureMap = getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/StructureMap_PatientReg_Generate.map")
+//        val immunizationStructureMap = getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/StructureMap_Vaccination_Generate.map")
 
         val structureMap =
             structureMapUtilities.parse(immunizationStructureMap, "psi reg")
@@ -70,8 +84,8 @@ class ExampleUnitTest {
 println("===== structureMap: ${mapString}")
 
         // Generate empty target resource object
-//        val registrationQuestionnaireResponseString =  getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/QuestionnaireResponse_PatientReg.json")
-        val registrationQuestionnaireResponseString =  getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/QuestionnaireResponse_VaccinationPrevenar13.json")
+        val registrationQuestionnaireResponseString =  getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/QuestionnaireResponse_PatientReg.json")
+//        val registrationQuestionnaireResponseString =  getStringFromFile("C:/Users/cthut/Documents/GitHub/Android_kotlin_ProjectSamples/FHIRApplication/app/src/test/resources/QuestionnaireResponse_VaccinationPrevenar13.json")
 
 
         val targetResource = Bundle()
@@ -84,7 +98,7 @@ println("===== structureMap: ${mapString}")
         structureMapUtilities.transform(contextR4, baseElement, structureMap, targetResource)
 
 
-       println("========== targetResource.entry.size : ${targetResource.entry.size}")
+       println("========== targetResource.entry : ${iParser.encodeResourceToString(targetResource)}")
         assertEquals(true, true)
 
     }
