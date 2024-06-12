@@ -13,6 +13,11 @@ const SidebarMenu: React.FC = () => {
     setIsOpen(!isOpen);
   };
 
+  const handleShowClientList = () => {
+    setMainUi(Constant.UI_CLIENT_LIST) ;
+    setIsOpen(!isOpen);
+  }
+
   const handleLogout = () => {
     setLoginUserData( null );
     setMainUi( Constant.UI_LOGIN_PAGE );
@@ -25,7 +30,7 @@ const SidebarMenu: React.FC = () => {
       </button>
 
       <div
-        className={`fixed top-0 left-0 h-full bg-lime-700 text-white w-64 transform ${
+        className={`fixed top-0 left-0 h-full bg-green-700 text-white w-64 transform ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } transition-transform duration-300 ease-in-out`}
       >
@@ -34,7 +39,7 @@ const SidebarMenu: React.FC = () => {
         </button>
         <nav className="mt-10">
           <ul className="mx-2">
-            <li className="px-4 py-3 hover:bg-lime-800 cursor-pointer border-b-2" onClick={() => setMainUi(Constant.UI_CLIENT_LIST) }>
+            <li className="px-4 py-3 hover:bg-lime-800 cursor-pointer border-b-2" onClick={() => handleShowClientList() }>
               Client List
             </li>
             <li className="px-4 py-3 hover:bg-lime-800  cursor-pointer border-b-2" onClick={() => handleLogout() }>
