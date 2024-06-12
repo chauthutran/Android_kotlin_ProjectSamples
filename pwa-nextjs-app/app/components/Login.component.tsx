@@ -6,6 +6,10 @@ import Alert from "./basics/Alert.component";
 import * as Constant from "@/app/constants";
 import { createMessage } from "../utils";
 import useAppHook from "../features/hooks";
+import { FaRegUser } from "react-icons/fa6";
+import { FaRegCircleUser } from "react-icons/fa6";
+import { FaKey } from "react-icons/fa";
+
 
 export default function Login() {
 
@@ -54,26 +58,26 @@ export default function Login() {
             {message.msg != "" && <Alert type={message.type} message={message.msg} />}
 
             <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Login</h2>
+
             <div>
 
-                <div className="mb-4">
-                    <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">Username:</label>
+                <div className="relative flex items-center">
+                    <FaRegCircleUser className="absolute left-3 text-gray-400" />
                     <input 
-                        className="shadow border-slate-400 appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                         type="text"
                         id="username"
                         value={username}
                         onChange={(e) => {setUsername(e.target.value); setMessage(createMessage())}} 
                         onKeyDown={handleKeyDown}
                         required
-            />
+                    />
                 </div>
 
-                <div className="mb-6">
-                    <label htmlFor="pin" className="block text-gray-700 text-sm font-bold mb-2">Pin:</label>
-                    <input 
+                <div className="relative flex items-center my-3">
+                    <FaKey className="absolute left-3 text-gray-400" /> <input 
                         id="pin"
-                        className="shadow border-slate-400 appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                        className="shadow pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                         type="password"
                         value={pin}
                         maxLength={4} 

@@ -4,12 +4,12 @@ export default function ClientIcon({clientFullName}) {
     const getIconText = (text: string) => {
         return text.split(' ')
         .map((word: string) => word[0])
-        .join('').toUpperCase();
+        .join('').substring(0,2).toUpperCase();
     };
 
     
-// ==============================================================================
-// For COLOR
+    // ==============================================================================
+    // For COLOR
 
     const convertStringToLightColour = function(str: string): string {
         var hash = 0;

@@ -12,10 +12,10 @@ export const saveActivityData = async(clientData: JSONObject, activityData: JSON
    
     try {
         let savedResponse;
-        activityData.date = new Date();
 
         if( !activityData.id ) {
             activityData.id = uuidv4();
+            activityData.date = new Date();
             clientData.activities.push(activityData);
         }
         else {

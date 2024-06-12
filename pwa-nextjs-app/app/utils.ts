@@ -18,9 +18,9 @@ export const formatDate = ( date: Date) => {
 export const createEmptyClientData = (): JSONObject => {
     return  {
             fullName: "",
-            birthdate: new Date(),
+            birthdate: (new Date()).toISOString(),
             phone: "",
-            createdAt: new Date()
+            createdAt: (new Date()).toISOString()
         };
 }
 

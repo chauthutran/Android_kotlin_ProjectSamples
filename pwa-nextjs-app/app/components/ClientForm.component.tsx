@@ -70,6 +70,7 @@ export default function ClientForm({ clientData =  Utils.createEmptyClientData()
         
     }
 
+    
     const birthDate = (data.birthdate != undefined) ? data.birthdate.substring(0,10) : "";
 
     return (
