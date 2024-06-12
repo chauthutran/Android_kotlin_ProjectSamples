@@ -1,14 +1,9 @@
 import { useEffect, useState } from "react";
 import ClientForm from "./ClientForm.component";
-import { JSONObject } from "../schemas/types";
 import ActivityList from "./ActiviyList.component";
 import ActivityForm from "./ActivityForm.component";
-import { RootState } from "../features/store";
-import { useSelector } from "react-redux";
 import * as Constant from "@/app/constants";
 import * as Utils from "@/app/utils";
-import useClients from "../features/client/clientHooks";
-import useStatus from "../features/status/StatusHooks";
 import useAppHook from "../features/hooks";
 
 
@@ -23,7 +18,6 @@ const ClientDetailsForm = ({ clientData }) => {
     const [showActivityForm, setShowActivityForm] = useState(false);
 
     const { statusData, clientList } = useAppHook();
-    const {  } = useStatus();
 
     const [data, setData] = useState(clientData);
 
@@ -49,7 +43,7 @@ const ClientDetailsForm = ({ clientData }) => {
                     onClick={() => handleTabClick('clientDetailsTab')}
                     className={`${
                         activeTab === 'clientDetailsTab'
-                        ? 'border-green-800 text-blue-600'
+                        ? 'border-blue-500 text-blue-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                     } flex-1 inline-block py-2 px-4 border-b-2 font-medium text-sm focus:outline-none`}
                 >

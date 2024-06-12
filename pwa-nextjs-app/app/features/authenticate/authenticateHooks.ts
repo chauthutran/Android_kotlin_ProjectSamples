@@ -12,7 +12,7 @@ const useAuthentications = () => {
     const currentUser = useSelector((state: RootState) => getCurrentUser(state));
 
     // --------- For 'Authenticate' actions
-    const handleSetLoginUserData = useCallback((userData: JSONObject) => {
+    const handleSetLoginUserData = useCallback((userData: JSONObject | null) => {
         dispatch(setLoginUserData(userData));
     }, [dispatch]);
 

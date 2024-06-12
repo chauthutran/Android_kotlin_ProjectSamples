@@ -1,11 +1,7 @@
 "use client";
 
-import * as Utils from "@/app/utils";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../features/store";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { JSONObject } from "../schemas/types";
-import * as Constant from "@/app/constants";
 import useAppHook from "../features/hooks";
 
 function ActivityForm({clientData, activityData = {} as JSONObject, handleOnClose}) {
