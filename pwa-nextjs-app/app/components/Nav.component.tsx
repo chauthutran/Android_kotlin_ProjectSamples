@@ -10,7 +10,7 @@ export default function Nav() {
 
     return (
         
-        <nav className="flex justify-between items-center px-8 py-3  bg-green-200" >
+        <nav className="flex justify-between items-center px-8 py-3  bg-green-200 shadow-lg" >
 
             <div className="inline-flex space-x-4 text-gray-600 font-bold cursor-pointer">
                 { mainUi == Constant.UI_CLIENT_LIST && <SidebarMenu /> }
